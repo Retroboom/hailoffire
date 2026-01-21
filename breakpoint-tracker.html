@@ -603,7 +603,7 @@
         // Axis: Fast MG42 "buzzsaw" ripping sound
         function createGunShotWav(isAllies) {
             const sampleRate = 44100; // Higher quality
-            const duration = isAllies ? 1.2 : 0.8; // Include reverb tail
+            const duration = isAllies ? 1.5 : 1.0; // Include longer reverb tail
             const numSamples = Math.floor(sampleRate * duration);
             const numShots = 12;
             const shotDelay = isAllies ? 75 : 45; // Axis much faster (MG42 ~1200 RPM)
@@ -612,12 +612,13 @@
             const samples = new Float32Array(numSamples);
 
             // Sound profile based on faction
-            const baseFreq = isAllies ? 80 : 140;      // Allies deeper
-            const endFreq = isAllies ? 30 : 50;
-            const clickDecay = isAllies ? 50 : 90;     // Axis sharper crack
-            const noiseDecay = isAllies ? 10 : 20;     // Allies longer sustain
-            const thumpDecay = isAllies ? 12 : 18;
-            const shotLength = isAllies ? 0.12 : 0.07; // Allies heavier, longer
+            const baseFreq = isAllies ? 65 : 140;      // Allies much deeper
+            const endFreq = isAllies ? 25 : 50;
+            const clickDecay = isAllies ? 30 : 90;     // Allies softer crack, Axis sharper
+            const noiseDecay = isAllies ? 8 : 20;      // Allies longer sustain
+            const thumpDecay = isAllies ? 10 : 18;
+            const shotLength = isAllies ? 0.14 : 0.07; // Allies heavier, longer
+            const clickVol = isAllies ? 0.3 : 0.7;     // Allies less bright click
 
             for (let shot = 0; shot < numShots; shot++) {
                 const shotStart = shot * shotSamples;
@@ -627,29 +628,29 @@
                     const t = i / shotSampleLength;
                     const ti = i / sampleRate; // Time in seconds
 
-                    // Layer 1: Sharp transient click (the "crack")
+                    // Layer 1: Sharp transient click (the "crack") - reduced for Allies
                     const clickLen = 0.015;
                     const click = ti < clickLen ?
-                        (Math.random() * 2 - 1) * Math.exp(-ti / clickLen * clickDecay) * 0.7 : 0;
+                        (Math.random() * 2 - 1) * Math.exp(-ti / clickLen * clickDecay) * clickVol : 0;
 
-                    // Layer 2: Low frequency thump (the "punch")
+                    // Layer 2: Low frequency thump (the "punch") - boosted for Allies
                     const freq = baseFreq * Math.exp(-ti * 20 * (endFreq / baseFreq));
-                    const thump = Math.sin(2 * Math.PI * freq * ti) * Math.exp(-t * thumpDecay) * (isAllies ? 1.0 : 0.6);
+                    const thump = Math.sin(2 * Math.PI * freq * ti) * Math.exp(-t * thumpDecay) * (isAllies ? 1.2 : 0.6);
 
                     // Layer 3: Filtered noise burst (the "body")
                     let noise = (Math.random() * 2 - 1) * Math.exp(-t * noiseDecay);
-                    // Simple low-pass effect by averaging with previous samples
-                    if (isAllies) noise *= 0.8; // Allies more bass, less high freq
+                    // Allies: much less high freq content (darker, bassier)
+                    if (isAllies) noise *= 0.5;
 
-                    samples[shotStart + i] += (click + thump * 0.8 + noise * 0.5) * 0.65;
+                    samples[shotStart + i] += (click + thump * 0.9 + noise * 0.4) * 0.65;
                 }
             }
 
-            // Add outdoor reverb tail (simple delay-based reverb)
+            // Add outdoor reverb tail - more noticeable
             const reverbStart = numShots * shotSamples;
             const reverbDecay = 0.4;
-            const delays = [0.02, 0.035, 0.05, 0.08, 0.12]; // Multiple delay taps
-            const gains = [0.3, 0.2, 0.15, 0.1, 0.05];
+            const delays = [0.03, 0.06, 0.1, 0.15, 0.22, 0.3]; // More delay taps, longer
+            const gains = [0.5, 0.4, 0.3, 0.2, 0.15, 0.1];     // Higher reverb levels
 
             for (let d = 0; d < delays.length; d++) {
                 const delaySamples = Math.floor(delays[d] * sampleRate);
