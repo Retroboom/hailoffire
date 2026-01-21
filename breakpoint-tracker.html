@@ -596,6 +596,7 @@
         // Audio context for sound effects
         let audioContext = null;
         let convolver = null;
+        let audioUnlocked = false;
 
         function initAudio() {
             if (!audioContext) {
@@ -605,10 +606,32 @@
             }
             // Mobile browsers require resuming suspended AudioContext
             if (audioContext.state === 'suspended') {
-                audioContext.resume();
+                audioContext.resume().then(() => {
+                    audioUnlocked = true;
+                });
+            } else {
+                audioUnlocked = true;
             }
             return audioContext;
         }
+
+        // Unlock audio on first touch/click (iOS requirement)
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            const ctx = initAudio();
+            // Play a silent buffer to unlock audio
+            const buffer = ctx.createBuffer(1, 1, 22050);
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(ctx.destination);
+            source.start(0);
+            audioUnlocked = true;
+        }
+
+        // Add unlock listeners for mobile
+        document.addEventListener('touchstart', unlockAudio, { once: true });
+        document.addEventListener('touchend', unlockAudio, { once: true });
+        document.addEventListener('click', unlockAudio, { once: true });
 
         // Create outdoor/battlefield atmosphere - shorter, more diffuse
         function createOutdoorReverb(ctx) {
@@ -641,6 +664,10 @@
         // Axis: Fast, ripping sound (like MG42 "buzzsaw")
         function playGunSound(player) {
             const ctx = initAudio();
+            // Ensure audio is resumed (critical for mobile)
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
             const numShots = 12;
 
             // Sound profile based on player
