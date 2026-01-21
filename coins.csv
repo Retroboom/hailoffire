@@ -1,0 +1,7 @@
+Transaction ID,Date,Player Name,Coins Earned,Reason,Game ID,Receipt/Proof,Notes
+1,2025-01-15,Example Player,1,Game Played,1,Discord Post Link,First campaign game
+2,2025-01-16,Example Player,1,Store Purchase ($30+),,receipt_photo.jpg,Bought new infantry squad
+3,2025-01-16,Example Player,1,Paint Session,,Discord Post Link,Painted infantry in store
+4,2025-01-17,Example Player,2,New Unit Used,2,,Used newly purchased infantry
+5,2025-01-18,Example Player,2,Brought New Player,,,Introduced John to HoF
+6,2025-01-18,Example Player,2,New Player Joined,,,John joined the campaign
