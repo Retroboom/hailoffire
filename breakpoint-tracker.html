@@ -747,9 +747,10 @@
             const btn = panel.querySelector('.generate-btn');
             const lastRollValue = panel.querySelector('.last-roll-value');
 
-            // Trigger bullet strafe across the button with sound
-            createBulletStrafe(btn);
+            // Trigger sound first (mobile has audio latency)
             playGunSound(player);
+            // Delay animation slightly to sync with sound on mobile
+            setTimeout(() => createBulletStrafe(btn), 80);
 
             // Add rolling animation
             btn.classList.add('rolling');
