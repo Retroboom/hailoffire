@@ -593,77 +593,91 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Audio context for sound effects - iOS compatible
+        // Audio using HTML5 Audio element - most iOS compatible method
         let audioContext = null;
+        let alliesSound = null;
+        let axisSound = null;
 
-        // Play machine gun burst sound - different for each side
-        // Allies: Slower, heavier thump (like .30 cal / .50 cal)
-        // Axis: Fast, ripping sound (like MG42 "buzzsaw")
-        function playGunSound(player) {
-            // Create fresh context each time for iOS compatibility
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            // Resume if suspended (iOS requirement)
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            const ctx = audioContext;
+        // Generate WAV data URL for gunshot sound
+        function createGunShotWav(isAllies) {
+            const sampleRate = 22050;
+            const duration = isAllies ? 0.9 : 0.55; // Total burst duration
+            const numSamples = Math.floor(sampleRate * duration);
             const numShots = 12;
+            const shotDelay = isAllies ? 75 : 45;
+            const shotSamples = Math.floor(sampleRate * shotDelay / 1000);
 
-            // Sound profile based on player
-            const isAllies = player === 'allies';
-            const shotDelay = isAllies ? 75 : 45; // Axis much faster (MG42 ~1200 RPM)
-            const baseFreq = isAllies ? 100 : 160; // Allies deeper thump
-            const endFreq = isAllies ? 35 : 60;
-            const noiseDecay = isAllies ? 12 : 25;
+            const samples = new Float32Array(numSamples);
 
-            for (let i = 0; i < numShots; i++) {
-                setTimeout(() => {
-                    try {
-                        // Simple gunshot: oscillator thump + noise burst
-                        const now = ctx.currentTime;
+            for (let shot = 0; shot < numShots; shot++) {
+                const shotStart = shot * shotSamples;
+                const shotLength = Math.floor(sampleRate * 0.08);
 
-                        // Layer 1: Low frequency thump
-                        const osc = ctx.createOscillator();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(baseFreq, now);
-                        osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.05);
-
-                        const oscGain = ctx.createGain();
-                        oscGain.gain.setValueAtTime(0.8, now);
-                        oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-
-                        osc.connect(oscGain);
-                        oscGain.connect(ctx.destination);
-                        osc.start(now);
-                        osc.stop(now + 0.1);
-
-                        // Layer 2: Noise burst
-                        const bufferSize = ctx.sampleRate * 0.08;
-                        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                        const noiseData = noiseBuffer.getChannelData(0);
-                        for (let j = 0; j < bufferSize; j++) {
-                            const t = j / bufferSize;
-                            noiseData[j] = (Math.random() * 2 - 1) * Math.exp(-t * noiseDecay);
-                        }
-
-                        const noiseSource = ctx.createBufferSource();
-                        noiseSource.buffer = noiseBuffer;
-
-                        const noiseGain = ctx.createGain();
-                        noiseGain.gain.value = 0.5;
-
-                        noiseSource.connect(noiseGain);
-                        noiseGain.connect(ctx.destination);
-                        noiseSource.start(now);
-                    } catch (e) {
-                        console.log('Audio error:', e);
-                    }
-                }, i * shotDelay);
+                for (let i = 0; i < shotLength && (shotStart + i) < numSamples; i++) {
+                    const t = i / shotLength;
+                    // Noise burst with decay
+                    const decay = isAllies ? 12 : 25;
+                    const noise = (Math.random() * 2 - 1) * Math.exp(-t * decay);
+                    // Low thump
+                    const freq = isAllies ? 100 : 160;
+                    const thump = Math.sin(2 * Math.PI * freq * i / sampleRate) * Math.exp(-t * 15);
+                    samples[shotStart + i] += (noise * 0.6 + thump * 0.8) * 0.7;
+                }
             }
+
+            // Convert to 16-bit PCM WAV
+            const buffer = new ArrayBuffer(44 + numSamples * 2);
+            const view = new DataView(buffer);
+
+            // WAV header
+            const writeString = (offset, str) => {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            };
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, numSamples * 2, true);
+
+            // Audio data
+            for (let i = 0; i < numSamples; i++) {
+                const s = Math.max(-1, Math.min(1, samples[i]));
+                view.setInt16(44 + i * 2, s * 0x7FFF, true);
+            }
+
+            // Convert to base64 data URL
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return 'data:audio/wav;base64,' + btoa(binary);
+        }
+
+        // Initialize sounds on first interaction
+        function initSounds() {
+            if (!alliesSound) {
+                alliesSound = new Audio(createGunShotWav(true));
+                axisSound = new Audio(createGunShotWav(false));
+                // Preload
+                alliesSound.load();
+                axisSound.load();
+            }
+        }
+
+        // Play machine gun burst sound
+        function playGunSound(player) {
+            initSounds();
+            const sound = player === 'allies' ? alliesSound : axisSound;
+            // Clone and play to allow overlapping
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Audio play failed:', e));
         }
 
         // Bullet strafing animation - crosses the button left to right
@@ -873,13 +887,15 @@
 
         // Event Listeners
         document.getElementById('startBattle').addEventListener('click', () => {
-            // Initialize audio context on first user interaction (required for iOS)
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
+            // Initialize sounds on first user interaction (required for iOS)
+            initSounds();
+            // Play silent to unlock audio on iOS
+            alliesSound.volume = 0;
+            alliesSound.play().then(() => {
+                alliesSound.pause();
+                alliesSound.currentTime = 0;
+                alliesSound.volume = 1;
+            }).catch(() => {});
             // Check for saved game
             if (loadGame()) {
                 if (confirm('Resume saved game?')) {
