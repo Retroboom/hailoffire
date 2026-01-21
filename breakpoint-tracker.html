@@ -674,9 +674,10 @@
         // Play machine gun burst sound
         function playGunSound(player) {
             initSounds();
-            const sound = player === 'allies' ? alliesSound : axisSound;
-            // Clone and play to allow overlapping
-            sound.currentTime = 0;
+            const source = player === 'allies' ? alliesSound : axisSound;
+            // Clone the audio element for instant playback without reset delay
+            const sound = source.cloneNode();
+            sound.volume = 1;
             sound.play().catch(e => console.log('Audio play failed:', e));
         }
 
