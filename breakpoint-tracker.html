@@ -353,7 +353,8 @@
 
         .last-roll-value {
             font-family: 'Black Ops One', cursive;
-            font-size: 2.2rem;
+            font-size: 1.6rem;
+            white-space: nowrap;
         }
 
         .last-roll-value .die {
@@ -725,9 +726,11 @@
         function showScore(player) {
             const panel = document.querySelector(`.player-panel.${player}`);
             const scoreSection = panel.querySelector('.score-section');
+            const lastRoll = panel.querySelector('.last-roll');
             const btn = panel.querySelector('.toggle-score-btn');
 
             scoreSection.classList.add('visible');
+            lastRoll.style.visibility = 'visible';
             btn.textContent = 'Hide Score';
         }
 
@@ -735,10 +738,13 @@
         function toggleScore(player) {
             const panel = document.querySelector(`.player-panel.${player}`);
             const scoreSection = panel.querySelector('.score-section');
+            const lastRoll = panel.querySelector('.last-roll');
             const btn = panel.querySelector('.toggle-score-btn');
 
             scoreSection.classList.toggle('visible');
-            btn.textContent = scoreSection.classList.contains('visible') ? 'Hide Score' : 'Show Score';
+            const isVisible = scoreSection.classList.contains('visible');
+            lastRoll.style.visibility = isVisible ? 'visible' : 'hidden';
+            btn.textContent = isVisible ? 'Hide Score' : 'Show Score';
         }
 
         // Show all scores
@@ -751,6 +757,9 @@
         function hideAllScores() {
             document.querySelectorAll('.score-section').forEach(section => {
                 section.classList.remove('visible');
+            });
+            document.querySelectorAll('.last-roll').forEach(roll => {
+                roll.style.visibility = 'hidden';
             });
             document.querySelectorAll('.toggle-score-btn').forEach(btn => {
                 btn.textContent = 'Show Score';
