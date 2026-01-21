@@ -603,6 +603,10 @@
                 // Create outdoor atmosphere reverb
                 convolver = createOutdoorReverb(audioContext);
             }
+            // Mobile browsers require resuming suspended AudioContext
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
             return audioContext;
         }
 
@@ -941,6 +945,8 @@
 
         // Event Listeners
         document.getElementById('startBattle').addEventListener('click', () => {
+            // Initialize audio on first user interaction (required for mobile)
+            initAudio();
             // Check for saved game
             if (loadGame()) {
                 if (confirm('Resume saved game?')) {
