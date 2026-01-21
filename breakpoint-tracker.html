@@ -905,30 +905,6 @@
                 toggleScore(player);
             });
         });
-
-        // Auto-resume game on page load if there's a saved game
-        const savedGame = localStorage.getItem('hof-breakpoint-game');
-        if (savedGame) {
-            const saved = JSON.parse(savedGame);
-            // Check if there's actual progress (any draws made)
-            if (saved.allies.draws.length > 0 || saved.axis.draws.length > 0) {
-                gameState = saved;
-                updatePlayerDisplay('allies');
-                updatePlayerDisplay('axis');
-                // Restore last roll display
-                if (saved.allies.draws.length > 0) {
-                    const lastBp = saved.allies.draws[saved.allies.draws.length - 1];
-                    document.querySelector('.player-panel.allies .last-roll-value').innerHTML = `<span class="bp">${lastBp} BP</span>`;
-                }
-                if (saved.axis.draws.length > 0) {
-                    const lastBp = saved.axis.draws[saved.axis.draws.length - 1];
-                    document.querySelector('.player-panel.axis .last-roll-value').innerHTML = `<span class="bp">${lastBp} BP</span>`;
-                }
-                // Go directly to play area
-                setupScreen.classList.add('hidden');
-                playArea.classList.add('active');
-            }
-        }
     </script>
 </body>
 </html>
