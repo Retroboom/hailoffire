@@ -593,81 +593,24 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Audio context for sound effects
+        // Audio context for sound effects - iOS compatible
         let audioContext = null;
-        let convolver = null;
-        let audioUnlocked = false;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                // Create outdoor atmosphere reverb
-                convolver = createOutdoorReverb(audioContext);
-            }
-            // Mobile browsers require resuming suspended AudioContext
-            if (audioContext.state === 'suspended') {
-                audioContext.resume().then(() => {
-                    audioUnlocked = true;
-                });
-            } else {
-                audioUnlocked = true;
-            }
-            return audioContext;
-        }
-
-        // Unlock audio on first touch/click (iOS requirement)
-        function unlockAudio() {
-            if (audioUnlocked) return;
-            const ctx = initAudio();
-            // Play a silent buffer to unlock audio
-            const buffer = ctx.createBuffer(1, 1, 22050);
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(ctx.destination);
-            source.start(0);
-            audioUnlocked = true;
-        }
-
-        // Add unlock listeners for mobile
-        document.addEventListener('touchstart', unlockAudio, { once: true });
-        document.addEventListener('touchend', unlockAudio, { once: true });
-        document.addEventListener('click', unlockAudio, { once: true });
-
-        // Create outdoor/battlefield atmosphere - shorter, more diffuse
-        function createOutdoorReverb(ctx) {
-            const sampleRate = ctx.sampleRate;
-            const length = sampleRate * 0.8; // Shorter than indoor (0.8 sec vs 2 sec)
-            const impulse = ctx.createBuffer(2, length, sampleRate);
-            const leftChannel = impulse.getChannelData(0);
-            const rightChannel = impulse.getChannelData(1);
-
-            for (let i = 0; i < length; i++) {
-                const t = i / length;
-                // Faster decay for outdoor (no walls to bounce off)
-                const envelope = Math.exp(-t * 8);
-                // Very minimal early reflections (open space)
-                const earlyReflection = i < sampleRate * 0.01 ? Math.random() * 0.1 : 0;
-                // Add slight delayed "distance" echo
-                const distantEcho = (i > sampleRate * 0.15 && i < sampleRate * 0.25) ? Math.random() * 0.08 * Math.exp(-(i - sampleRate * 0.15) / (sampleRate * 0.1)) : 0;
-
-                leftChannel[i] = (Math.random() * 2 - 1) * envelope * 0.5 + earlyReflection + distantEcho;
-                rightChannel[i] = (Math.random() * 2 - 1) * envelope * 0.5 + earlyReflection + distantEcho * 0.8;
-            }
-
-            const convolverNode = ctx.createConvolver();
-            convolverNode.buffer = impulse;
-            return convolverNode;
-        }
 
         // Play machine gun burst sound - different for each side
         // Allies: Slower, heavier thump (like .30 cal / .50 cal)
         // Axis: Fast, ripping sound (like MG42 "buzzsaw")
         function playGunSound(player) {
-            const ctx = initAudio();
-            // Ensure audio is resumed (critical for mobile)
-            if (ctx.state === 'suspended') {
-                ctx.resume();
+            // Create fresh context each time for iOS compatibility
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+
+            // Resume if suspended (iOS requirement)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            const ctx = audioContext;
             const numShots = 12;
 
             // Sound profile based on player
@@ -675,93 +618,51 @@
             const shotDelay = isAllies ? 75 : 45; // Axis much faster (MG42 ~1200 RPM)
             const baseFreq = isAllies ? 100 : 160; // Allies deeper thump
             const endFreq = isAllies ? 35 : 60;
-            const highpassFreq = isAllies ? 150 : 350; // Allies more bass
-            const lowpassBase = isAllies ? 2200 : 3800; // Axis brighter/ripping
-            const clickDecay = isAllies ? 60 : 100; // Axis sharper crack
-            const noiseDecay = isAllies ? 18 : 35; // Allies longer sustain (heavier rounds)
+            const noiseDecay = isAllies ? 12 : 25;
 
             for (let i = 0; i < numShots; i++) {
                 setTimeout(() => {
-                    // Create a more realistic gunshot with multiple layers
+                    try {
+                        // Simple gunshot: oscillator thump + noise burst
+                        const now = ctx.currentTime;
 
-                    // Layer 1: Sharp transient click (the "crack")
-                    const clickBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.015, ctx.sampleRate);
-                    const clickData = clickBuffer.getChannelData(0);
-                    for (let j = 0; j < clickData.length; j++) {
-                        const t = j / clickData.length;
-                        clickData[j] = (Math.random() * 2 - 1) * Math.exp(-t * clickDecay);
+                        // Layer 1: Low frequency thump
+                        const osc = ctx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(baseFreq, now);
+                        osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.05);
+
+                        const oscGain = ctx.createGain();
+                        oscGain.gain.setValueAtTime(0.8, now);
+                        oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+                        osc.connect(oscGain);
+                        oscGain.connect(ctx.destination);
+                        osc.start(now);
+                        osc.stop(now + 0.1);
+
+                        // Layer 2: Noise burst
+                        const bufferSize = ctx.sampleRate * 0.08;
+                        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                        const noiseData = noiseBuffer.getChannelData(0);
+                        for (let j = 0; j < bufferSize; j++) {
+                            const t = j / bufferSize;
+                            noiseData[j] = (Math.random() * 2 - 1) * Math.exp(-t * noiseDecay);
+                        }
+
+                        const noiseSource = ctx.createBufferSource();
+                        noiseSource.buffer = noiseBuffer;
+
+                        const noiseGain = ctx.createGain();
+                        noiseGain.gain.value = 0.5;
+
+                        noiseSource.connect(noiseGain);
+                        noiseGain.connect(ctx.destination);
+                        noiseSource.start(now);
+                    } catch (e) {
+                        console.log('Audio error:', e);
                     }
-                    const clickSource = ctx.createBufferSource();
-                    clickSource.buffer = clickBuffer;
-
-                    // Layer 2: Low frequency thump (the "punch")
-                    const osc = ctx.createOscillator();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.05);
-
-                    const oscGain = ctx.createGain();
-                    oscGain.gain.setValueAtTime(isAllies ? 1.0 : 0.6, ctx.currentTime);
-                    oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isAllies ? 0.08 : 0.05));
-
-                    // Layer 3: Noise burst (the "body")
-                    const noiseLength = isAllies ? 0.14 : 0.06; // Allies heavier, longer boom
-                    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * noiseLength, ctx.sampleRate);
-                    const noiseData = noiseBuffer.getChannelData(0);
-                    for (let j = 0; j < noiseData.length; j++) {
-                        const t = j / noiseData.length;
-                        noiseData[j] = (Math.random() * 2 - 1) * Math.exp(-t * noiseDecay);
-                    }
-                    const noiseSource = ctx.createBufferSource();
-                    noiseSource.buffer = noiseBuffer;
-
-                    // Filters
-                    const highpass = ctx.createBiquadFilter();
-                    highpass.type = 'highpass';
-                    highpass.frequency.value = highpassFreq;
-
-                    const lowpass = ctx.createBiquadFilter();
-                    lowpass.type = 'lowpass';
-                    lowpass.frequency.value = lowpassBase + Math.random() * 1000;
-
-                    // Master gain (dry signal)
-                    const masterGain = ctx.createGain();
-                    masterGain.gain.value = 0.7;
-
-                    // Reverb send gain (wet signal)
-                    const reverbSend = ctx.createGain();
-                    reverbSend.gain.value = 0.4; // Amount of reverb
-
-                    // Connect click
-                    clickSource.connect(masterGain);
-                    clickSource.connect(reverbSend);
-
-                    // Connect oscillator (thump)
-                    osc.connect(oscGain);
-                    oscGain.connect(masterGain);
-                    oscGain.connect(reverbSend);
-
-                    // Connect noise through filters
-                    noiseSource.connect(highpass);
-                    highpass.connect(lowpass);
-                    lowpass.connect(masterGain);
-                    lowpass.connect(reverbSend);
-
-                    // Dry path direct to output
-                    masterGain.connect(ctx.destination);
-
-                    // Wet path through reverb
-                    reverbSend.connect(convolver);
-                    convolver.connect(ctx.destination);
-
-                    // Start all
-                    const now = ctx.currentTime;
-                    clickSource.start(now);
-                    osc.start(now);
-                    osc.stop(now + 0.07);
-                    noiseSource.start(now);
-
-                }, i * shotDelay); // Different timing per side
+                }, i * shotDelay);
             }
         }
 
@@ -972,8 +873,13 @@
 
         // Event Listeners
         document.getElementById('startBattle').addEventListener('click', () => {
-            // Initialize audio on first user interaction (required for mobile)
-            initAudio();
+            // Initialize audio context on first user interaction (required for iOS)
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
             // Check for saved game
             if (loadGame()) {
                 if (confirm('Resume saved game?')) {
