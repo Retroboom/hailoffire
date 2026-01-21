@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hail of Fire - Break Point Tracker</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Special+Elite&display=swap');
 
         * {
             box-sizing: border-box;
@@ -74,7 +74,7 @@
         }
 
         .setup-screen h1 {
-            font-family: 'Black Ops One', cursive;
+            font-family: 'American Typewriter', 'Special Elite', 'Courier New', serif;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 0.5rem;
@@ -150,7 +150,7 @@
         }
 
         .header h1 {
-            font-family: 'Black Ops One', cursive;
+            font-family: 'American Typewriter', 'Special Elite', 'Courier New', serif;
             font-size: 2rem;
             margin-bottom: 0.25rem;
         }
@@ -194,7 +194,7 @@
         }
 
         .player-name {
-            font-family: 'Black Ops One', cursive;
+            font-family: 'American Typewriter', 'Special Elite', 'Courier New', serif;
             font-size: 1.8rem;
             margin-bottom: 1rem;
             text-transform: uppercase;
@@ -297,7 +297,7 @@
         }
 
         .score-value {
-            font-family: 'Black Ops One', cursive;
+            font-family: 'American Typewriter', 'Special Elite', 'Courier New', serif;
             font-size: 5rem;
             color: var(--gold);
             line-height: 1;
@@ -352,7 +352,7 @@
         }
 
         .last-roll-value {
-            font-family: 'Black Ops One', cursive;
+            font-family: 'American Typewriter', 'Special Elite', 'Courier New', serif;
             font-size: 1.6rem;
             white-space: nowrap;
         }
@@ -633,7 +633,8 @@
             const numBullets = 12; // 12 bullets
             const rect = buttonElement.getBoundingClientRect();
             const buttonCenterX = rect.left + rect.width / 2;
-            const buttonCenterY = rect.top + rect.height / 2;
+            // Target lower on the button area (where it ends up after Last Roll appears)
+            const buttonCenterY = rect.top + rect.height / 2 + 50;
 
             // Start to the left of the button, end to the right
             const totalWidth = 200 + Math.random() * 100; // Total strafe width
