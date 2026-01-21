@@ -598,31 +598,77 @@
         let alliesSound = null;
         let axisSound = null;
 
-        // Generate WAV data URL for gunshot sound
+        // Generate WAV data URL for gunshot sound with full effects
+        // Allies: Slower, heavier .30/.50 cal sound
+        // Axis: Fast MG42 "buzzsaw" ripping sound
         function createGunShotWav(isAllies) {
-            const sampleRate = 22050;
-            const duration = isAllies ? 0.9 : 0.55; // Total burst duration
+            const sampleRate = 44100; // Higher quality
+            const duration = isAllies ? 1.2 : 0.8; // Include reverb tail
             const numSamples = Math.floor(sampleRate * duration);
             const numShots = 12;
-            const shotDelay = isAllies ? 75 : 45;
+            const shotDelay = isAllies ? 75 : 45; // Axis much faster (MG42 ~1200 RPM)
             const shotSamples = Math.floor(sampleRate * shotDelay / 1000);
 
             const samples = new Float32Array(numSamples);
 
+            // Sound profile based on faction
+            const baseFreq = isAllies ? 80 : 140;      // Allies deeper
+            const endFreq = isAllies ? 30 : 50;
+            const clickDecay = isAllies ? 50 : 90;     // Axis sharper crack
+            const noiseDecay = isAllies ? 10 : 20;     // Allies longer sustain
+            const thumpDecay = isAllies ? 12 : 18;
+            const shotLength = isAllies ? 0.12 : 0.07; // Allies heavier, longer
+
             for (let shot = 0; shot < numShots; shot++) {
                 const shotStart = shot * shotSamples;
-                const shotLength = Math.floor(sampleRate * 0.08);
+                const shotSampleLength = Math.floor(sampleRate * shotLength);
 
-                for (let i = 0; i < shotLength && (shotStart + i) < numSamples; i++) {
-                    const t = i / shotLength;
-                    // Noise burst with decay
-                    const decay = isAllies ? 12 : 25;
-                    const noise = (Math.random() * 2 - 1) * Math.exp(-t * decay);
-                    // Low thump
-                    const freq = isAllies ? 100 : 160;
-                    const thump = Math.sin(2 * Math.PI * freq * i / sampleRate) * Math.exp(-t * 15);
-                    samples[shotStart + i] += (noise * 0.6 + thump * 0.8) * 0.7;
+                for (let i = 0; i < shotSampleLength && (shotStart + i) < numSamples; i++) {
+                    const t = i / shotSampleLength;
+                    const ti = i / sampleRate; // Time in seconds
+
+                    // Layer 1: Sharp transient click (the "crack")
+                    const clickLen = 0.015;
+                    const click = ti < clickLen ?
+                        (Math.random() * 2 - 1) * Math.exp(-ti / clickLen * clickDecay) * 0.7 : 0;
+
+                    // Layer 2: Low frequency thump (the "punch")
+                    const freq = baseFreq * Math.exp(-ti * 20 * (endFreq / baseFreq));
+                    const thump = Math.sin(2 * Math.PI * freq * ti) * Math.exp(-t * thumpDecay) * (isAllies ? 1.0 : 0.6);
+
+                    // Layer 3: Filtered noise burst (the "body")
+                    let noise = (Math.random() * 2 - 1) * Math.exp(-t * noiseDecay);
+                    // Simple low-pass effect by averaging with previous samples
+                    if (isAllies) noise *= 0.8; // Allies more bass, less high freq
+
+                    samples[shotStart + i] += (click + thump * 0.8 + noise * 0.5) * 0.65;
                 }
+            }
+
+            // Add outdoor reverb tail (simple delay-based reverb)
+            const reverbStart = numShots * shotSamples;
+            const reverbDecay = 0.4;
+            const delays = [0.02, 0.035, 0.05, 0.08, 0.12]; // Multiple delay taps
+            const gains = [0.3, 0.2, 0.15, 0.1, 0.05];
+
+            for (let d = 0; d < delays.length; d++) {
+                const delaySamples = Math.floor(delays[d] * sampleRate);
+                for (let i = 0; i < reverbStart && (i + delaySamples) < numSamples; i++) {
+                    const t = i / numSamples;
+                    samples[i + delaySamples] += samples[i] * gains[d] * Math.exp(-t * 3);
+                }
+            }
+
+            // Normalize and soft clip to prevent distortion
+            let maxVal = 0;
+            for (let i = 0; i < numSamples; i++) {
+                maxVal = Math.max(maxVal, Math.abs(samples[i]));
+            }
+            const normalize = maxVal > 0 ? 0.9 / maxVal : 1;
+            for (let i = 0; i < numSamples; i++) {
+                samples[i] *= normalize;
+                // Soft clip
+                samples[i] = Math.tanh(samples[i] * 1.2);
             }
 
             // Convert to 16-bit PCM WAV
