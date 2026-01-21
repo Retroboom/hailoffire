@@ -96,10 +96,12 @@
 
         .setup-screen .subtitle {
             color: var(--gold);
-            font-size: 2.5rem;
+            font-size: clamp(1.2rem, 5vw, 2.5rem);
             margin-bottom: 1rem;
             text-transform: uppercase;
-            letter-spacing: 6px;
+            letter-spacing: clamp(2px, 1vw, 6px);
+            text-align: center;
+            white-space: nowrap;
         }
 
         .start-btn {
