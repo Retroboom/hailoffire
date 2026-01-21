@@ -730,7 +730,7 @@
             const btn = panel.querySelector('.toggle-score-btn');
 
             scoreSection.classList.add('visible');
-            lastRoll.style.visibility = 'visible';
+            lastRoll.style.display = 'flex';
             btn.textContent = 'Hide Score';
         }
 
@@ -743,7 +743,7 @@
 
             scoreSection.classList.toggle('visible');
             const isVisible = scoreSection.classList.contains('visible');
-            lastRoll.style.visibility = isVisible ? 'visible' : 'hidden';
+            lastRoll.style.display = isVisible ? 'flex' : 'none';
             btn.textContent = isVisible ? 'Hide Score' : 'Show Score';
         }
 
@@ -759,7 +759,7 @@
                 section.classList.remove('visible');
             });
             document.querySelectorAll('.last-roll').forEach(roll => {
-                roll.style.visibility = 'hidden';
+                roll.style.display = 'none';
             });
             document.querySelectorAll('.toggle-score-btn').forEach(btn => {
                 btn.textContent = 'Show Score';
@@ -846,13 +846,10 @@
         document.getElementById('startBattle').addEventListener('click', () => {
             // Initialize sounds on first user interaction (required for iOS)
             initSounds();
-            // Play silent to unlock audio on iOS
-            alliesSound.volume = 0;
-            alliesSound.play().then(() => {
-                alliesSound.pause();
-                alliesSound.currentTime = 0;
-                alliesSound.volume = 1;
-            }).catch(() => {});
+            // Unlock audio on iOS by playing a tiny silent clip
+            const silentUnlock = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+            silentUnlock.volume = 0;
+            silentUnlock.play().catch(() => {});
             // Check for saved game
             if (loadGame()) {
                 if (confirm('Resume saved game?')) {
