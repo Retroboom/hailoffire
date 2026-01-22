@@ -2003,12 +2003,15 @@
             // Listen for campaign data changes
             database.ref('campaign').on('value', (snapshot) => {
                 const data = snapshot.val();
+                console.log('Firebase data loaded:', data);
+                console.log('territoryArrows from Firebase:', data?.territoryArrows);
                 if (data) {
                     campaignData.players = data.players ? Object.values(data.players) : [];
                     campaignData.games = data.games ? Object.values(data.games) : [];
                     campaignData.coins = data.coins ? Object.values(data.coins) : [];
                     campaignData.sectors = data.sectors || {};
                     campaignData.territoryArrows = data.territoryArrows ? Object.values(data.territoryArrows) : [];
+                    console.log('campaignData.territoryArrows after load:', campaignData.territoryArrows);
                 } else {
                     // Initialize default data if none exists
                     initializeSectors();
