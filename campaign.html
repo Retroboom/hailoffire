@@ -2438,7 +2438,23 @@
         }
 
         function deleteGame(id) {
-            if (!confirm('Delete this game? This will NOT reverse sector changes.')) return;
+            if (!confirm('Delete this game? This will reverse any sector changes and remove associated arrows.')) return;
+
+            // Find the game before deleting
+            const game = campaignData.games.find(g => g.id === id);
+
+            if (game && game.sectorChanged) {
+                // Revert sector to opposite faction
+                const currentController = campaignData.sectors[game.sectorChanged]?.controller;
+                const previousController = currentController === 'Allied' ? 'Axis' : 'Allied';
+                campaignData.sectors[game.sectorChanged] = { controller: previousController };
+
+                // Remove associated arrow
+                campaignData.territoryArrows = campaignData.territoryArrows.filter(
+                    a => a.gameId !== id
+                );
+            }
+
             campaignData.games = campaignData.games.filter(g => g.id !== id);
             // Also remove associated coin transactions
             campaignData.coins = campaignData.coins.filter(c => c.gameId !== id);
