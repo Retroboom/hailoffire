@@ -3506,14 +3506,20 @@ Allied: ${allied} | Axis: ${axis}
 
         // Render curved territory arrows
         function renderTerritoryArrows(overlay) {
-            if (!campaignData.territoryArrows || campaignData.territoryArrows.length === 0) return;
+            console.log('renderTerritoryArrows called, arrows:', campaignData.territoryArrows);
+            if (!campaignData.territoryArrows || campaignData.territoryArrows.length === 0) {
+                console.log('No arrows to render');
+                return;
+            }
 
             // Get container dimensions
             const containerWidth = overlay.offsetWidth;
             const containerHeight = overlay.offsetHeight;
+            console.log('Container dimensions:', containerWidth, containerHeight);
 
             // If container has no dimensions yet, wait and try again
             if (containerWidth === 0 || containerHeight === 0) {
+                console.log('Container has no dimensions, retrying...');
                 requestAnimationFrame(() => renderTerritoryArrows(overlay));
                 return;
             }
