@@ -564,6 +564,31 @@
             transform: translate(-50%, -50%) scale(1.5);
         }
 
+        /* Territory Arrow */
+        .territory-arrow-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .territory-arrow {
+            fill: none;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0.2px 0.4px rgba(0,0,0,0.5));
+        }
+
+        .territory-arrow.allied {
+            stroke: var(--allied-color);
+        }
+
+        .territory-arrow.axis {
+            stroke: var(--axis-color);
+        }
+
         /* Position Editor */
         .editor-controls {
             background: var(--bg-dark);
@@ -1940,7 +1965,8 @@
             games: [],
             coins: [],
             sectors: {},
-            pendingGames: []
+            pendingGames: [],
+            territoryArrows: []
         };
 
         // Admin state (stored locally, not in Firebase)
@@ -1977,11 +2003,15 @@
             // Listen for campaign data changes
             database.ref('campaign').on('value', (snapshot) => {
                 const data = snapshot.val();
+                console.log('Firebase data loaded:', data);
+                console.log('territoryArrows from Firebase:', data?.territoryArrows);
                 if (data) {
                     campaignData.players = data.players ? Object.values(data.players) : [];
                     campaignData.games = data.games ? Object.values(data.games) : [];
                     campaignData.coins = data.coins ? Object.values(data.coins) : [];
                     campaignData.sectors = data.sectors || {};
+                    campaignData.territoryArrows = data.territoryArrows ? Object.values(data.territoryArrows) : [];
+                    console.log('campaignData.territoryArrows after load:', campaignData.territoryArrows);
                 } else {
                     // Initialize default data if none exists
                     initializeSectors();
@@ -2009,7 +2039,8 @@
                 players: {},
                 games: {},
                 coins: {},
-                sectors: campaignData.sectors
+                sectors: campaignData.sectors,
+                territoryArrows: {}
             };
 
             // Convert arrays to objects with IDs as keys
@@ -2021,6 +2052,9 @@
             });
             campaignData.coins.forEach((c, i) => {
                 dataToSave.coins['coin_' + i] = c;
+            });
+            campaignData.territoryArrows.forEach((a, i) => {
+                dataToSave.territoryArrows['arrow_' + i] = a;
             });
 
             database.ref('campaign').set(dataToSave);
@@ -2352,6 +2386,22 @@
                 game.sectorChanged = loserSector;
                 game.result = `${game.winner} captured ${loserSector}`;
                 campaignData.sectors[loserSector] = { controller: game.winner };
+
+                // Update territory arrows
+                // Remove any arrows where the captured sector is involved
+                campaignData.territoryArrows = campaignData.territoryArrows.filter(
+                    a => a.fromSector !== loserSector && a.toSector !== loserSector
+                );
+
+                // Determine the winning (attacking) sector and add new arrow
+                const winnerSector = game.winner === game.initiative ? game.fromSector : game.toSector;
+                campaignData.territoryArrows.push({
+                    fromSector: winnerSector,
+                    toSector: loserSector,
+                    controller: game.winner,
+                    gameId: game.id,
+                    date: game.date
+                });
             }
 
             campaignData.games.push(game);
@@ -3119,6 +3169,22 @@ Allied: ${allied} | Axis: ${axis}
                 game.sectorChanged = loserSector;
                 game.result = `${game.winner} captured ${loserSector}`;
                 campaignData.sectors[loserSector] = { controller: game.winner };
+
+                // Update territory arrows
+                // Remove any arrows where the captured sector is involved
+                campaignData.territoryArrows = campaignData.territoryArrows.filter(
+                    a => a.fromSector !== loserSector && a.toSector !== loserSector
+                );
+
+                // Determine the winning (attacking) sector and add new arrow
+                const winnerSector = game.winner === game.initiative ? game.fromSector : game.toSector;
+                campaignData.territoryArrows.push({
+                    fromSector: winnerSector,
+                    toSector: loserSector,
+                    controller: game.winner,
+                    gameId: game.id,
+                    date: game.date
+                });
             }
 
             campaignData.games.push(game);
@@ -3308,7 +3374,7 @@ Allied: ${allied} | Axis: ${axis}
             if (!confirm('DELETE ALL DATA? This cannot be undone!')) return;
             if (!confirm('Are you REALLY sure? Type "RESET" to confirm...')) return;
 
-            campaignData = { players: [], games: [], coins: [], sectors: {}, pendingGames: [] };
+            campaignData = { players: [], games: [], coins: [], sectors: {}, pendingGames: [], territoryArrows: [] };
             initializeSectors();
             saveToFirebase();
             // Also clear pending games
@@ -3390,6 +3456,9 @@ Allied: ${allied} | Axis: ${axis}
 
             const cities = ['Cherbourg', 'Ste-Mere-Eglise', 'Carentan', 'Bayeux', 'Caen', 'Saint-Lo', 'Coutances'];
 
+            // Render territory arrows first (so they appear behind markers)
+            renderTerritoryArrows(overlay);
+
             for (const [code, def] of Object.entries(SECTOR_DEFINITIONS)) {
                 const ctrl = campaignData.sectors[code]?.controller || 'Axis';
 
@@ -3436,6 +3505,125 @@ Allied: ${allied} | Axis: ${axis}
 
             // Also render submit page map (read-only reference)
             renderSubmitMap();
+        }
+
+        // Render curved territory arrows
+        function renderTerritoryArrows(overlay) {
+            console.log('renderTerritoryArrows called, arrows:', campaignData.territoryArrows);
+            if (!campaignData.territoryArrows || campaignData.territoryArrows.length === 0) {
+                console.log('No arrows to render');
+                return;
+            }
+
+            // Get container dimensions
+            const containerWidth = overlay.offsetWidth;
+            const containerHeight = overlay.offsetHeight;
+            console.log('Container dimensions:', containerWidth, containerHeight);
+
+            // If container has no dimensions yet, wait and try again
+            if (containerWidth === 0 || containerHeight === 0) {
+                console.log('Container has no dimensions, retrying...');
+                requestAnimationFrame(() => renderTerritoryArrows(overlay));
+                return;
+            }
+
+            // Use pixel-based viewBox to avoid aspect ratio distortion
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('territory-arrow-svg');
+            svg.setAttribute('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
+            svg.setAttribute('preserveAspectRatio', 'none');
+
+            // Stroke width matches sector marker's red fill (12px)
+            const strokeWidth = 12;
+            const headLength = 12;  // Shorter/stubbier arrowhead
+            const headWidth = 28;   // Scaled down width
+            const gapFromTarget = 12;  // Gap between arrowhead tip and target sector
+
+            // Draw each arrow
+            campaignData.territoryArrows.forEach(arrow => {
+                const fromDef = SECTOR_DEFINITIONS[arrow.fromSector];
+                const toDef = SECTOR_DEFINITIONS[arrow.toSector];
+                if (!fromDef || !toDef) return;
+
+                const fromPos = currentPositions[arrow.fromSector] || { x: fromDef.x, y: fromDef.y };
+                const toPos = currentPositions[arrow.toSector] || { x: toDef.x, y: toDef.y };
+
+                // Convert percentage positions to pixels
+                const fromX = fromPos.x / 100 * containerWidth;
+                const fromY = fromPos.y / 100 * containerHeight;
+                const toX = toPos.x / 100 * containerWidth;
+                const toY = toPos.y / 100 * containerHeight;
+
+                // Direction vector
+                const dx = toX - fromX;
+                const dy = toY - fromY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const ux = dx / dist;
+                const uy = dy / dist;
+
+                // Perpendicular vector
+                const px = -uy;
+                const py = ux;
+
+                // Curve control point
+                const midX = (fromX + toX) / 2;
+                const midY = (fromY + toY) / 2;
+                const curveOffset = Math.min(dist * 0.15, 40);
+                const ctrlX = midX + px * curveOffset;
+                const ctrlY = midY + py * curveOffset;
+
+                // Offset target position to create gap before sector marker
+                const targetX = toX - ux * gapFromTarget;
+                const targetY = toY - uy * gapFromTarget;
+
+                // For a quadratic bezier, the tangent at the end point is the direction from control to end
+                // Calculate the tangent direction at the end of the curve (control point to target)
+                const tangentDx = targetX - ctrlX;
+                const tangentDy = targetY - ctrlY;
+                const tangentDist = Math.sqrt(tangentDx * tangentDx + tangentDy * tangentDy);
+                const tangentUx = tangentDx / tangentDist;
+                const tangentUy = tangentDy / tangentDist;
+
+                // Perpendicular to tangent for arrowhead base
+                const tangentPx = -tangentUy;
+                const tangentPy = tangentUx;
+
+                // Shorten the path so it ends where arrowhead begins (along the tangent direction)
+                const endX = targetX - tangentUx * headLength;
+                const endY = targetY - tangentUy * headLength;
+
+                // Recalculate control point for shortened path
+                const shortMidX = (fromX + endX) / 2;
+                const shortMidY = (fromY + endY) / 2;
+                const shortCtrlX = shortMidX + px * curveOffset;
+                const shortCtrlY = shortMidY + py * curveOffset;
+
+                // Create curved path
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const d = `M ${fromX} ${fromY} Q ${shortCtrlX} ${shortCtrlY} ${endX} ${endY}`;
+                path.setAttribute('d', d);
+                path.classList.add('territory-arrow', arrow.controller.toLowerCase());
+                path.style.strokeWidth = strokeWidth;
+                svg.appendChild(path);
+
+                // Draw arrowhead triangle aligned with the curve's tangent
+                const headBaseLeftX = endX + tangentPx * headWidth / 2;
+                const headBaseLeftY = endY + tangentPy * headWidth / 2;
+                const headBaseRightX = endX - tangentPx * headWidth / 2;
+                const headBaseRightY = endY - tangentPy * headWidth / 2;
+
+                // Tip of arrowhead extends along the tangent direction
+                const tipX = endX + tangentUx * headLength;
+                const tipY = endY + tangentUy * headLength;
+
+                const arrowhead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                arrowhead.setAttribute('points',
+                    `${tipX},${tipY} ${headBaseLeftX},${headBaseLeftY} ${headBaseRightX},${headBaseRightY}`);
+                arrowhead.setAttribute('fill', arrow.controller === 'Allied' ? 'var(--allied-color)' : 'var(--axis-color)');
+                svg.appendChild(arrowhead);
+            });
+
+            overlay.appendChild(svg);
         }
 
         function renderSubmitMap() {
