@@ -3511,7 +3511,12 @@ Allied: ${allied} | Axis: ${axis}
             // Get container dimensions
             const containerWidth = overlay.offsetWidth;
             const containerHeight = overlay.offsetHeight;
-            if (containerWidth === 0 || containerHeight === 0) return;
+
+            // If container has no dimensions yet, wait and try again
+            if (containerWidth === 0 || containerHeight === 0) {
+                requestAnimationFrame(() => renderTerritoryArrows(overlay));
+                return;
+            }
 
             // Use pixel-based viewBox to avoid aspect ratio distortion
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
