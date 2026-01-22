@@ -2361,6 +2361,7 @@
         // Game Functions
         function recordGame(e) {
             e.preventDefault();
+            console.log('recordGame called');
 
             const game = {
                 id: campaignData.games.length + 1,
@@ -2373,19 +2374,23 @@
                 winner: document.getElementById('game-winner').value,
                 notes: document.getElementById('game-notes').value
             };
+            console.log('Game data:', game);
 
             // Determine sector change
             const loserSector = game.winner === game.initiative ? game.toSector : game.fromSector;
             const loserDef = SECTOR_DEFINITIONS[loserSector];
+            console.log('loserSector:', loserSector, 'loserDef:', loserDef);
 
             // Landing sectors can't be captured by Axis
             if (loserDef?.landing && game.winner === 'Axis') {
                 game.sectorChanged = null;
                 game.result = 'No change (Landing sector protected)';
+                console.log('No territory change - landing sector protected');
             } else {
                 game.sectorChanged = loserSector;
                 game.result = `${game.winner} captured ${loserSector}`;
                 campaignData.sectors[loserSector] = { controller: game.winner };
+                console.log('Territory captured:', loserSector, 'by', game.winner);
 
                 // Update territory arrows
                 // Remove any arrows where the captured sector is involved
@@ -2395,6 +2400,7 @@
 
                 // Determine the winning (attacking) sector and add new arrow
                 const winnerSector = game.winner === game.initiative ? game.fromSector : game.toSector;
+                console.log('Creating arrow from', winnerSector, 'to', loserSector);
                 campaignData.territoryArrows.push({
                     fromSector: winnerSector,
                     toSector: loserSector,
@@ -2402,6 +2408,7 @@
                     gameId: game.id,
                     date: game.date
                 });
+                console.log('territoryArrows after push:', campaignData.territoryArrows);
             }
 
             campaignData.games.push(game);
@@ -2411,6 +2418,7 @@
             const axisCoins = { player: game.axisPlayer, amount: 1, reason: 'Game Played', date: game.date, gameId: game.id };
             campaignData.coins.push(alliedCoins, axisCoins);
 
+            console.log('About to save, territoryArrows:', campaignData.territoryArrows);
             saveToFirebase();
             renderAll();
             closeModal('new-game-modal');
