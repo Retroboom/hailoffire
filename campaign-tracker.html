@@ -3557,12 +3557,6 @@ Allied: ${allied} | Axis: ${axis}
             svg.setAttribute('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
             svg.setAttribute('preserveAspectRatio', 'none');
 
-            // Stroke width matches sector marker's red fill (12px)
-            const strokeWidth = 12;
-            const headLength = 12;  // Shorter/stubbier arrowhead
-            const headWidth = 28;   // Scaled down width
-            const gapFromTarget = 12;  // Gap between arrowhead tip and target sector
-
             // Draw each arrow
             campaignData.territoryArrows.forEach(arrow => {
                 const fromDef = SECTOR_DEFINITIONS[arrow.fromSector];
@@ -3585,14 +3579,24 @@ Allied: ${allied} | Axis: ${axis}
                 const ux = dx / dist;
                 const uy = dy / dist;
 
+                // Scale arrow properties based on distance
+                // For short distances, scale everything down proportionally
+                const minDist = 60;  // Minimum distance before scaling kicks in
+                const scale = dist < minDist ? dist / minDist : 1;
+
+                const strokeWidth = Math.max(4, 12 * scale);
+                const headLength = Math.max(6, 12 * scale);
+                const headWidth = Math.max(12, 28 * scale);
+                const gapFromTarget = Math.max(6, 12 * scale);
+
                 // Perpendicular vector
                 const px = -uy;
                 const py = ux;
 
-                // Curve control point
+                // Curve control point - less curve for short distances
                 const midX = (fromX + toX) / 2;
                 const midY = (fromY + toY) / 2;
-                const curveOffset = Math.min(dist * 0.15, 40);
+                const curveOffset = Math.min(dist * 0.15 * scale, 40);
                 const ctrlX = midX + px * curveOffset;
                 const ctrlY = midY + py * curveOffset;
 
