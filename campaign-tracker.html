@@ -1199,17 +1199,10 @@
                     <li>Determine who will play Allied and who will play Axis for this game</li>
                 </ul>
 
-                <h3>Step 2: Roll for Initiative</h3>
+                <h3>Step 2: Allied Player Chooses Battlefield</h3>
                 <ul>
-                    <li>Both players roll 1d6</li>
-                    <li><strong>Allied player adds +1 to their roll and wins ties</strong></li>
-                    <li>High roll wins initiative</li>
-                </ul>
-
-                <h3>Step 3: Winner Chooses Battlefield</h3>
-                <ul>
-                    <li>Initiative winner declares which friendly sector will be attacking which adjacent enemy sector (paradrops excepted)</li>
-                    <li><strong>Important:</strong> If the attacker loses the battle, they lose the sector they attacked FROM</li>
+                    <li>Allied player declares which friendly sector will be attacking which adjacent enemy sector (paradrops excepted)</li>
+                    <li><strong>Note:</strong> Allies always have initiative in this campaign</li>
                 </ul>
 
                 <h3>Step 4: Build Your Forces</h3>
@@ -1222,7 +1215,7 @@
                     <li>Show each other your forces</li>
                     <li>Count vehicle teams (tanks, half-tracks, armored cars, etc.)</li>
                     <li><strong>Player with more vehicles = Scenario Attacker</strong></li>
-                    <li>If tied, initiative winner chooses</li>
+                    <li>If tied, Allied player chooses</li>
                     <li><strong>Check coin totals:</strong> Each player announces how many rerolls they have (coins ÷ 4)</li>
                 </ul>
 
@@ -1234,8 +1227,8 @@
 
                 <h3>Step 8: Resolve Sector Control</h3>
                 <ul>
-                    <li>Winner captures the loser's sector</li>
-                    <li><strong>Exception:</strong> Landing sectors (Utah, Omaha, Gold, Juno, Sword) cannot be captured by Axis - if Axis would capture a landing sector, no sector changes hands</li>
+                    <li><strong>Allied win:</strong> Allies capture the target sector</li>
+                    <li><strong>Axis win:</strong> No territory changes (Allied attack repelled)</li>
                     <li>Update store map immediately (move pins)</li>
                 </ul>
 
@@ -1243,9 +1236,8 @@
                 <p>Both players post to Discord:</p>
                 <ul>
                     <li>[SECTOR NAME/CODE] - [Winner] defeats [Loser]</li>
-                    <li>Initiative: [Who won roll-off]</li>
                     <li>Attack: [Sector attacked] FROM [Sector attacked from]</li>
-                    <li>Result: [Which sector changed hands]</li>
+                    <li>Result: [Which sector changed hands, if any]</li>
                     <li>Modifiers: [list adjacency/supply/terrain]</li>
                     <li>@opponent (confirm with 👍 emoji)</li>
                 </ul>
@@ -1319,9 +1311,8 @@
 
                 <h3>Requirements</h3>
                 <ul>
-                    <li>Win the initiative roll (1d6+1 vs opponent's 1d6)</li>
                     <li>Choose any German sector NOT adjacent to Allied sectors</li>
-                    <li><strong>Choose an enemy-adjacent, non-landing Allied sector the attack originates from.</strong> That sector is captured if the paradrop fails</li>
+                    <li><strong>Choose an enemy-adjacent, non-landing Allied sector the attack originates from</strong></li>
                 </ul>
 
                 <h3>Restrictions</h3>
@@ -1337,14 +1328,14 @@
                 <h3>Results</h3>
                 <ul>
                     <li><strong>Allied victory:</strong> Sector becomes Allied-controlled AND becomes an Allied supply source (like landing sectors)</li>
-                    <li><strong>German victory:</strong> Germans capture the Allied sector the paradrop originated from</li>
+                    <li><strong>German victory:</strong> No territory changes (Allied attack repelled)</li>
                 </ul>
             </div>
 
             <div class="card">
                 <h2>Breakpoint Modifiers</h2>
                 <ul>
-                    <li><strong>Initiative Winner:</strong> +1 BP per additional friendly sector bordering the target (beyond sector attacking from), maximum +2 BP</li>
+                    <li><strong>Attacker (Allies):</strong> +1 BP per additional friendly sector bordering the target (beyond sector attacking from), maximum +2 BP</li>
                     <li><strong>Allies Only:</strong> Flat +2 BP if fighting from a landing sector (Utah, Omaha, Gold, Juno, Sword)</li>
                     <li><strong>Flooded Sector Paradrop:</strong> -1 BP penalty to Allies (difficult landing conditions)</li>
                 </ul>
@@ -1460,13 +1451,12 @@
                 <h3>Game Sequence Checklist</h3>
                 <ul>
                     <li>☐ Schedule with opponent, determine who plays which side</li>
-                    <li>☐ Roll for initiative (Allied +1, wins ties)</li>
-                    <li>☐ Winner picks which sector is attacking which sector</li>
+                    <li>☐ Allied player picks which sector is attacking which sector</li>
                     <li>☐ Determine scenario attacker (vehicle count)</li>
                     <li>☐ Check coin totals and announce rerolls (coins ÷ 4)</li>
                     <li>☐ Calculate BP modifiers</li>
                     <li>☐ Play game</li>
-                    <li>☐ Winner takes Loser's sector</li>
+                    <li>☐ Allied win = capture target; Axis win = no change</li>
                     <li>☐ Update map, post to Discord with photos</li>
                 </ul>
 
@@ -1670,23 +1660,22 @@
                         </div>
                     </div>
 
-                    <div class="grid-2">
-                        <div>
-                            <label>Initiative Winner</label>
-                            <select id="submit-initiative" required>
-                                <option value="">Select...</option>
-                                <option value="Allied">Allied</option>
-                                <option value="Axis">Axis</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Winner</label>
-                            <select id="submit-winner" required>
-                                <option value="">Select...</option>
-                                <option value="Allied">Allied</option>
-                                <option value="Axis">Axis</option>
-                            </select>
-                        </div>
+                    <!-- Initiative hidden - Allies always have initiative in current campaign rules -->
+                    <div style="display: none;">
+                        <label>Initiative Winner</label>
+                        <select id="submit-initiative" required>
+                            <option value="Allied" selected>Allied</option>
+                            <option value="Axis">Axis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Winner</label>
+                        <select id="submit-winner" required>
+                            <option value="">Select...</option>
+                            <option value="Allied">Allied</option>
+                            <option value="Axis">Axis</option>
+                        </select>
+                    </div>
                     </div>
 
                     <div class="grid-2">
@@ -1853,11 +1842,14 @@
                 <label>Date</label>
                 <input type="date" id="game-date" required>
 
-                <label>Initiative Winner</label>
-                <select id="game-initiative" required>
-                    <option value="Allied">Allied</option>
-                    <option value="Axis">Axis</option>
-                </select>
+                <!-- Initiative hidden - Allies always have initiative in current campaign rules -->
+                <div style="display: none;">
+                    <label>Initiative Winner</label>
+                    <select id="game-initiative" required>
+                        <option value="Allied" selected>Allied</option>
+                        <option value="Axis">Axis</option>
+                    </select>
+                </div>
 
                 <div class="grid-2">
                     <div>
@@ -2377,34 +2369,43 @@
             console.log('Game data:', game);
 
             // Determine sector change
-            const loserSector = game.winner === game.initiative ? game.toSector : game.fromSector;
-            const loserDef = SECTOR_DEFINITIONS[loserSector];
-            console.log('loserSector:', loserSector, 'loserDef:', loserDef);
+            // CAMPAIGN RULE: Allies always have initiative and only gain territory (never lose)
+            // Allied win = Allies capture the Axis sector (toSector)
+            // Axis win = No territory change (Allies defended)
+            const targetSector = game.toSector;  // Allies always attacking toward toSector
+            const targetDef = SECTOR_DEFINITIONS[targetSector];
+            console.log('targetSector:', targetSector, 'targetDef:', targetDef);
 
-            // Landing sectors can't be captured by Axis
-            if (loserDef?.landing && game.winner === 'Axis') {
+            if (game.winner === 'Axis') {
+                // Axis wins = Allies defended, no territory change
                 game.sectorChanged = null;
-                game.result = 'No change (Landing sector protected)';
-                console.log('No territory change - landing sector protected');
+                game.result = 'No change (Allied attack repelled)';
+                console.log('No territory change - Axis defended');
+            } else if (targetDef?.controller === 'Allied' || campaignData.sectors[targetSector]?.controller === 'Allied') {
+                // Target already Allied controlled
+                game.sectorChanged = null;
+                game.result = 'No change (Already Allied controlled)';
+                console.log('No territory change - already Allied');
             } else {
-                game.sectorChanged = loserSector;
-                game.result = `${game.winner} captured ${loserSector}`;
-                campaignData.sectors[loserSector] = { controller: game.winner };
-                console.log('Territory captured:', loserSector, 'by', game.winner);
+                // Allied wins = capture the target sector
+                game.sectorChanged = targetSector;
+                game.result = `Allied captured ${targetSector}`;
+                campaignData.sectors[targetSector] = { controller: 'Allied' };
+                console.log('Territory captured:', targetSector, 'by Allied');
 
                 // Update territory arrows
                 // Remove any arrows where the captured sector is involved
                 campaignData.territoryArrows = campaignData.territoryArrows.filter(
-                    a => a.fromSector !== loserSector && a.toSector !== loserSector
+                    a => a.fromSector !== targetSector && a.toSector !== targetSector
                 );
 
-                // Determine the winning (attacking) sector and add new arrow
-                const winnerSector = game.winner === game.initiative ? game.fromSector : game.toSector;
-                console.log('Creating arrow from', winnerSector, 'to', loserSector);
+                // Add new arrow from Allied sector to captured sector
+                const winnerSector = game.fromSector;
+                console.log('Creating arrow from', winnerSector, 'to', targetSector);
                 campaignData.territoryArrows.push({
                     fromSector: winnerSector,
-                    toSector: loserSector,
-                    controller: game.winner,
+                    toSector: targetSector,
+                    controller: 'Allied',
                     gameId: game.id,
                     date: game.date
                 });
@@ -2834,7 +2835,6 @@
         function updateDiscordPreview() {
             const allied = document.getElementById('game-allied-player').value;
             const axis = document.getElementById('game-axis-player').value;
-            const initiative = document.getElementById('game-initiative').value;
             const from = document.getElementById('game-from-sector').value;
             const to = document.getElementById('game-to-sector').value;
             const winner = document.getElementById('game-winner').value;
@@ -2845,14 +2845,12 @@
             }
 
             const loser = winner === 'Allied' ? 'Axis' : 'Allied';
-            const loserSector = winner === initiative ? to : from;
-            const def = SECTOR_DEFINITIONS[loserSector];
-            const sectorResult = def?.landing && winner === 'Axis'
-                ? 'No change (Landing sector protected)'
-                : `${loserSector} → ${winner}`;
+            // Allies always attack, so Allied win = capture target, Axis win = no change
+            const sectorResult = winner === 'Allied'
+                ? `${to} → Allied`
+                : 'No change (Allied attack repelled)';
 
             const post = `**[${to}]** - ${winner} defeats ${loser}
-Initiative: ${initiative} won roll-off
 Attack: ${to} FROM ${from}
 Result: ${sectorResult}
 Allied: ${allied} | Axis: ${axis}
@@ -3182,30 +3180,38 @@ Allied: ${allied} | Axis: ${axis}
             };
 
             // Determine sector change
-            const loserSector = game.winner === game.initiative ? game.toSector : game.fromSector;
-            const loserDef = SECTOR_DEFINITIONS[loserSector];
+            // CAMPAIGN RULE: Allies always have initiative and only gain territory (never lose)
+            // Allied win = Allies capture the Axis sector (toSector)
+            // Axis win = No territory change (Allies defended)
+            const targetSector = game.toSector;  // Allies always attacking toward toSector
+            const targetDef = SECTOR_DEFINITIONS[targetSector];
 
-            // Landing sectors can't be captured by Axis
-            if (loserDef?.landing && game.winner === 'Axis') {
+            if (game.winner === 'Axis') {
+                // Axis wins = Allies defended, no territory change
                 game.sectorChanged = null;
-                game.result = 'No change (Landing sector protected)';
+                game.result = 'No change (Allied attack repelled)';
+            } else if (targetDef?.controller === 'Allied' || campaignData.sectors[targetSector]?.controller === 'Allied') {
+                // Target already Allied controlled
+                game.sectorChanged = null;
+                game.result = 'No change (Already Allied controlled)';
             } else {
-                game.sectorChanged = loserSector;
-                game.result = `${game.winner} captured ${loserSector}`;
-                campaignData.sectors[loserSector] = { controller: game.winner };
+                // Allied wins = capture the target sector
+                game.sectorChanged = targetSector;
+                game.result = `Allied captured ${targetSector}`;
+                campaignData.sectors[targetSector] = { controller: 'Allied' };
 
                 // Update territory arrows
                 // Remove any arrows where the captured sector is involved
                 campaignData.territoryArrows = campaignData.territoryArrows.filter(
-                    a => a.fromSector !== loserSector && a.toSector !== loserSector
+                    a => a.fromSector !== targetSector && a.toSector !== targetSector
                 );
 
-                // Determine the winning (attacking) sector and add new arrow
-                const winnerSector = game.winner === game.initiative ? game.fromSector : game.toSector;
+                // Add new arrow from Allied sector to captured sector
+                const winnerSector = game.fromSector;
                 campaignData.territoryArrows.push({
                     fromSector: winnerSector,
-                    toSector: loserSector,
-                    controller: game.winner,
+                    toSector: targetSector,
+                    controller: 'Allied',
                     gameId: game.id,
                     date: game.date
                 });
@@ -3261,7 +3267,7 @@ Allied: ${allied} | Axis: ${axis}
                     <div style="margin: 0.5rem 0;">
                         <span class="badge ${game.winner.toLowerCase()}">${game.winner} Victory</span>
                         <span style="color: var(--text-secondary); margin-left: 0.5rem;">
-                            ${game.fromSector} → ${game.toSector} | Initiative: ${game.initiative}
+                            ${game.fromSector} → ${game.toSector}
                         </span>
                     </div>
                     ${game.notes ? `<p style="color: var(--text-secondary); font-style: italic;">${game.notes}</p>` : ''}
