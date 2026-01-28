@@ -2548,9 +2548,8 @@
             document.getElementById('axis-sectors').textContent = axisCount;
             document.getElementById('battles-fought').textContent = campaignData.games.length;
 
-            // Calculate campaign week
-            const campaignStart = campaignData.campaignStart || new Date().toISOString().split('T')[0];
-            const startDate = new Date(campaignStart);
+            // Calculate campaign week (campaign started January 16th, 2026)
+            const startDate = new Date('2026-01-16');
             const today = new Date();
             const weekNum = Math.max(1, Math.ceil((today - startDate) / (7 * 24 * 60 * 60 * 1000)));
             document.getElementById('header-week').textContent = Math.min(weekNum, 8);
