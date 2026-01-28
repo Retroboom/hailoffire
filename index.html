@@ -1040,11 +1040,11 @@
             </div>
 
             <div class="event-banner">
-                <div class="event-banner-content">
-                    <span>••• WEEK 1 - INVASION BEGINS! — CLEAR SKIES OVER NORMANDY! All Allied forces receive Air Support •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span>••• WEEK 1 - INVASION BEGINS! — CLEAR SKIES OVER NORMANDY! All Allied forces receive Air Support •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span>••• WEEK 1 - INVASION BEGINS! — CLEAR SKIES OVER NORMANDY! All Allied forces receive Air Support •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <span>••• WEEK 1 - INVASION BEGINS! — CLEAR SKIES OVER NORMANDY! All Allied forces receive Air Support •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <div class="event-banner-content" id="event-banner-content">
+                    <span>••• WEEK 2 - THE PUSH INLAND •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>••• WEEK 2 - THE PUSH INLAND •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>••• WEEK 2 - THE PUSH INLAND •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <span>••• WEEK 2 - THE PUSH INLAND •••&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </div>
             </div>
 
@@ -1755,6 +1755,21 @@
                 </div>
             </div>
 
+            <div class="card" id="banner-editor-card" style="display: none;">
+                <h2>Edit Banner Text</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Change the scrolling banner message at the top of the map.
+                </p>
+                <input type="text" id="banner-text-input" placeholder="Enter banner text..." style="margin-bottom: 0.5rem;">
+                <div class="flex gap-1">
+                    <button onclick="saveBannerText()">Save Banner</button>
+                    <button class="secondary" onclick="loadCurrentBanner()">Reset to Current</button>
+                </div>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.85rem;">
+                    Tip: Use ••• at the start and end for the classic ticker style.
+                </p>
+            </div>
+
             <div class="card" id="set-password-card" style="display: none;">
                 <h2>Change Admin Password</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
@@ -2135,6 +2150,7 @@
             setupModals();
             updateAdminUI();
             populateSubmitSectorSelects();
+            loadBannerFromFirebase();
 
             // Set today's date as default for forms
             document.getElementById('game-date').valueAsDate = new Date();
@@ -3103,6 +3119,7 @@ Allied: ${allied} | Axis: ${axis}
             const pendingCard = document.getElementById('pending-games-card');
             const actionsCard = document.getElementById('admin-actions-card');
             const passwordCard = document.getElementById('set-password-card');
+            const bannerCard = document.getElementById('banner-editor-card');
 
             if (isAdmin) {
                 loginSection.style.display = 'none';
@@ -3110,13 +3127,68 @@ Allied: ${allied} | Axis: ${axis}
                 pendingCard.style.display = 'block';
                 actionsCard.style.display = 'block';
                 passwordCard.style.display = 'block';
+                bannerCard.style.display = 'block';
+                loadCurrentBanner();
             } else {
                 loginSection.style.display = 'block';
                 loggedInSection.style.display = 'none';
                 pendingCard.style.display = 'none';
                 actionsCard.style.display = 'none';
                 passwordCard.style.display = 'none';
+                bannerCard.style.display = 'none';
             }
+        }
+
+        // ============================================
+        // BANNER FUNCTIONS
+        // ============================================
+
+        function loadCurrentBanner() {
+            const bannerContent = document.getElementById('event-banner-content');
+            const firstSpan = bannerContent.querySelector('span');
+            if (firstSpan) {
+                // Remove the trailing &nbsp; characters for editing
+                const text = firstSpan.textContent.replace(/\s+$/, '');
+                document.getElementById('banner-text-input').value = text;
+            }
+        }
+
+        function saveBannerText() {
+            const text = document.getElementById('banner-text-input').value.trim();
+            if (!text) {
+                alert('Please enter banner text');
+                return;
+            }
+
+            // Update the banner display
+            const bannerContent = document.getElementById('event-banner-content');
+            const spacer = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+            bannerContent.innerHTML = `
+                <span>${text}${spacer}</span>
+                <span>${text}${spacer}</span>
+                <span>${text}${spacer}</span>
+                <span>${text}${spacer}</span>
+            `;
+
+            // Save to Firebase
+            database.ref('config/bannerText').set(text);
+            alert('Banner updated!');
+        }
+
+        function loadBannerFromFirebase() {
+            database.ref('config/bannerText').on('value', (snapshot) => {
+                const text = snapshot.val();
+                if (text) {
+                    const bannerContent = document.getElementById('event-banner-content');
+                    const spacer = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+                    bannerContent.innerHTML = `
+                        <span>${text}${spacer}</span>
+                        <span>${text}${spacer}</span>
+                        <span>${text}${spacer}</span>
+                        <span>${text}${spacer}</span>
+                    `;
+                }
+            });
         }
 
         // ============================================
