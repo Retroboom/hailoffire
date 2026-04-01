@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In Defense of Playing What You Want: The Force Parity Procedure | Retro Boom Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-base: #0a0a0a;
+            --bg-elevated: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #f0f0f0;
+            --text-muted: #c8c8c8;
+            --border: #333333;
+            --accent: #c9a84c;
+            --accent-dim: #7a6230;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            font-weight: 300;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Header */
+        .site-header {
+            padding: 2.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .site-header a {
+            font-family: 'Monoton', cursive;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            transition: color 0.2s;
+        }
+
+        .site-header a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Navbar */
+        .site-nav {
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-base);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .site-nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .site-nav ul li a {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .site-nav ul li a:hover {
+            color: var(--accent);
+        }
+
+        /* Article */
+        .post {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .post-meta {
+            margin-bottom: 2rem;
+        }
+
+        .post-meta .back {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .post-meta .back:hover {
+            color: var(--text-primary);
+        }
+
+        .post-tag {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .post-date {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 400;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .post h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .post-deck {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-body p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-body h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid var(--accent);
+        }
+
+        .post-cta {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        .post-cta a {
+            color: var(--accent);
+            transition: color 0.2s;
+        }
+
+        .post-cta a:hover {
+            color: var(--text-primary);
+        }
+
+        .post-sign {
+            margin-top: 2rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <a href="/">RETRO BOOM</a>
+</header>
+
+<nav class="site-nav">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#games">Games</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/#player-tools">Player Tools</a></li>
+        <li><a href="https://www.wargamevault.com/en/product/188181/hail-of-fire" target="_blank">WargameVault</a></li>
+        <li><a href="https://discord.gg/arQJtRj5cV" target="_blank">Discord</a></li>
+    </ul>
+</nav>
+
+<article class="post">
+    <div class="post-meta">
+        <a href="/blog/" class="back">&larr; All Posts</a>
+        <div class="post-tag">Hail of Fire</div>
+        <div class="post-date">April 2026</div>
+    </div>
+    <h1>In Defense of Playing What You Want: The Force Parity Procedure</h1>
+    <p class="post-deck">Hail of Fire doesn't use a points system. Here's what it uses instead, and why.</p>
+
+    <div class="post-body">
+
+        <p>At every convention where I run Hail of Fire, there is always one person who looks through the rulebook, flips to the back, and asks where the points are. I explain there aren't any, and the person looks briefly at the back of the book and puts it down. No points means casual. Casual means beer and pretzels. Beer and pretzels means not serious.</p>
+
+        <p>Hail of Fire doesn't use a points system. Instead it uses the Force Parity Procedure, and I wanted to briefly explain what it is and why HoF uses it.</p>
+
+        <h2>What Points Actually Measure</h2>
+        <p>Points systems inherently make a specific claim: that every unit's combat value can be accurately quantified, that those values hold up consistently across unit types, and that equal points produce equal games. No points system fully delivers on this.</p>
+        <p>The deeper problem is that points systems are measuring the wrong thing. A points value is supposed to represent how effective a unit is in the game, but effectiveness greatly depends on context. The terrain, objectives, engagement range, available support, what it's being asked to fight. A points value reduces all of that to a single number that is always, in the end, one person's opinion about how a unit performs on an average table, against an average opponent, in an average scenario. That average may never describe any actual game played.</p>
+        <p>For competitive play, that tradeoff is worth making. But for a game whose goal is simply producing a compelling match with the forces the players wish to bring, it creates obstacles rather than removes them.</p>
+
+        <h2>The Homework Problem</h2>
+        <p>There's a second cost that doesn't get talked about enough. Building a list requires drafting, revising, optimizing. Coming in under budget isn't neutral, it's a penalty. The system punishes you for not optimizing, meaning players are immediately taught that building to the budget is the correct way to engage with the game, and that bringing an unoptimized force is playing the game incorrectly. And largely they'd be right.</p>
+        <p>All of that work happens before the game even starts. The FPP skips it. Bring what you want to play. Bring a historically accurate order of battle from a specific period of the war if that's your interest. Bring the force that looks good on the table. Bring whatever you've been building for the last year. The time that would have been spent optimizing around a points limit, and the incentives pushing you toward efficiency-driven force composition, are gone.</p>
+
+        <h2>What The FPP Actually Does</h2>
+        <p>Points assign a unit a value outside of any of the variables it's going to encounter. The FPP instead measures relative threat. Both players reveal their forces, rank each enemy unit from most to least threatening from their own perspective, and score each pairing based on who has the advantage. It's not asking how much is this unit worth. It's asking how does this unit perform against the specific units it will face today.</p>
+        <p>That's a more useful question. A unit of Shermans paired against a Tiger scores differently on a crowded urban table than a wide open one, because the important question isn't one of abstract effectiveness. It's how well the unit will likely perform here and now.</p>
+        <p>The procedure takes two minutes and produces a handicap applied to the stronger force's Break Limit. The imbalance is accounted for. The game is winnable for both players.</p>
+
+        <h2>What Most Players Really Want</h2>
+        <p>Outside of competitive environments, what many players are actually looking for is some assurance that the game they're about to sit down to is going to be worth playing. That someone has considered whether these two forces make for a good match. That's a very valid desire. That's what the FPP chooses to address directly.</p>
+        <p>Is the FPP suitable for tournament play? Definitely not, and it doesn't claim to be. More importantly, it doesn't need to be.</p>
+        <p>Hail of Fire is not a beer and pretzels game. It is a fast, considered, historically grounded game that respects your time and your collection. The absence of a points system isn't a gap in the design. It's a decision.</p>
+
+        <p class="post-sign">— Brandon</p>
+
+    </div>
+</article>
+
+<footer>
+    <a href="/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://discord.gg/arQJtRj5cV">Discord</a>
+    <a href="https://www.wargamevault.com/en/product/188181/hail-of-fire">WargameVault</a>
+</footer>
+
+</body>
+</html>
