@@ -1,0 +1,6 @@
+[build]
+  publish = "hail-of-fire/hof-arsenal"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"

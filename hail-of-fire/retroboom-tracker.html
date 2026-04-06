@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retroboom Games — Project Tracker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; color: #111; min-height: 100vh; }
+  .container { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem; }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
+  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 1.75rem; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+  .tab { padding: 6px 16px; font-size: 13px; background: none; border: none; border-bottom: 2px solid transparent; color: #64748b; cursor: pointer; margin-bottom: -1px; text-transform: capitalize; font-family: inherit; }
+  .tab.active { font-weight: 600; color: #111; border-bottom-color: #111; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .section-label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .progress { height: 3px; background: #e2e8f0; border-radius: 2px; margin-bottom: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 5px 6px; border-radius: 6px; margin-bottom: 2px; }
+  .check { width: 15px; height: 15px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+  .task.done .check { background: #3b82f6; }
+  .task.done .check::after { content: ''; display: block; width: 8px; height: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+  .task:not(.done) .check { border: 1.5px solid #cbd5e1; background: #fff; }
+  .task span { font-size: 14px; line-height: 1.5; }
+  .task.done span { color: #94a3b8; text-decoration: line-through; }
+  .task:not(.done) span { color: #1e293b; }
+  .section-block { margin-bottom: 1.75rem; }
+  .toggle-btn { font-size: 12px; color: #94a3b8; cursor: pointer; margin-bottom: 6px; background: none; border: none; font-family: inherit; padding: 0; }
+  .toggle-btn:hover { color: #475569; }
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .game-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.1rem; }
+  .game-card.priority { border: 1.5px solid #93c5fd; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
+  .card-name { font-size: 15px; font-weight: 600; color: #0f172a; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; }
+  .badge-priority { background: #dbeafe; color: #1e40af; }
+  .badge-early { background: #fef9c3; color: #854d0e; }
+  .badge-concept { background: #f1f5f9; color: #475569; }
+  .card-oneliner { font-size: 12px; color: #64748b; font-style: italic; line-height: 1.6; }
+  .card-footer { border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 10px; }
+  .card-task-count { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+  .principle-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; background: #fff; border-radius: 8px; font-size: 14px; line-height: 1.6; margin-bottom: 8px; border: 1px solid #e2e8f0; }
+  .principle-num { font-size: 11px; font-weight: 700; color: #94a3b8; min-width: 16px; padding-top: 2px; }
+  .principle-text { color: #334155; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Retroboom Games</h1>
+  <div class="subtitle">Project tracker</div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tasks')">Tasks</button>
+    <button class="tab" onclick="switchTab('games')">Games</button>
+    <button class="tab" onclick="switchTab('principles')">Principles</button>
+  </div>
+
+  <div id="panel-tasks" class="panel active">
+
+    <div class="section-block">
+      <div class="section-label"><span>Infrastructure</span><span>4/6 done</span></div>
+      <div class="progress"><div class="progress-fill" style="background:#22c55e;width:67%"></div></div>
+      <div class="task done"><div class="check"></div><span>retroboomgames.com — build real homepage</span></div>
+      <div class="task done"><div class="check"></div><span>retroboomgames.com — add Blog/News section</span></div>
+      <div class="task done"><div class="check"></div><span>retroboomgames.com — add nav bar</span></div>
+      <div class="task"><div class="check"></div><span>Discord — set up proper channels</span></div>
+      <div class="task done"><div class="check"></div><span>Discord — add invite link to WargameVault page and website</span></div>
+      <div class="task"><div class="check"></div><span>Ko-fi — set up page with membership tier for paid content (scenarios, stats, optional rules) — start on free plan at 5%, upgrade to Gold ($6/mo) if revenue exceeds $120/mo</span></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label"><span>Low priority / long term</span><span></span></div>
+      <div class="task"><div class="check"></div><span>retroboomgames.com — add individual game pages (when games reach sufficient development)</span></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label"><span>Hail of Fire</span><span>4/11 done</span></div>
+      <div class="progress"><div class="progress-fill" style="background:#3b82f6;width:36%"></div></div>
+      <button class="toggle-btn" onclick="toggleSection('hof')">▾ hide tasks</button>
+      <div id="hof">
+        <div class="task done"><div class="check"></div><span>Rewrite WargameVault product description</span></div>
+        <div class="task done"><div class="check"></div><span>Publish first blog post</span></div>
+        <div class="task done"><div class="check"></div><span>Publish upcoming rules update</span></div>
+        <div class="task"><div class="check"></div><span>Redesign cover ⬅ high priority</span></div>
+        <div class="task done"><div class="check"></div><span>Publish design diary post about the update</span></div>
+        <div style="margin: 4px 0 8px 25px;">
+          <button class="toggle-btn" onclick="toggleSection('diary-draft')" style="font-size:12px;color:#3b82f6;">▸ show draft</button>
+          <div id="diary-draft" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-top:6px;font-size:13px;line-height:1.7;color:#334155;white-space:pre-wrap;"><strong>Hail of Fire — Update Notes, March 2026</strong>
+
+A new version of Hail of Fire is live on WargameVault. Here's what changed and why.
+
+<strong>The big one: Order Dice</strong>
+
+The most significant change is to how Order Points are generated. The original system, roll 2d6 and take the higher, is simple and fast, and it works well for the standard 6-8 unit game HoF was designed around. But as the game has grown to accommodate smaller skirmishes and larger engagements, that fixed range starts to feel disconnected from what's actually on the table.
+
+The new system ties order generation directly to your force. Roll one die for each friendly Platoon Leader and Vehicle Unit deployed. Each 4+ generates an Order Point, plus one is always added to the total. A large force generates more orders. A battered one generates fewer. A commander whose platoon leaders are being picked off feels it immediately.
+
+It also integrates the Hero Die more naturally. Rather than a separate doubles trigger resetting your Hero Points mid-game, the Hero Die is now part of your order pool, one die of a different color rolled alongside the rest. When it rolls a 6, your Hero Points refresh. Having a consistently identified die in the pool also opens the door for other event triggers. The optional Air Support rules, for example, use the Hero Die to determine when air attacks occur.
+
+I've been running this system for about six months across a range of game sizes, including the ongoing Normandy campaign at my local store. It plays cleanly, teaches quickly, and produces better results at the extremes. I'm confident enough to make it the primary system.
+
+<strong>Troop Quality</strong>
+
+Troop Quality rules are new to this version. The first benefit is consistency. All Checks in Hail of Fire use a 4+ target, and Troop Quality works the same way, simply adjusting which results get a second look rather than introducing new target numbers or modifiers.
+
+Beyond consistency, it expresses meaningful differences in a tactically satisfying way. Elite troops are more survivable, with a re-roll when resolving Received Fire Points that can pull a result back from Killed to Suppressed. They are also better trained with crewed weapons, re-rolling 1s when firing guns at vehicles. Poor troops are the mirror image, re-rolling 6s in the same situations. The result is a more historically accurate representation of what separated elite, battle-hardened troops from the rest.
+
+<strong>Clarity and presentation</strong>
+
+A significant amount of work went into rewriting and reformatting sections throughout the rulebook and the Quick Reference Sheet. The result is cleaner organization, clearer language, and a meaningfully reduced word count across the board. The rules say the same things, just more directly. If you've ever gotten lost in the assault sequence or the artillery procedure, this version should help.
+
+<strong>Other changes</strong>
+
+Force building guidance has been expanded and clarified. Several minor rules clarifications and typo fixes throughout.
+
+As always, Hail of Fire is free. If you're getting value from it, the best thing you can do is bring it to the table, tell someone about it, or join the conversation on Discord.
+
+Thanks for playing.
+
+— Brandon</div>
+        </div>
+        <div class="task"><div class="check"></div><span>Add QR code / Discord link to convention table signage</span></div>
+        <div class="task"><div class="check"></div><span>Print convention one-pager</span></div>
+        <div class="task"><div class="check"></div><span>Commission layout polish pass on booklet (~$200–400)</span></div>
+        <div class="task"><div class="check"></div><span>Add Ko-fi link once set up</span></div>
+        <div class="task"><div class="check"></div><span>Design and print Normandy campaign postcard (prize + participant keepsake)</span></div>
+        <div class="task"><div class="check"></div><span>Write and add Meeting Engagement scenario to rulebook ⬅ draft ready, see below</span></div>
+        <div style="margin: 4px 0 8px 25px;">
+          <button class="toggle-btn" onclick="toggleSection('meeting-engagement')" style="font-size:12px;color:#3b82f6;">▸ show draft</button>
+          <div id="meeting-engagement" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-top:6px;font-size:13px;line-height:1.7;color:#334155;white-space:pre-wrap;"><strong>Meeting Engagement</strong>
+
+Two forces advance into contested ground with no clear attacker or defender. What follows is a fight for control of whatever ground matters most.
+
+<strong>Setting Up</strong>
+
+Both players decide which forces will be used and mutually agree on terrain type and placement. Randomly determine which player places three objectives anywhere on the table. The other player then chooses any table edge to deploy from and deploys first, within 16" of the center line. The first player deploys from the opposite table edge, also within 16" of the center line.
+
+Non-vehicle Units may deploy Hidden. Vehicle Units must deploy revealed or arrive later from their table edge. Any Unit may be held off table voluntarily and arrive on any turn from their table edge.
+
+<strong>Hidden Teams</strong>
+
+Hidden Teams follow the same rules as the standard scenario.
+
+<strong>Break Point</strong>
+
+When certain conditions are met, your opponent rolls 1d6 to generate Break Points:
+
+1: 1 BP
+2-5: 2 BP
+6: 3 BP
+
+Break Limits are 3 plus 2 per Unit.
+
+Each of the following requires generating Break Points:
+
+- A Unit is reduced below half strength: 1 roll
+- A Unit already below half strength is destroyed: 1 roll
+- A Unit is destroyed before falling below half strength: 2 rolls
+- An objective is captured: 2 rolls
+
+Controlling an objective requires a Player be the only one with at least one Infantry Team within 4" of the objective. Vehicles may contest but cannot control.
+
+When your total Break Points exceed your Break Limit, your force routs and the game ends.
+
+<strong>Force Parity Procedure</strong>
+
+Use the standard Force Parity Procedure. The player with the higher score reduces their starting Break Limit by the difference between the scores multiplied by 2.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="panel-games" class="panel">
+    <div class="games-grid">
+      <div class="game-card priority">
+        <div class="card-header"><span class="card-name">Hail of Fire</span><span class="badge badge-priority">priority</span></div>
+        <div class="card-oneliner">Company-level WWII miniatures. Fast, intuitive mechanics. Fog of war drives every decision.</div>
+        <div class="card-footer">
+          <div class="progress"><div class="progress-fill" style="background:#3b82f6;width:25%"></div></div>
+          <div class="card-task-count">2/9 tasks done</div>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">Ashen Empires</span><span class="badge badge-early">early dev</span></div>
+        <div class="card-oneliner">Steampunk fantasy warfare running on a single engine: leadership. Cascading activation, accumulating shock.</div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">The Damned</span><span class="badge badge-early">early dev</span></div>
+        <div class="card-oneliner">Grimdark co-op demon hunting. Campaign play, procedurally generated narrative.</div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">Full Burn</span><span class="badge badge-early">early dev</span></div>
+        <div class="card-oneliner">Fast-play mech combat. No rulers, no strict turn order. Lock on and burn.</div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">Bleeding Edge</span><span class="badge badge-concept">concept</span></div>
+        <div class="card-oneliner">Cyberpunk TCG. Community card creation and voting. Players control the meta.</div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">&lt;HOT//WIRED_&gt;</span><span class="badge badge-concept">concept</span></div>
+        <div class="card-oneliner">Fast-play cyberpunk TTRPG. No classes, no skill lists. The Skill Scope system.</div>
+      </div>
+      <div class="game-card">
+        <div class="card-header"><span class="card-name">Forsaken Dark</span><span class="badge badge-concept">concept</span></div>
+        <div class="card-oneliner">Fast-play dark fantasy survival. Brutal combat, desperate choices, ancient magic.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel-principles" class="panel">
+    <div class="principle-row"><span class="principle-num">1</span><span class="principle-text">Core rules always free or PWYW — players never need to pay to play</span></div>
+    <div class="principle-row"><span class="principle-num">2</span><span class="principle-text">Money comes as patronage, not purchase — make it easy, never ask</span></div>
+    <div class="principle-row"><span class="principle-num">3</span><span class="principle-text">Convention presence is the primary trust-building channel</span></div>
+    <div class="principle-row"><span class="principle-num">4</span><span class="principle-text">Show the design process publicly — changelogs, design diaries, community input</span></div>
+    <div class="principle-row"><span class="principle-num">5</span><span class="principle-text">Physical booklet = the "I want to support this" option, not a sales pitch</span></div>
+  </div>
+
+</div>
+<script>
+  function switchTab(name) {
+    const names = ['tasks','games','principles'];
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', names[i] === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    const btn = el.previousElementSibling;
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    btn.textContent = open ? '▸ show tasks' : '▾ hide tasks';
+  }
+</script>
+</body>
+</html>
