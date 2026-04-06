@@ -147,9 +147,11 @@ exports.handler = async (event) => {
     const ref = db.ref('forces');
     const results = [];
 
-    for (const force of forces) {
+    await Promise.all(forces.map(force => {
       const platoonCount = force.platoons.length;
+      const newRef = ref.push();
       const entry = {
+        id: newRef.key,
         name: force.name,
         notes: force.notes,
         author: 'Hail of Fire',
@@ -162,11 +164,9 @@ exports.handler = async (event) => {
         created: now,
         published: true,
       };
-      const newRef = ref.push();
-      entry.id = newRef.key;
-      await newRef.set(entry);
       results.push(`${force.name} (BL ${entry.breakLimit})`);
-    }
+      return newRef.set(entry);
+    }));
 
     return {
       statusCode: 200,
