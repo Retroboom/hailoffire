@@ -136,29 +136,45 @@ const forces = [
 ];
 
 exports.handler = async (event) => {
-  // Simple token check so this can't be triggered by anyone
-  const token = event.queryStringParameters && event.queryStringParameters.token;
+  const params = event.queryStringParameters || {};
+  const token = params.token;
   if (token !== process.env.KOFI_VERIFICATION_TOKEN) {
     return { statusCode: 401, body: 'Unauthorized' };
   }
 
+  const ref = db.ref('forces');
+
+  // ?check=true — just read and report what's in Firebase, no writes
+  if (params.check === 'true') {
+    const snap = await ref.once('value');
+    const found = [];
+    snap.forEach(child => {
+      const v = child.val();
+      found.push(`[${child.key}] ${v.name} | author:${v.author} | published:${v.published}`);
+    });
+    return {
+      statusCode: 200,
+      body: `${found.length} force(s) in Firebase:\n${found.join('\n') || '(none)'}`
+    };
+  }
+
   try {
     const now = Date.now();
-    const ref = db.ref('forces');
+    const log = [];
 
-    // Delete any previously seeded example forces so this is safe to re-run
+    // Delete any previously seeded example forces
     const existing = await ref.once('value');
     const deleteOps = [];
     existing.forEach(child => {
       if (child.val().author === 'Hail of Fire') {
         deleteOps.push(ref.child(child.key).remove());
+        log.push(`Deleted: ${child.val().name}`);
       }
     });
     await Promise.all(deleteOps);
 
     // Write all example forces in parallel
-    const results = [];
-    await Promise.all(forces.map(force => {
+    const writeOps = forces.map(force => {
       const platoonCount = force.platoons.length;
       const newRef = ref.push();
       const entry = {
@@ -175,16 +191,17 @@ exports.handler = async (event) => {
         created: now,
         published: true,
       };
-      results.push(`${force.name} (BL ${entry.breakLimit})`);
+      log.push(`Writing: ${force.name}`);
       return newRef.set(entry);
-    }));
+    });
+    await Promise.all(writeOps);
 
     return {
       statusCode: 200,
-      body: `Seeded ${results.length} forces:\n${results.join('\n')}`
+      body: `Done. ${forces.length} forces seeded.\n\n${log.join('\n')}`
     };
   } catch (err) {
     console.error('Seed error:', err);
-    return { statusCode: 500, body: `Error: ${err.message}` };
+    return { statusCode: 500, body: `Error: ${err.message}\n${err.stack}` };
   }
 };
