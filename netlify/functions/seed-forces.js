@@ -145,8 +145,19 @@ exports.handler = async (event) => {
   try {
     const now = Date.now();
     const ref = db.ref('forces');
-    const results = [];
 
+    // Delete any previously seeded example forces so this is safe to re-run
+    const existing = await ref.once('value');
+    const deleteOps = [];
+    existing.forEach(child => {
+      if (child.val().author === 'Hail of Fire') {
+        deleteOps.push(ref.child(child.key).remove());
+      }
+    });
+    await Promise.all(deleteOps);
+
+    // Write all example forces in parallel
+    const results = [];
     await Promise.all(forces.map(force => {
       const platoonCount = force.platoons.length;
       const newRef = ref.push();
