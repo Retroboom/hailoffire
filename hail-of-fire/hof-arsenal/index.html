@@ -1412,6 +1412,20 @@
 
   .team-remove-btn:hover { color: var(--red); }
 
+  .team-lock-btn {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 11px;
+    padding: 2px 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity 0.1s;
+  }
+  .team-lock-btn:hover { opacity: 1; }
+  .team-lock-btn.unlocked { opacity: 1; color: var(--accent); }
+
   .platoon-empty {
     font-family: var(--mono);
     font-size: 10px;
@@ -3020,11 +3034,8 @@
     <span class="force-notes-label">Force Notes</span>
     <textarea class="force-notes-input" id="force-notes" placeholder="History, composition, playstyle, context — anything you want to share..."></textarea>
   </div>
-  <div class="add-platoon-bar">
-    <button class="add-platoon-btn" onclick="addPlatoon()">+ Add Platoon</button>
-  </div>
   <div class="platoon-list" id="platoon-list">
-    <div class="force-empty" id="platoon-empty">No platoons yet.<br>Add a platoon, then select units<br>from the arsenal to fill it.</div>
+    <div class="force-empty" id="platoon-empty">No platoons yet.<br>Click "New Platoon" on a unit card<br>to start building your force.</div>
   </div>
   <div class="force-summary">
     <div class="force-summary-grid">
@@ -3112,6 +3123,18 @@ let platoons = [];
 let activePlatoonId = null;
 let platoonCounter = 0;
 const collapsedPlatoons = new Set();
+const unlockedTeams = new Set();
+
+function isFixedUnit(unitId) {
+  return unitId.endsWith('-leader') || unitId.endsWith('-fo');
+}
+
+function toggleTeamLock(platoonId, unitId) {
+  const key = `${platoonId}|${unitId}`;
+  if (unlockedTeams.has(key)) unlockedTeams.delete(key);
+  else unlockedTeams.add(key);
+  updateForceUI();
+}
 let currentView = 'grid';
 let activeFilters = {
   search: '',
@@ -3473,9 +3496,7 @@ function renderGrid(container, forceIds) {
               ? `<button class="add-force-btn" onclick="event.stopPropagation();showSubscribePrompt()" style="border-color:#5a4a2a;color:#9a8a5a;">Ko-fi subscriber only</button>`
               : `<div class="card-footer-btns">
                   ${unit.standard_platoon ? `<button class="add-platoon-standard-btn" onclick="event.stopPropagation();addAsStandardPlatoon('${unit.id}')">New Platoon</button>` : ''}
-                  <button class="add-force-btn" id="btn-${unit.id}" onclick="event.stopPropagation();addTeamToPlatoon('${unit.id}')">
-                    Add to Platoon
-                  </button>
+                  ${activePlatoonId ? `<button class="add-force-btn" id="btn-${unit.id}" onclick="event.stopPropagation();addTeamToPlatoon('${unit.id}')">Add to Platoon</button>` : ''}
                 </div>`
             }
           </div>
@@ -3622,6 +3643,7 @@ function removePlatoon(id) {
 function setActivePlatoon(id) {
   activePlatoonId = id;
   updateForceUI();
+  renderUnits();
 }
 
 function nationPrefix(nation) {
@@ -3766,15 +3788,26 @@ function updateForceUI() {
       : platoon.teams.map(t => {
           const unit = allUnits.find(u => u.id === t.unitId);
           if (!unit) return '';
+          const fixed = isFixedUnit(t.unitId);
+          const lockKey = `${platoon.id}|${t.unitId}`;
+          const unlocked = unlockedTeams.has(lockKey);
+          const showControls = !fixed || unlocked;
           return `
             <div class="platoon-team-row">
-              <div class="team-qty-btns">
-                <button class="qty-btn" onclick="changeTeamQty('${platoon.id}','${t.unitId}',1)">▲</button>
-                <button class="qty-btn" onclick="changeTeamQty('${platoon.id}','${t.unitId}',-1)">▼</button>
-              </div>
+              ${showControls ? `
+                <div class="team-qty-btns">
+                  <button class="qty-btn" onclick="changeTeamQty('${platoon.id}','${t.unitId}',1)">▲</button>
+                  <button class="qty-btn" onclick="changeTeamQty('${platoon.id}','${t.unitId}',-1)">▼</button>
+                </div>
+              ` : ''}
               <span class="team-qty">${t.qty}×</span>
               <span class="team-name">${unit.name}</span>
-              <button class="team-remove-btn" onclick="removeTeamFromPlatoon('${platoon.id}','${t.unitId}')">✕</button>
+              ${fixed ? `
+                <button class="team-lock-btn ${unlocked ? 'unlocked' : ''}" onclick="toggleTeamLock('${platoon.id}','${t.unitId}')" title="${unlocked ? 'Lock' : 'Unlock to edit'}">${unlocked ? '🔓' : '🔒'}</button>
+              ` : ''}
+              ${showControls ? `
+                <button class="team-remove-btn" onclick="removeTeamFromPlatoon('${platoon.id}','${t.unitId}')">✕</button>
+              ` : ''}
             </div>
           `;
         }).join('')
@@ -4262,7 +4295,7 @@ function openUnitDetail(unitId) {
   } else {
     document.getElementById('udp-footer').innerHTML = `
       ${unit.standard_platoon ? `<button class="udp-add-btn" onclick="addAsStandardPlatoon('${unit.id}');closeUnitDetail()">＋ New Platoon</button>` : ''}
-      <button class="udp-add-btn primary" onclick="addTeamToPlatoon('${unit.id}');closeUnitDetail()">＋ Add to Platoon</button>
+      ${activePlatoonId ? `<button class="udp-add-btn primary" onclick="addTeamToPlatoon('${unit.id}');closeUnitDetail()">＋ Add to Platoon</button>` : ''}
     `;
   }
 
