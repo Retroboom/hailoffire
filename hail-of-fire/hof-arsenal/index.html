@@ -1746,54 +1746,6 @@
     background: transparent !important;
   }
 
-  /* LIBRARY MODAL */
-  .library-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 9, 8, 0.92);
-    z-index: 300;
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 40px 16px;
-    overflow-y: auto;
-  }
-
-  .library-modal.open { display: flex; }
-
-  .library-box {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    width: 100%;
-    max-width: 960px;
-    max-height: calc(100vh - var(--header-h));
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .library-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .library-title {
-    font-family: var(--display);
-    font-size: 22px;
-    letter-spacing: 3px;
-    color: var(--accent);
-  }
-
-  .library-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
   .library-tab {
     padding: 10px 20px;
     font-family: var(--mono);
@@ -3061,32 +3013,7 @@
   </div>
 </div>
 
-<!-- LIBRARY MODAL -->
-<div class="library-modal" id="library-modal">
-  <div class="library-box">
-    <div class="library-header">
-      <div class="library-title">Force Library</div>
-      <button class="close-panel-btn" onclick="closeLibrary()">✕</button>
-    </div>
-    <div class="library-tabs">
-      <button class="library-tab active" id="tab-browse" onclick="switchLibTab('browse')">Browse</button>
-      <button class="library-tab" id="tab-mine" onclick="switchLibTab('mine')">My Forces</button>
-    </div>
-    <div class="lib-search-bar">
-      <input class="lib-search-input" id="lib-search" type="text" placeholder="Search forces..." oninput="applyLibFilters()">
-      <div class="lib-nation-chips">
-        <button class="lib-chip" data-nation="United States" onclick="toggleLibNation(this)">US</button>
-        <button class="lib-chip" data-nation="Germany" onclick="toggleLibNation(this)">GER</button>
-        <button class="lib-chip" data-nation="Britain" onclick="toggleLibNation(this)">BR</button>
-        <button class="lib-chip" data-nation="Soviet Union" onclick="toggleLibNation(this)">SOV</button>
-      </div>
-      <span class="lib-result-count" id="lib-result-count"></span>
-    </div>
-    <div class="library-body" id="library-body">
-      <div class="lib-loading">Loading...</div>
-    </div>
-  </div>
-</div>
+<!-- library modal removed — Force Library is now section-library -->
 
 <!-- COMPARISON MODAL -->
 <div class="compare-modal" id="compare-modal">
@@ -4020,7 +3947,7 @@ function openLibrary() {
 }
 
 function closeLibrary() {
-  document.getElementById('library-modal').classList.remove('open');
+  // library is now a full section; this is a no-op kept for call-site compatibility
 }
 
 function switchLibTab(tab) {
