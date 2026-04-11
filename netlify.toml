@@ -1,7 +1,6 @@
 [build]
-  publish = "hail-of-fire/hof-arsenal"
   functions = "netlify/functions"
-  ignore = "git diff --quiet HEAD^ HEAD -- hail-of-fire/hof-arsenal/ netlify/"
+  ignore = "git diff --quiet HEAD^ HEAD -- netlify/"
 
 [build.environment]
   # Firebase client API keys are intentionally public (security is enforced by Firebase Rules)
