@@ -1,14 +1,4 @@
+# Arsenal app and all Netlify functions have moved to Retroboom/arsenal.git
+# This site has no active deployment.
 [build]
-  functions = "netlify/functions"
-  ignore = "git diff --quiet HEAD^ HEAD -- netlify/"
-
-[build.environment]
-  # Firebase client API keys are intentionally public (security is enforced by Firebase Rules)
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
-
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["firebase-admin"]
-
-[[plugins]]
-  package = "@netlify/plugin-functions-install-core"
+  ignore = "exit 0"
