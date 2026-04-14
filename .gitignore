@@ -2,3 +2,4 @@ serviceAccount.json
 netlify/functions/node_modules/
 .DS_Store
 .claude/worktrees/
+arsenal/
