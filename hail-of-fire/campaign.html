@@ -954,6 +954,48 @@
         .event-banner-content span {
             display: inline;
         }
+        /* ── Raffle Tab ────────────────────────────────────────────── */
+        .raffle-side-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+        .raffle-side-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+        .raffle-side-btn.active { border-color: var(--gold); color: var(--gold); }
+        .raffle-summary {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        .raffle-winner {
+            text-align: center;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg-dark);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            animation: raffle-pop 0.4s ease;
+        }
+        .raffle-winner h2 {
+            font-size: 2rem;
+            color: var(--gold);
+            margin: 0.5rem 0;
+        }
+        .raffle-odds-label {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+        @keyframes raffle-pop {
+            0%   { transform: scale(0.8); opacity: 0; }
+            60%  { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
     </style>
 </head>
 <body>
@@ -1005,6 +1047,7 @@
             <button data-tab="games">Games</button>
             <button data-tab="submit">Submit Game Results</button>
             <button data-tab="coins" class="admin-only">Coins</button>
+            <button data-tab="raffle" class="admin-only">Raffle</button>
             <button data-tab="data" class="admin-only">Import/Export</button>
         </div>
         <button data-tab="admin" style="opacity: 0.5; font-size: 0.85em;">Admin</button>
@@ -1563,6 +1606,43 @@
                     <tr><td>Bring a new player</td><td class="text-right"><strong>+2 coins</strong></td></tr>
                     <tr><td>New player joins campaign</td><td class="text-right"><strong>+2 coins</strong> (additional)</td></tr>
                 </table>
+            </div>
+        </div>
+
+        <!-- Raffle Tab -->
+        <div id="raffle" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; border: none; padding: 0;">Raffle</h2>
+                        <p style="color: var(--text-secondary); margin: 0.25rem 0 0;">Each coin = 1 ticket. Toggle players to include or exclude. Coins are not spent.</p>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <span style="font-size:0.85em; color:var(--text-secondary);">Draw from:</span>
+                        <button class="raffle-side-btn active" onclick="setRaffleSide('Both')">Both</button>
+                        <button class="raffle-side-btn" onclick="setRaffleSide('Allied')">Allied</button>
+                        <button class="raffle-side-btn" onclick="setRaffleSide('Axis')">Axis</button>
+                        <button onclick="drawRaffle()" id="raffle-draw-btn" style="margin-left:0.5rem;">🎲 Draw Winner</button>
+                    </div>
+                </div>
+
+                <div id="raffle-pool-summary" class="raffle-summary"></div>
+                <div id="raffle-winner-display" class="raffle-winner" style="display:none;"></div>
+
+                <div style="overflow-x: auto;">
+                    <table id="raffle-players-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px; text-align:center;">Include</th>
+                                <th>Player</th>
+                                <th>Side</th>
+                                <th>Coins (Tickets)</th>
+                                <th>Odds</th>
+                            </tr>
+                        </thead>
+                        <tbody id="raffle-players-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -2589,6 +2669,130 @@
                 .replace('No change (Axis attack repelled)', 'Defense held — Allied reinforced (+2 BL bonus)');
         }
 
+        // ── Raffle Functions ───────────────────────────────────────────────────────
+
+        function renderRaffle() {
+            const tbody = document.getElementById('raffle-players-tbody');
+            if (!tbody) return;
+
+            const players = campaignData.players.map(p => ({
+                ...p,
+                coins: getPlayerStats(p.name).coins
+            })).filter(p => p.coins > 0)
+              .sort((a, b) => b.coins - a.coins);
+
+            const totalTickets = players.reduce((sum, p) => sum + p.coins, 0);
+
+            const summary = document.getElementById('raffle-pool-summary');
+            if (summary) {
+                summary.textContent = `${players.length} eligible player${players.length !== 1 ? 's' : ''} · ${totalTickets} total tickets`;
+            }
+
+            tbody.innerHTML = players.map(p => {
+                const pct = totalTickets > 0 ? ((p.coins / totalTickets) * 100).toFixed(1) : '0.0';
+                const sideColor = p.side === 'Allied' ? '#4a90d9' : p.side === 'Axis' ? '#c0392b' : '#888';
+                return `
+                    <tr>
+                        <td style="text-align:center;">
+                            <input type="checkbox" class="raffle-include" data-player="${p.name}" checked>
+                        </td>
+                        <td><strong>${p.name}</strong></td>
+                        <td style="color:${sideColor};">${p.side}</td>
+                        <td>${p.coins}</td>
+                        <td>${pct}%</td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.querySelectorAll('.raffle-include').forEach(cb => {
+                cb.addEventListener('change', updateRaffleOdds);
+            });
+
+            updateRaffleOdds();
+        }
+
+        function setRaffleSide(side) {
+            document.querySelectorAll('.raffle-side-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === side);
+            });
+            document.querySelectorAll('#raffle-players-tbody tr').forEach(row => {
+                const cb = row.querySelector('.raffle-include');
+                if (!cb) return;
+                const playerName = cb.dataset.player;
+                const player = campaignData.players.find(p => p.name === playerName);
+                if (!player) return;
+                if (side === 'Both') {
+                    cb.checked = true;
+                } else {
+                    cb.checked = player.side === side;
+                }
+            });
+            updateRaffleOdds();
+        }
+
+        function updateRaffleOdds() {
+            const rows = document.querySelectorAll('#raffle-players-tbody tr');
+            let total = 0;
+
+            rows.forEach(row => {
+                const cb = row.querySelector('.raffle-include');
+                const coins = parseInt(row.cells[3].textContent) || 0;
+                if (cb && cb.checked) total += coins;
+            });
+
+            rows.forEach(row => {
+                const cb = row.querySelector('.raffle-include');
+                const coins = parseInt(row.cells[3].textContent) || 0;
+                const pct = (cb && cb.checked && total > 0)
+                    ? ((coins / total) * 100).toFixed(1)
+                    : '—';
+                row.cells[4].textContent = (cb && cb.checked) ? `${pct}%` : '—';
+            });
+
+            const included = [...rows].filter(r => r.querySelector('.raffle-include')?.checked).length;
+            const summary = document.getElementById('raffle-pool-summary');
+            if (summary) {
+                summary.textContent = `${included} player${included !== 1 ? 's' : ''} included · ${total} total tickets`;
+            }
+        }
+
+        function drawRaffle() {
+            const rows = [...document.querySelectorAll('#raffle-players-tbody tr')];
+            const pool = [];
+
+            rows.forEach(row => {
+                const cb = row.querySelector('.raffle-include');
+                if (!cb || !cb.checked) return;
+                const name  = cb.dataset.player;
+                const coins = parseInt(row.cells[3].textContent) || 0;
+                for (let i = 0; i < coins; i++) pool.push(name);
+            });
+
+            const display = document.getElementById('raffle-winner-display');
+
+            if (pool.length === 0) {
+                display.style.display = 'block';
+                display.innerHTML = '<p style="color:var(--text-secondary);">No eligible players with tickets.</p>';
+                return;
+            }
+
+            const winner = pool[Math.floor(Math.random() * pool.length)];
+            const winnerRow = rows.find(r => r.querySelector('.raffle-include')?.dataset.player === winner);
+            const winnerCoins = parseInt(winnerRow?.cells[3].textContent) || 0;
+            const totalTickets = pool.length;
+            const pct = ((winnerCoins / totalTickets) * 100).toFixed(1);
+
+            // Reset animation by toggling display
+            display.style.display = 'none';
+            void display.offsetWidth;
+            display.style.display = 'block';
+            display.innerHTML = `
+                <div style="font-size:0.85em; color:var(--text-secondary); text-transform:uppercase; letter-spacing:2px; margin-bottom:0.5rem;">🎲 Winner</div>
+                <h2>${winner}</h2>
+                <div class="raffle-odds-label">${winnerCoins} ticket${winnerCoins !== 1 ? 's' : ''} · ${pct}% odds</div>
+            `;
+        }
+
         // Rendering Functions
         function renderAll() {
             renderHeader();
@@ -2597,6 +2801,7 @@
             renderPlayers();
             renderGames();
             renderCoins();
+            renderRaffle();
             populateSubmitPlayerSelects();
         }
 
