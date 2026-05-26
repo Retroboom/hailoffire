@@ -2921,7 +2921,7 @@ ${ABILITIES.filter(a=>['Special','Tech'].includes(a.cat)).map(a=>`<tr><td><stron
 </table>
 
 <h3>10.7 Stat Bonus Abilities</h3>
-<p>Each permanently adds 1 rank to a specific stat. The bonus rank counts toward the unit's rank cap. Each costs 3 pts.</p>
+<p>Each permanently adds 1 rank to a specific stat. The bonus rank does not count toward the per-stat maximum or the unit's total rank pool. Each costs 3 pts.</p>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>a.cat==='Stat').map(a=>`<tr><td><strong>${esc(a.name)}</strong></td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
