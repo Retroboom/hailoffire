@@ -7,20 +7,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:   #0a0806;
-    --navy2:  #161210;
-    --navy3:  #201a14;
-    --navy4:  #5c4830;
-    --red:    #aa3030;
-    --red2:   #cc4545;
-    --gold:   #d4aa48;
-    --mist:   #a09080;
-    --ink:    #ede0c8;
-    --faint:  #2c2218;
-    --stripe: #4a3828;
-    --white:  #faf0dc;
-    --green:  #4a8a58;
-    --amber:  #c88020;
+    /* Surfaces: 4-level iron-ash hierarchy (near-neutral dark with warm undertone) */
+    --navy:   #0d0c0b;   /* base: near-black */
+    --navy2:  #181614;   /* panels: step above base */
+    --navy3:  #262220;   /* cards/sections: clearly above panel */
+    --navy4:  #746454;   /* panel dividers: warm tan, clearly visible */
+
+    /* Accent colors */
+    --red:    #8e2028;   /* deep crimson: authority, primary actions */
+    --red2:   #b83038;   /* bright crimson: hover/active */
+    --gold:   #c8a030;   /* warm brass: primary decorative accent */
+    --amber:  #c07830;   /* amber: secondary accent */
+    --green:  #3d7848;   /* muted jade: positive/under-budget */
+
+    /* Text hierarchy */
+    --ink:    #f0e4ce;   /* primary: warm parchment (~16:1 on base) */
+    --white:  #f8eed8;   /* emphasis: brightest parchment */
+    --mist:   #9a8c7a;   /* secondary: warm stone (~5:1 on base) */
+
+    /* Structural */
+    --faint:  #282420;   /* subtle card surfaces and internal borders */
+    --stripe: #1d1b19;   /* table row alternation: barely perceptible */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,8 +42,9 @@
 
   /* ── HEADER ── */
   header {
-    background: var(--navy2);
+    background: linear-gradient(180deg, #1e1b17 0%, var(--navy2) 100%);
     border-bottom: 2px solid var(--red);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.7);
     padding: 0 24px;
     display: flex;
     align-items: center;
@@ -103,7 +111,7 @@
   /* ── SIDEBAR ── */
   .sidebar {
     background: var(--navy2);
-    border-right: 1px solid var(--faint);
+    border-right: 1px solid var(--navy4);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -162,7 +170,7 @@
     background: var(--faint);
     margin-top: 6px;
   }
-  .add-btn.secondary:hover { background: var(--navy4); }
+  .add-btn.secondary:hover { background: var(--navy3); }
 
   /* Company list */
   .company-item {
@@ -231,7 +239,7 @@
   .mini-unit.commander { color: var(--gold); }
 
   .regiment-group { border-bottom: 1px solid var(--faint); margin-bottom: 2px; }
-  .regiment-group.active-regiment { border-left: 2px solid var(--gold); }
+  .regiment-group.active-regiment { border-left: 3px solid var(--gold); }
   .regiment-group-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 6px 10px 4px 10px; cursor: pointer;
@@ -247,14 +255,15 @@
   }
   .regiment-header {
     padding: 6px 10px;
-    background: var(--navy4);
+    background: var(--faint);
+    border-bottom: 1px solid var(--navy4);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--mist);
+    color: var(--ink);
   }
   .regiment-header strong { color: var(--gold); }
 
@@ -274,7 +283,7 @@
     transition: border-color 0.15s;
   }
   .unit-card:hover { border-color: var(--navy4); }
-  .unit-card.selected { border-color: var(--red); }
+  .unit-card.selected { border-color: var(--red); box-shadow: inset 3px 0 0 var(--red); }
 
   .unit-card-header {
     background: var(--navy3);
@@ -348,7 +357,7 @@
     font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--red);
+    color: var(--gold);
     font-weight: 700;
     margin-bottom: 8px;
     padding-bottom: 4px;
@@ -389,7 +398,7 @@
     transition: background 0.1s;
     font-family: 'Share Tech Mono', monospace;
   }
-  .rank-btn:hover { background: var(--navy4); }
+  .rank-btn:hover { background: var(--navy3); }
   .rank-btn:disabled { opacity: 0.3; cursor: not-allowed; }
   .rank-value {
     font-family: 'Share Tech Mono', monospace;
@@ -481,7 +490,7 @@
     transition: background 0.1s;
   }
   .ability-item:hover { background: var(--faint); }
-  .ability-item.selected { background: var(--navy4); }
+  .ability-item.selected { background: var(--faint); border-left: 2px solid var(--gold); }
   .ability-check {
     width: 14px;
     height: 14px;
@@ -516,7 +525,7 @@
   .toggle-switch {
     width: 28px;
     height: 14px;
-    background: var(--navy4);
+    background: #3a3028;
     border-radius: 7px;
     position: relative;
     transition: background 0.2s;
@@ -570,7 +579,7 @@
   /* ── INSPECTOR PANEL ── */
   .inspector {
     background: var(--navy2);
-    border-left: 1px solid var(--faint);
+    border-left: 1px solid var(--navy4);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -649,7 +658,8 @@
   }
   .stat-chip.stat-boosted {
     color: var(--gold);
-    border-color: var(--faint);
+    border-color: var(--amber);
+    background: #1e1c16;
   }
   .roster-abilities { margin-top: 4px; }
   .roster-ability-line {
@@ -779,10 +789,14 @@
   .sidebar-label {
     font-family: 'Cinzel', serif;
     color: var(--gold);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--faint);
+    display: block;
   }
   .inspector-header {
     font-family: 'Cinzel', serif;
     color: var(--gold);
+    background: linear-gradient(90deg, rgba(200,160,48,0.07) 0%, transparent 50%);
   }
   .section-title {
     font-family: 'Cinzel', serif;
@@ -790,7 +804,7 @@
   }
   .empty-state h3 {
     font-family: 'Cinzel', serif;
-    color: var(--gold);
+    color: var(--mist);
   }
   .modal-title {
     font-family: 'Cinzel', serif;
@@ -811,7 +825,7 @@
     font-family: 'Cinzel', serif;
     letter-spacing: 0.08em;
   }
-  .modal-overlay { background: rgba(12,7,2,0.9); }
+  .modal-overlay { background: rgba(8,6,4,0.92); }
   ::-webkit-scrollbar-track { background: var(--stripe); }
   ::-webkit-scrollbar-thumb { background: var(--navy4); }
   ::-webkit-scrollbar-thumb:hover { background: var(--faint); }
@@ -879,15 +893,16 @@
     vertical-align: middle;
   }
   .tag-special { background: var(--gold); color: var(--navy); font-weight: 700; }
-  .tag-commander { background: var(--navy4); color: var(--gold); }
+  .tag-commander { background: var(--faint); color: var(--gold); border: 1px solid var(--navy4); }
 
   .company-section-title {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--mist);
-    padding: 8px 0 4px;
-    margin-bottom: 4px;
+    color: var(--gold);
+    padding: 8px 0 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--faint);
   }
 
   select, input { color-scheme: dark; }
