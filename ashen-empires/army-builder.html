@@ -53,6 +53,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--white);
+    white-space: nowrap;
   }
   .header-title span { color: var(--red); }
   .header-pts {
@@ -71,6 +72,7 @@
     color: var(--gold);
     font-size: 16px;
     font-weight: 700;
+    white-space: nowrap;
   }
   .pts-display span { color: var(--mist); font-size: 11px; font-weight: 400; }
 
@@ -603,15 +605,18 @@
     font-weight: 700;
   }
   .roster-section { padding: 14px 16px; border-bottom: 1px solid var(--faint); }
-  .roster-unit-row {
+  .roster-unit-card {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--stripe);
+    font-size: 12px;
+  }
+  .roster-unit-card:last-child { border-bottom: none; }
+  .roster-unit-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 0;
-    font-size: 12px;
-    border-bottom: 1px solid var(--stripe);
+    margin-bottom: 2px;
   }
-  .roster-unit-row:last-child { border-bottom: none; }
   .roster-unit-name { color: var(--ink); flex: 1; }
   .roster-unit-name.commander { color: var(--gold); }
   .roster-unit-pts {
@@ -621,6 +626,84 @@
     min-width: 45px;
     text-align: right;
   }
+  .roster-unit-meta {
+    font-size: 10px;
+    color: var(--mist);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .roster-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin: 3px 0;
+  }
+  .stat-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    background: var(--navy3);
+    border: 1px solid var(--navy4);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--mist);
+  }
+  .stat-chip.stat-boosted {
+    color: var(--gold);
+    border-color: var(--faint);
+  }
+  .roster-abilities { margin-top: 4px; }
+  .roster-ability-line {
+    font-size: 10px;
+    line-height: 1.45;
+    padding: 1px 0;
+    color: var(--mist);
+  }
+  .roster-ability-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--white);
+    margin-right: 3px;
+  }
+
+  /* ── ARMY LIBRARY ── */
+  .library-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--stripe);
+    font-size: 11px;
+  }
+  .library-item:last-child { border-bottom: none; }
+  .library-item-info { flex: 1; overflow: hidden; }
+  .library-item-name {
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    margin-bottom: 1px;
+  }
+  .library-item-meta { color: var(--mist); font-size: 10px; }
+  .library-item-btn {
+    background: transparent;
+    border: 1px solid var(--navy4);
+    color: var(--mist);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .library-item-btn:hover { color: var(--white); border-color: var(--mist); }
+  .library-item-btn.del:hover { color: var(--red2); border-color: var(--red2); }
 
   .breakdown-row {
     display: flex;
@@ -872,6 +955,12 @@
   <div style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span> — Army Builder</div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'">Rules Reference</button></div>
   <div class="header-pts">
     <div class="pts-display" id="total-pts-display">0 <span>pts</span></div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mist);white-space:nowrap;">
+      <span style="letter-spacing:0.05em;text-transform:uppercase;font-size:10px;">Limit</span>
+      <input id="budget-input" type="number" min="0" step="25" placeholder="—" title="Points limit"
+        style="background:var(--faint);border:1px solid var(--navy4);color:var(--ink);font-family:'Share Tech Mono',monospace;font-size:13px;width:58px;padding:2px 6px;border-radius:2px;outline:none;text-align:center;">
+      <span style="font-size:10px;">pts</span>
+    </div>
     <div id="army-name-container">
       <input id="army-name-input" style="background:transparent;border:none;border-bottom:1px solid var(--faint);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:13px;outline:none;width:160px;text-align:right;" placeholder="Army Name..." value="My Army">
     </div>
@@ -958,8 +1047,14 @@
       <div id="validation-view" class="roster-section"></div>
       <div style="padding:14px 16px; margin-top:auto; border-top:1px solid var(--faint);">
         <button class="export-btn primary" onclick="printRoster()">⎙ Print Roster</button>
-        <button class="export-btn" onclick="exportJSON()">↓ Save Army (JSON)</button>
-        <button class="export-btn" onclick="loadJSONPrompt()">↑ Load Army (JSON)</button>
+        <button class="export-btn" onclick="saveToLibrary()" style="background:var(--navy3);border-color:var(--gold);color:var(--gold);">⊙ Save Army</button>
+        <div id="save-confirm" style="display:none;font-size:10px;color:var(--green);text-align:center;padding:2px 0;letter-spacing:0.06em;text-transform:uppercase;">Saved.</div>
+        <button class="export-btn" onclick="toggleLibrary()" id="library-toggle-btn">▸ Saved Armies</button>
+        <div id="library-panel" style="display:none;padding:2px 0 4px;"></div>
+        <div style="display:flex;gap:6px;margin-top:2px;">
+          <button class="export-btn" onclick="exportJSON()" style="flex:1;font-size:12px;padding:7px 4px;">↓ Export JSON</button>
+          <button class="export-btn" onclick="loadJSONPrompt()" style="flex:1;font-size:12px;padding:7px 4px;">↑ Import JSON</button>
+        </div>
         <input type="file" id="load-file" accept=".json" style="display:none" onchange="loadJSON(this)">
       </div>
     </div>
@@ -1069,6 +1164,7 @@ let state = {
   companies: [],
   activeCompanyId: null,
   activeRegimentId: null,
+  budget: null,
 };
 
 let nextId = 1;
@@ -1149,6 +1245,53 @@ function totalArmyPts() {
   return state.companies.reduce((s, c) => s + c.units.reduce((t, u) => t + unitCost(u), 0), 0);
 }
 
+function updatePtsDisplay() {
+  const total = totalArmyPts();
+  const budget = state.budget;
+  const el = document.getElementById('total-pts-display');
+  if (!budget) {
+    el.innerHTML = `${total} <span>pts</span>`;
+    el.style.color = 'var(--gold)';
+  } else {
+    const over = total > budget;
+    const exact = total === budget;
+    const color = over ? 'var(--red2)' : exact ? 'var(--white)' : 'var(--green)';
+    el.innerHTML = `${total}<span style="color:var(--mist);font-size:13px;font-weight:400;"> / ${budget} pts</span>`;
+    el.style.color = color;
+  }
+}
+
+const AB_STAT_BONUSES = {
+  'Swift':          { move:      1 },
+  'Aggressive':     { fighting:  1 },
+  'Marksmen':       { shooting:  1 },
+  'Stalwart':       { defense:   1 },
+  'Resolute':       { courage:   1 },
+  'Brutal':         { fStrength: 1 },
+  'Deadly Aim':     { sStrength: 1 },
+  'Extended Range': { range:     1 },
+  'Giant':          { defense:   1 },
+};
+
+const ASSET_STAT_BONUSES = [
+  { shooting: 2, sStrength: 1 },
+  { fighting:  2, fStrength: 1 },
+  { defense:   2 },
+];
+
+function effectiveStats(unit) {
+  const s = { ...unit.stats };
+  unit.abilities.forEach(name => {
+    const bonus = AB_STAT_BONUSES[name];
+    if (bonus) Object.entries(bonus).forEach(([k, v]) => { s[k] = (s[k] || 0) + v; });
+  });
+  if (unit.isSpecialAsset) {
+    const bonus = ASSET_STAT_BONUSES[unit.assetType];
+    if (bonus) Object.entries(bonus).forEach(([k, v]) => { s[k] = (s[k] || 0) + v; });
+  }
+  return s;
+}
+
 // ══════════════════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════════════════
@@ -1169,10 +1312,11 @@ function sortState() {
 function render() {
   sortState();
   document.getElementById('army-name-input').value = state.armyName;
-  document.getElementById('total-pts-display').innerHTML = `${totalArmyPts()} <span>pts</span>`;
+  updatePtsDisplay();
   renderSidebar();
   renderMainCanvas();
   renderInspector();
+  autoSave();
 }
 
 function renderSidebar() {
@@ -1459,6 +1603,17 @@ function renderInspector() {
   renderValidation();
 }
 
+const ROSTER_STAT_LABELS = [
+  { key: 'move',      short: 'MOV',  fmt: v => (v*2)+'"' },
+  { key: 'fighting',  short: 'FD',   fmt: v => v },
+  { key: 'fStrength', short: 'FS',   fmt: v => v },
+  { key: 'shooting',  short: 'SD',   fmt: v => v },
+  { key: 'sStrength', short: 'SS',   fmt: v => v },
+  { key: 'defense',   short: 'DEF',  fmt: v => v },
+  { key: 'courage',   short: 'CRG',  fmt: v => v },
+  { key: 'range',     short: 'RNG',  fmt: v => (v*6)+'"' },
+];
+
 function renderRosterView() {
   const rv = document.getElementById('roster-view');
   rv.innerHTML = '';
@@ -1478,17 +1633,47 @@ function renderRosterView() {
       ...company.units.filter(u => u.isCommander),
       ...company.units.filter(u => !u.isCommander),
     ];
+
     sortedUnits.forEach(u => {
-      const row = document.createElement('div');
-      row.className = 'roster-unit-row';
+      const card = document.createElement('div');
+      card.className = 'roster-unit-card';
+
       const tags = [];
       if (u.isCommander) tags.push(`<span class="tag tag-commander">${u.commanderType}</span>`);
       if (u.isSpecialAsset) tags.push(`<span class="tag tag-special">${ASSET_TYPES[u.assetType].label}</span>`);
-      row.innerHTML = `
-        <span class="roster-unit-name${u.isCommander ? ' commander' : ''}">${esc(u.name)}${tags.join('')}</span>
-        <span class="roster-unit-pts">${unitCost(u)}pts</span>
+
+      const eff = effectiveStats(u);
+      const base = u.stats;
+
+      const statChips = ROSTER_STAT_LABELS
+        .filter(s => eff[s.key] > 0)
+        .map(s => {
+          const boosted = eff[s.key] > (base[s.key] || 0);
+          return `<span class="stat-chip${boosted ? ' stat-boosted' : ''}">${s.short} ${s.fmt(eff[s.key])}</span>`;
+        }).join('');
+
+      const abilityLines = u.abilities.map(name => {
+        const ab = ABILITIES.find(a => a.name === name);
+        if (!ab) return '';
+        return `<div class="roster-ability-line"><span class="roster-ability-name">${esc(name)}</span>${esc(ab.desc)}</div>`;
+      }).join('');
+
+      const ft = FORCE_TYPES[u.forceType];
+      const metaText = u.isCommander
+        ? ''
+        : `<span class="roster-unit-meta">${ft.label} &times;${u.models} &middot; Force ${ft.force * u.models}</span>`;
+
+      card.innerHTML = `
+        <div class="roster-unit-header">
+          <span class="roster-unit-name${u.isCommander ? ' commander' : ''}">${esc(u.name)}${tags.join('')}</span>
+          <span class="roster-unit-pts">${unitCost(u)}pts</span>
+        </div>
+        ${metaText}
+        ${statChips ? `<div class="roster-stat-row">${statChips}</div>` : ''}
+        ${abilityLines ? `<div class="roster-abilities">${abilityLines}</div>` : ''}
       `;
-      cdiv.appendChild(row);
+
+      cdiv.appendChild(card);
     });
 
     rv.appendChild(cdiv);
@@ -1852,7 +2037,7 @@ function findUnit(id) {
 // ══════════════════════════════════════════════════════
 
 function exportJSON() {
-  const data = JSON.stringify({ armyName: state.armyName, regiments: state.regiments, companies: state.companies, nextId }, null, 2);
+  const data = JSON.stringify({ armyName: state.armyName, budget: state.budget, regiments: state.regiments, companies: state.companies, nextId }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1872,9 +2057,13 @@ function loadJSON(input) {
     try {
       const data = JSON.parse(e.target.result);
       state.armyName = data.armyName || 'My Army';
+      state.budget = data.budget || null;
       state.companies = data.companies || [];
+      state.regiments = data.regiments || [];
       state.activeCompanyId = state.companies[0]?.id || null;
       nextId = data.nextId || 100;
+      const bi = document.getElementById('budget-input');
+      if (bi) bi.value = state.budget || '';
       render();
     } catch(err) {
       alert('Could not load army: invalid JSON file.');
@@ -1919,18 +2108,26 @@ function printRoster() {
     ];
 
     function statBox(u) {
+      const eff = effectiveStats(u);
+      const base = u.stats;
       const cells = STAT_GRID.map(s => {
-        const v = u.stats[s.key] || 0;
+        const v = eff[s.key] || 0;
         const rng = s.key === 'range' ? (v * 6) + '"' : (s.key === 'move' ? (v * 2) + '"' : v);
         const display = v === 0 ? '—' : rng;
-        return `<td class="sb${v === 0 ? ' sb-zero' : ''}">${display}<br><span class="sb-lbl">${s.short}</span></td>`;
+        const boosted = v > (base[s.key] || 0);
+        return `<td class="sb${v === 0 ? ' sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}<br><span class="sb-lbl">${s.short}</span></td>`;
       }).join('');
       return `<table class="stat-grid"><tr>${cells}</tr></table>`;
     }
 
     const unitRows = sortedUnits.map(u => {
       const ft = FORCE_TYPES[u.forceType];
-      const abilityList = u.abilities.length > 0 ? u.abilities.join(', ') : '—';
+      const abilityList = u.abilities.length > 0
+        ? u.abilities.map(name => {
+            const ab = ABILITIES.find(a => a.name === name);
+            return `<div class="ab-entry"><strong>${name}</strong>${ab ? ` — ${ab.desc}` : ''}</div>`;
+          }).join('')
+        : '—';
       const tags = [];
       if (u.isCommander) tags.push(u.commanderType);
       if (u.isSpecialAsset) tags.push(ASSET_TYPES[u.assetType].label);
@@ -2007,6 +2204,8 @@ function printRoster() {
   .stat-grid tr td{border:1px solid #bbb;text-align:center;padding:2pt 4pt;min-width:28pt;line-height:1.2;}
   .sb-zero{color:#bbb;}
   .sb-lbl{font-size:6.5pt;text-transform:uppercase;letter-spacing:0.04em;display:block;color:#666;}
+  .sb-boosted{font-weight:bold;background:#f5f0dc;}
+  .ab-entry{font-size:8pt;line-height:1.45;margin-bottom:2pt;}
   .glossary-block{margin-top:24pt;break-before:auto;}
   .glossary-header{font-size:12pt;font-weight:bold;border-bottom:2px solid black;padding-bottom:3pt;margin-bottom:4pt;}
   .ab-name{font-weight:bold;white-space:nowrap;width:1%;}
@@ -2028,6 +2227,119 @@ ${abilityGlossary}
 }
 
 // ══════════════════════════════════════════════════════
+// LOCAL STORAGE — AUTO-SAVE & ARMY LIBRARY
+// ══════════════════════════════════════════════════════
+
+function stateSnapshot() {
+  return { armyName: state.armyName, budget: state.budget, regiments: state.regiments, companies: state.companies, nextId };
+}
+
+function autoSave() {
+  try { localStorage.setItem('ae_autosave', JSON.stringify(stateSnapshot())); } catch(e) {}
+}
+
+function loadAutoSave() {
+  try {
+    const raw = localStorage.getItem('ae_autosave');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    state.armyName  = data.armyName  || 'My Army';
+    state.budget    = data.budget    || null;
+    state.regiments = data.regiments || [];
+    state.companies = data.companies || [];
+    state.activeCompanyId  = state.companies[0]?.id  || null;
+    state.activeRegimentId = state.regiments[0]?.id  || null;
+    nextId = data.nextId || 100;
+    document.getElementById('army-name-input').value = state.armyName;
+    const bi = document.getElementById('budget-input');
+    if (bi) bi.value = state.budget || '';
+  } catch(e) {}
+}
+
+function getLibrary() {
+  try { return JSON.parse(localStorage.getItem('ae_library') || '[]'); } catch(e) { return []; }
+}
+
+function saveLibrary(lib) {
+  try { localStorage.setItem('ae_library', JSON.stringify(lib)); } catch(e) {}
+}
+
+function saveToLibrary() {
+  const lib = getLibrary();
+  const entry = {
+    name: state.armyName || 'My Army',
+    savedAt: new Date().toISOString(),
+    data: stateSnapshot(),
+  };
+  const idx = lib.findIndex(e => e.name === entry.name);
+  if (idx >= 0) lib[idx] = entry;
+  else lib.unshift(entry);
+  saveLibrary(lib);
+  if (libraryOpen) renderLibrary();
+  const conf = document.getElementById('save-confirm');
+  if (conf) { conf.style.display = 'block'; setTimeout(() => { conf.style.display = 'none'; }, 1800); }
+}
+
+function loadFromLibrary(idx) {
+  const lib = getLibrary();
+  const entry = lib[idx];
+  if (!entry) return;
+  const data = entry.data;
+  state.armyName  = data.armyName  || 'My Army';
+  state.budget    = data.budget    || null;
+  state.regiments = data.regiments || [];
+  state.companies = data.companies || [];
+  state.activeCompanyId  = state.companies[0]?.id  || null;
+  state.activeRegimentId = state.regiments[0]?.id  || null;
+  nextId = data.nextId || 100;
+  document.getElementById('army-name-input').value = state.armyName;
+  const bi = document.getElementById('budget-input');
+  if (bi) bi.value = state.budget || '';
+  render();
+}
+
+function deleteFromLibrary(idx) {
+  const lib = getLibrary();
+  lib.splice(idx, 1);
+  saveLibrary(lib);
+  renderLibrary();
+}
+
+let libraryOpen = false;
+
+function toggleLibrary() {
+  libraryOpen = !libraryOpen;
+  const panel = document.getElementById('library-panel');
+  const btn   = document.getElementById('library-toggle-btn');
+  if (panel) panel.style.display = libraryOpen ? 'block' : 'none';
+  if (btn)   btn.textContent = (libraryOpen ? '▾' : '▸') + ' Saved Armies';
+  if (libraryOpen) renderLibrary();
+}
+
+function renderLibrary() {
+  const panel = document.getElementById('library-panel');
+  if (!panel) return;
+  const lib = getLibrary();
+  if (lib.length === 0) {
+    panel.innerHTML = '<div style="font-size:11px;color:var(--mist);padding:6px 0;">No saved armies.</div>';
+    return;
+  }
+  panel.innerHTML = lib.map((entry, i) => {
+    const d = new Date(entry.savedAt);
+    const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' });
+    const pts = (entry.data.companies || []).reduce((s, c) => s + (c.units || []).reduce((t, u) => t + unitCost(u), 0), 0);
+    return `<div class="library-item">
+      <div class="library-item-info">
+        <div class="library-item-name">${esc(entry.name)}</div>
+        <div class="library-item-meta">${dateStr} &middot; ${pts}pts</div>
+      </div>
+      <button class="library-item-btn" onclick="loadFromLibrary(${i})">Load</button>
+      <button class="library-item-btn del" onclick="deleteFromLibrary(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════════════════════
 
@@ -2039,6 +2351,12 @@ function esc(str) {
 document.getElementById('army-name-input').addEventListener('change', function() {
   state.armyName = this.value;
   render();
+});
+
+document.getElementById('budget-input').addEventListener('input', function() {
+  const v = parseInt(this.value);
+  state.budget = (this.value === '' || isNaN(v) || v <= 0) ? null : v;
+  updatePtsDisplay();
 });
 
 // ══════════════════════════════════════════════════════
@@ -2690,11 +3008,12 @@ function modalToggleAbility(abilityName) {
   renderModalGrid(unit);
   const badge = document.querySelector('#unit-' + unit.id + ' .unit-pts-badge');
   if (badge) badge.innerHTML = unitCost(unit) + ' <span class="pts-label">pts</span>';
-  document.getElementById('total-pts-display').innerHTML = totalArmyPts() + ' <span>pts</span>';
+  updatePtsDisplay();
 }
 
 // INIT
 // ══════════════════════════════════════════════════════
+loadAutoSave();
 render();
 </script>
 </body>
