@@ -990,14 +990,17 @@
   .modal-ability-name { font-size: 14px; font-weight: 700; color: var(--white); }
   .modal-ability-cost { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold); }
   .modal-ability-desc { font-size: 11px; color: var(--mist); line-height: 1.4; font-family: 'Libre Baskerville', serif; font-style: italic; }
+  .stat-row.stat-zero { opacity: 0.38; }
+  .stat-row.stat-zero .rank-value { color: var(--mist); }
+
   .abilities-open-btn {
-    width: 100%; background: var(--faint); border: 1px solid var(--navy4); color: var(--ink);
+    width: 100%; background: var(--faint); border: 1px solid var(--gold); color: var(--gold);
     font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600;
     letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; border-radius: 2px;
-    cursor: pointer; transition: background 0.12s, border-color 0.12s;
+    cursor: pointer; transition: background 0.12s, border-color 0.12s, color 0.12s;
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
   }
-  .abilities-open-btn:hover { background: var(--navy4); border-color: var(--mist); }
+  .abilities-open-btn:hover { background: var(--navy3); border-color: var(--white); color: var(--white); }
   .abilities-open-btn .ab-count { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold); }
   .selected-abilities-list { display: flex; flex-wrap: wrap; gap: 4px; }
   .sel-ab-tag {
@@ -1067,16 +1070,12 @@
         <div class="sidebar-label" style="margin:0;">Companies</div>
         <button class="collapse-btn" onclick="toggleLeft()" title="Collapse">◀</button>
       </div>
-      <div class="sidebar-section" style="padding-bottom:0;">
+      <div class="sidebar-section" style="padding-bottom:0; flex:1; overflow-y:auto;">
         <div id="regiment-list"></div>
       </div>
       <div class="sidebar-section" style="padding:6px 12px 10px;">
         <button class="add-btn" id="add-company-btn" onclick="addCompany()" style="margin-bottom:4px;">+ Add Company</button>
         <button class="add-btn" onclick="addRegiment()">+ Add Regiment</button>
-      </div>
-      <div class="sidebar-section" style="flex:1; overflow-y:auto;">
-        <div class="sidebar-label">Army Structure</div>
-        <div id="structure-view"></div>
       </div>
     </div>
     <div class="sidebar-strip" onclick="toggleLeft()">
@@ -1184,14 +1183,14 @@ const ABILITIES = [
 const ABILITY_CATS = ['Combat','Defense','Ranged','Movement','Morale','Support','Special','Tech','Stat'];
 
 const STATS = [
-  { key: 'move',      label: 'Move (2" per rank)',    max: 5 },
-  { key: 'fighting',  label: 'Fight Dice',            max: 5 },
-  { key: 'fStrength', label: 'Fight Strength',        max: 5 },
-  { key: 'shooting',  label: 'Shoot Dice',            max: 5 },
-  { key: 'sStrength', label: 'Shoot Strength',        max: 5 },
-  { key: 'defense',   label: 'Defense',               max: 5 },
-  { key: 'courage',   label: 'Courage',               max: 5 },
-  { key: 'range',     label: 'Range (6" per rank)',   max: 5 },
+  { key: 'move',      label: 'Move',          short: 'MOV', max: 5, fmt: r => r ? `${r*2}"` : '—' },
+  { key: 'fighting',  label: 'Fight Dice',    short: 'FD',  max: 5, fmt: r => r || '—' },
+  { key: 'fStrength', label: 'Fight Str',     short: 'FS',  max: 5, fmt: r => r || '—' },
+  { key: 'shooting',  label: 'Shoot Dice',    short: 'SD',  max: 5, fmt: r => r || '—' },
+  { key: 'sStrength', label: 'Shoot Str',     short: 'SS',  max: 5, fmt: r => r || '—' },
+  { key: 'defense',   label: 'Defense',       short: 'DEF', max: 5, fmt: r => r || '—' },
+  { key: 'courage',   label: 'Courage',       short: 'CRG', max: 5, fmt: r => r || '—' },
+  { key: 'range',     label: 'Range',         short: 'RNG', max: 5, fmt: r => r ? `${r*6}"` : '—' },
 ];
 
 const FORCE_TYPES = [
@@ -1404,6 +1403,10 @@ function renderSidebar() {
   state.regiments.forEach(regiment => {
     const isActiveReg = regiment.id === state.activeRegimentId;
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
+    const generals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General'));
+    const generalLine = generals.length > 0
+      ? `<div style="padding:0 10px 4px;font-size:10px;color:var(--gold);letter-spacing:0.03em;">⚔ ${generals.map(g => esc(g.name)).join(', ')}</div>`
+      : `<div style="padding:0 10px 4px;font-size:10px;color:var(--mist);font-style:italic;">No General</div>`;
 
     const regDiv = document.createElement('div');
     regDiv.className = 'regiment-group' + (isActiveReg ? ' active-regiment' : '');
@@ -1417,7 +1420,8 @@ function renderSidebar() {
           <button class="delete-btn" onclick="event.stopPropagation();duplicateRegiment('${regiment.id}')" title="Duplicate regiment" style="font-size:12px;">⧉</button>
           <button class="delete-btn" onclick="event.stopPropagation();deleteRegiment('${regiment.id}')" title="Delete regiment">×</button>
         </div>
-      </div>`;
+      </div>
+      ${generalLine}`;
 
     regCompanies.forEach(company => {
       const isActive = company.id === state.activeCompanyId;
@@ -1449,9 +1453,6 @@ function renderSidebar() {
 
     regList.appendChild(regDiv);
   });
-
-  // Structure view
-  renderStructureView();
 }
 
 function renderStructureView() {
@@ -1491,18 +1492,29 @@ function renderMainCanvas() {
   unitList.innerHTML = '';
 
   // Company header
+  const regiment = state.regiments.find(r => r.id === company.regimentId);
+  const ct = COMPANY_TYPES[company.type];
   const ch = document.createElement('div');
-  ch.style.cssText = 'margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+  ch.style.cssText = 'margin-bottom:16px;';
   ch.innerHTML = `
-    <div>
-      <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:4px;">Company Type</div>
-      <select class="unit-type-select" style="font-size:13px;" onchange="setCompanyType('${company.id}', this.value)">
-        ${COMPANY_TYPES.map((t, i) => `<option value="${i}" ${company.type === i ? 'selected' : ''}>${t.label}</option>`).join('')}
-      </select>
+    <div style="font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--mist);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--faint);display:flex;align-items:center;gap:6px;">
+      <span style="color:var(--gold);font-family:'Cinzel',serif;">${regiment ? esc(regiment.name) : 'Regiment'}</span>
+      <span style="color:var(--faint);">›</span>
+      <span style="color:var(--ink);">${esc(company.name)}</span>
     </div>
-    <div style="text-align:right;">
-      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);">Restriction</div>
-      <div style="font-size:11px;color:var(--amber);max-width:220px;text-align:right;margin-top:3px;font-family:'Libre Baskerville',serif;font-style:italic;">${COMPANY_TYPES[company.type].restriction}</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;font-weight:700;margin-bottom:4px;">Company Type</div>
+        <select class="unit-type-select" style="font-size:13px;" onchange="setCompanyType('${company.id}', this.value)">
+          ${COMPANY_TYPES.map((t, i) => `<option value="${i}" ${company.type === i ? 'selected' : ''}>${t.label}</option>`).join('')}
+        </select>
+        ${ct.bonus !== '—' ? `<div style="font-size:10px;color:var(--gold);background:var(--faint);border-left:2px solid var(--gold);padding:3px 8px;margin-top:6px;font-family:'Libre Baskerville',serif;font-style:italic;">${esc(ct.bonus)}</div>` : ''}
+      </div>
+      ${ct.restriction !== '—' ? `
+      <div style="text-align:right;max-width:200px;">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);margin-bottom:3px;">Restriction</div>
+        <div style="font-size:10px;color:var(--amber);font-family:'Libre Baskerville',serif;font-style:italic;line-height:1.4;">${esc(ct.restriction)}</div>
+      </div>` : ''}
     </div>
   `;
   unitList.appendChild(ch);
@@ -1605,18 +1617,21 @@ function buildUnitCard(unit, company) {
             </div>
           </div>
         `}
-        ${STATS.map(s => `
-          <div class="stat-row">
-            <span class="stat-name">${s.label}</span>
+        ${STATS.map(s => {
+          const rank = unit.stats[s.key];
+          const isZero = rank === 0;
+          return `
+          <div class="stat-row${isZero ? ' stat-zero' : ''}">
+            <span class="stat-name">${s.short}</span>
             <div class="stat-controls">
-              <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', -1)" ${unit.stats[s.key] <= 0 ? 'disabled' : ''}>−</button>
-              <span class="rank-value">${unit.stats[s.key]}</span>
+              <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', -1)" ${rank <= 0 ? 'disabled' : ''}>−</button>
+              <span class="rank-value">${s.fmt(rank)}</span>
               <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', 1)"
-                ${unit.stats[s.key] >= s.max || ranks >= cap ? 'disabled' : ''}>+</button>
-              <span class="rank-pts">${unit.stats[s.key] * 1}p</span>
+                ${rank >= s.max || ranks >= cap ? 'disabled' : ''}>+</button>
+              <span class="rank-pts">${isZero ? '' : rank+'p'}</span>
             </div>
-          </div>
-        `).join('')}
+          </div>`;
+        }).join('')}
         <div class="rank-cap-bar">
           <div class="rank-cap-row">
             <span class="rank-cap-label">Rank Total</span>
@@ -1688,7 +1703,7 @@ function renderRosterView() {
     const cdiv = document.createElement('div');
     cdiv.style.cssText = 'margin-bottom:12px;';
     const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
-    cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
+    cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
 
     const sortedUnits = [
       ...company.units.filter(u => u.isCommander),
