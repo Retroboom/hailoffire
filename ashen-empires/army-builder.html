@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ashen Empires — Army Builder</title>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:   #0f1923;
-    --navy2:  #172030;
-    --navy3:  #1e2d40;
-    --navy4:  #253550;
-    --red:    #c0392b;
-    --red2:   #e74c3c;
-    --gold:   #c8a96e;
-    --mist:   #8a9bb0;
-    --ink:    #d6dde8;
-    --faint:  #2a3a52;
-    --stripe: #192535;
-    --white:  #f0f4f8;
-    --green:  #27ae60;
-    --amber:  #e67e22;
+    --navy:   #1a1208;
+    --navy2:  #231810;
+    --navy3:  #2d2016;
+    --navy4:  #3c2c1c;
+    --red:    #a83030;
+    --red2:   #c84040;
+    --gold:   #c8a040;
+    --mist:   #9e8a6e;
+    --ink:    #ddd0b8;
+    --faint:  #3a2c1a;
+    --stripe: #1c1008;
+    --white:  #f5ead4;
+    --green:  #3a7a4e;
+    --amber:  #c87820;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -769,6 +769,52 @@
   .export-btn:hover { background: var(--faint); border-color: var(--mist); }
   .export-btn.primary { background: var(--red); border-color: var(--red); color: white; }
   .export-btn.primary:hover { background: var(--red2); border-color: var(--red2); }
+
+  /* ── FANTASY TYPOGRAPHY ── */
+  .header-title {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+  }
+  .header-title span { color: var(--gold); }
+  .sidebar-label {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+  }
+  .inspector-header {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+  }
+  .section-title {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+  }
+  .empty-state h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+  }
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+  }
+  .company-section-title {
+    font-family: 'Cinzel', serif;
+  }
+  .regiment-header {
+    font-family: 'Cinzel', serif;
+  }
+  #rules-body h2 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+    border-bottom-color: var(--gold);
+  }
+  #rules-body h3 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+  }
+  .modal-overlay { background: rgba(12,7,2,0.9); }
+  ::-webkit-scrollbar-track { background: var(--stripe); }
+  ::-webkit-scrollbar-thumb { background: var(--navy4); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 
   /* ── PRINT STYLES ── */
   @media print {
