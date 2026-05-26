@@ -2198,27 +2198,29 @@ function printRoster() {
 
     const unitRows = sortedUnits.map(u => {
       const ft = FORCE_TYPES[u.forceType];
-      const abilityList = u.abilities.length > 0
-        ? u.abilities.map(name => {
-            const ab = ABILITIES.find(a => a.name === name);
-            return `<div class="ab-entry"><strong>${name}</strong>${ab ? ` — ${ab.desc}` : ''}</div>`;
-          }).join('')
-        : '—';
+      const abilityEntries = u.abilities.map(name => {
+        const ab = ABILITIES.find(a => a.name === name);
+        return `<span class="ab-entry"><strong>${name}</strong>${ab ? ` — ${ab.desc}` : ''}</span>`;
+      });
       const tags = [];
       if (u.isCommander) tags.push(u.commanderType);
       if (u.isSpecialAsset) tags.push(ASSET_TYPES[u.assetType].label);
+      const rowClass = u.isCommander ? 'commander-row' : '';
 
       return `
-        <tr class="${u.isCommander ? 'commander-row' : ''}">
+        <tr class="${rowClass}">
           <td class="unit-name-cell">
             <strong>${esc(u.name)}</strong>
             ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
             <div class="unit-models">${u.isCommander ? '' : ft.label + ' \xd7' + u.models + '\u00a0(Force\u00a0' + (ft.force * u.models) + ')'}</div>
           </td>
           <td class="stat-cell">${statBox(u)}</td>
-          <td>${abilityList}</td>
           <td class="pts-cell">${unitCost(u)}pts</td>
-        </tr>`;
+        </tr>
+        ${abilityEntries.length > 0 ? `
+        <tr class="${rowClass} abilities-row">
+          <td colspan="3" class="abilities-cell">${abilityEntries.join('')}</td>
+        </tr>` : ''}`;
     }).join('');
 
     return `
@@ -2228,7 +2230,7 @@ function printRoster() {
           <span class="company-meta">${typeName !== 'Standard' ? typeName + '\u00a0\xb7\u00a0' : ''}${compPts}pts</span>
         </div>
         <table class="roster-table">
-          <thead><tr><th>Unit</th><th>Stats</th><th>Abilities</th><th>Pts</th></tr></thead>
+          <thead><tr><th>Unit</th><th>Stats</th><th>Pts</th></tr></thead>
           <tbody>${unitRows}</tbody>
         </table>
       </div>`;
@@ -2281,7 +2283,10 @@ function printRoster() {
   .sb-zero{color:#bbb;}
   .sb-lbl{font-size:6.5pt;text-transform:uppercase;letter-spacing:0.04em;display:block;color:#666;}
   .sb-boosted{font-weight:bold;background:#f5f0dc;}
-  .ab-entry{font-size:8pt;line-height:1.45;margin-bottom:2pt;}
+  .abilities-row td{border-top:none;padding-top:0;}
+  .abilities-cell{padding:1pt 5pt 4pt;border-top:none;}
+  .ab-entry{font-size:8pt;line-height:1.45;display:block;margin-bottom:1pt;}
+  .ab-entry+.ab-entry{border-top:1px dotted #ddd;padding-top:1pt;margin-top:1pt;}
   .glossary-block{margin-top:24pt;break-before:auto;}
   .glossary-header{font-size:12pt;font-weight:bold;border-bottom:2px solid black;padding-bottom:3pt;margin-bottom:4pt;}
   .ab-name{font-weight:bold;white-space:nowrap;width:1%;}
