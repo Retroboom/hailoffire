@@ -1137,7 +1137,7 @@ const ABILITIES = [
   { name: 'Great Weapons',      cost: 5,  cat: 'Combat',    desc: 'Each hit in melee inflicts 1 additional shock', commanderOnly: false },
   { name: 'Impetuous',          cost: 4,  cat: 'Combat',    desc: 'Must charge nearest enemy (player chooses if two or more are equidistant); +2 Fight Dice when charging', commanderOnly: false },
   { name: 'Berserk',            cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when this unit has 7+ shock', commanderOnly: false },
-  { name: 'Heavy Charge',       cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when charging 10"+ against units with equal or less Force', commanderOnly: false },
+  { name: 'Heavy Charge',       cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when charging 10"+ against units with equal or lower Force per model', commanderOnly: false },
   { name: 'Anti-Heavy',         cost: 2,  cat: 'Combat',    desc: '+1 Fight Dice vs units with Force 2+ per model in melee', commanderOnly: false },
   { name: 'Giant Slayer',       cost: 2,  cat: 'Combat',    desc: '+2 Fight Dice against Giant units', commanderOnly: false },
   { name: 'Veteran',            cost: 5,  cat: 'Combat',    desc: 'Reroll 1s in all rolls', commanderOnly: false },
@@ -1157,12 +1157,12 @@ const ABILITIES = [
   // Movement & Morale
   { name: 'Nimble',             cost: 2,  cat: 'Movement',  desc: 'Ignore terrain movement penalties when moving', commanderOnly: false },
   { name: 'Flying',             cost: 8,  cat: 'Movement',  desc: 'As Nimble; may move over impassable terrain and enemy units', commanderOnly: false },
-  { name: 'Aerial',             cost: 6,  cat: 'Movement',  desc: 'Single-model units only. While airborne: as Flying; may shoot and be shot at over non-Giants; may only shoot and be shot at (no melee, cannot charge, cannot be charged by non-Flying units). When taking combat shock: make a Courage Test — failure causes the unit to become Grounded permanently (loses Aerial and all Flying benefits; cannot move; may be charged normally; may still shoot at ground level).', commanderOnly: false },
+  { name: 'Aerial',             cost: 6,  cat: 'Movement',  desc: 'Single-model units only. While airborne: as Flying; may shoot and be shot at over non-Giants; may only shoot and be shot at (no melee, cannot charge, cannot be charged by non-Flying units). When taking shock from enemy attacks: make a Courage Test — failure causes the unit to become Grounded permanently (loses Aerial and all Flying benefits; cannot move; may be charged normally; may still shoot at ground level).', commanderOnly: false },
   { name: 'Ambush',             cost: 4,  cat: 'Movement',  desc: 'Deploy anywhere 16"+ from all enemy units after all other units on both sides have deployed, overriding normal deployment zone restrictions. If no valid position exists, deploy as a normal unit.', commanderOnly: false },
   { name: 'Fearless',           cost: 5,  cat: 'Morale',    desc: 'May ignore Retreat results on Courage Tests', commanderOnly: false },
   { name: 'Inspiring',          cost: 8,  cat: 'Morale',    desc: 'Friendly units within 12" reroll failed Courage Tests', commanderOnly: false },
-  { name: 'Terrifying',         cost: 8,  cat: 'Morale',    desc: 'Enemies within 12" must reroll successful Courage Tests', commanderOnly: false },
-  { name: 'Mindless',           cost: 5,  cat: 'Morale',    desc: 'Immune to Terrifying, Inspiring, and Retreat results', commanderOnly: false },
+  { name: 'Terrifying',         cost: 12, cat: 'Morale',    desc: 'Enemies within 12" must reroll successful Courage Tests', commanderOnly: false },
+  { name: 'Mindless',           cost: 5,  cat: 'Morale',    desc: 'Immune to Terrifying, Inspiring, and forced Retreat results from Courage Tests; may still voluntarily Retreat', commanderOnly: false },
   { name: 'Rallying Cry',       cost: 2,  cat: 'Support',   desc: 'Subordinates activated by this Commander who take the Rally order remove a minimum of 2 shock (Commanders only)', commanderOnly: true },
   { name: 'Loyal',              cost: 2,  cat: 'Support',   desc: 'When taking the Rally order, remove +1 additional shock', commanderOnly: false },
   { name: 'Regeneration',       cost: 5,  cat: 'Support',   desc: 'Remove 1d3 shock when this unit activates', commanderOnly: false },
@@ -2531,7 +2531,7 @@ stats: `
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
 <tr><td>Rank cost</td><td>1 pt per rank · max 5 per stat · 16 total (20 for Special Assets)</td></tr>
-<tr><td>Fight Dice</td><td>Requires Fight Strength &gt; 0; Fight Strength reduced to 0 zeroes Fight Dice</td></tr>
+<tr><td>Fight Dice</td><td>Requires Fight Strength &gt; 0</td></tr>
 <tr><td>Force</td><td>Fixed by model type: Infantry 1, Cavalry/Large 2, Hero/Creature 3; 1 pt per Force per model</td></tr>
 <tr><td>Commanders</td><td>Single-model units; army needs at least 1 Captain; do not count toward company unit limits</td></tr>
 </table>
@@ -2569,7 +2569,7 @@ commanders: `
 <tr><td>Command Test</td><td>2d6 + Courage vs. current shock — success activates Commander + up to 2 subordinates within 12"</td></tr>
 <tr><td>Activation cost</td><td>Successful Commander gains +1 shock; failure = Exhausted, turn passes to opponent</td></tr>
 <tr><td>Within 1" of friendly unit</td><td>Cannot be targeted, share shock allocation, +1 Fight Die if stat qualifies</td></tr>
-<tr><td>Recovery</td><td>Commanders remove 6 shock at Round End; cannot Rally themselves</td></tr>
+<tr><td>Recovery</td><td>Commanders remove 6 shock at Round End; may only Rally if activated by a Commander of higher rank</td></tr>
 <tr><td>Max activations</td><td>1 General + 2 Captains + 4 non-Commanders = 7 units per Turn</td></tr>
 </table>
 `,
@@ -2674,7 +2674,7 @@ actions: `
 <tr><td><strong>REPOSITION</strong></td><td>Move up to 1d6" (max 6"), then Shoot at −2 Shoot Dice penalty.</td></tr>
 <tr><td><strong>CHARGE</strong></td><td>Leader takes 1 shock. Move full Move + 2d6" toward a declared enemy, ending in base contact. See Ch. VIII.</td></tr>
 <tr><td><strong>RETREAT</strong></td><td>Free action — no Command Test required. Leader takes 1 shock, moves full Move + 2d6" away from all visible enemies. If unable to increase its distance from all enemies within LoS: unit is destroyed. Units in melee may Retreat, taking 1 shock to break contact.</td></tr>
-<tr><td><strong>RALLY</strong></td><td>Available only to units activated by a Commander. Remove 1d6 shock.</td></tr>
+<tr><td><strong>RALLY</strong></td><td>Available only to units activated by a Commander of higher rank. Remove 1d6 shock.</td></tr>
 </table>
 <p><em>Retreat is always available</em> to any unit at any time — it requires no Command Test. This is the only action available to Exhausted units.</p>
 
@@ -2711,7 +2711,7 @@ actions: `
 <tr><th colspan="2">Summary</th></tr>
 <tr><td>Movement</td><td>2d6 + Move inches; leader moves first; others maintain 1" coherency chain</td></tr>
 <tr><td>Charge / Retreat</td><td>Both cost 1 shock to leader; Retreat requires no Command Test</td></tr>
-<tr><td>Rally</td><td>Only when activated by a Commander; unit removes 1d6 shock from itself</td></tr>
+<tr><td>Rally</td><td>Only when activated by a Commander of higher rank; unit removes 1d6 shock from itself</td></tr>
 <tr><td>Difficult terrain</td><td>−3" per piece crossed</td></tr>
 <tr><td>Cover</td><td>Soft +1 Defense vs shooting; Hard +2 Defense vs shooting; Giants immune</td></tr>
 </table>
@@ -2839,7 +2839,7 @@ org: `
 <tr><td>Company</td><td>1–3 units</td><td>1 Captain (optional)</td><td>1 Special Asset</td></tr>
 <tr><td>Regiment</td><td>1–3 Companies</td><td>1 General</td><td>—</td></tr>
 </table>
-<p>You must fill a Company (1–3 units) before adding a new one. You must fill a Regiment (1–3 Companies) before adding a new one. <strong>At least 1 Captain required.</strong></p>
+<p>You must fill a Company to its maximum of 3 units before adding a new one. You must fill a Regiment to its maximum of 3 Companies before adding a new one. <strong>At least 1 Captain required.</strong></p>
 
 <h3>9.2 Special Assets</h3>
 <p>A Special Asset is an elite unit designated at army building. Paying the <strong>10 pt designation fee</strong> raises the unit's rank cap to <strong>20 ranks</strong> and grants the type bonus below. Special Assets <strong>do not count toward Company unit limits</strong> and therefore do not contribute to unlocking additional Commanders. Type bonuses and special ability bonuses are not subject to the per-stat cap. The Giant ability is included free in all Special Asset type bonuses and may not be purchased separately by Special Assets.</p>
@@ -2855,11 +2855,11 @@ org: `
 <p>A Company may specialise at army building, gaining a bonus and accepting a restriction.</p>
 <table class="rule-table">
 <tr><th>Type</th><th>Bonus</th><th>Restriction</th></tr>
-<tr><td>Assault</td><td>+1 Fight Die when charging</td><td>Must charge enemies within 12" if no friendly is closer</td></tr>
+<tr><td>Assault</td><td>+1 Fight Die when charging</td><td>Must charge enemies within 12" if no friendly unit is closer to that enemy</td></tr>
 <tr><td>Guard</td><td>All units gain Loyal free</td><td>Units must stay within 12" of any Commander. If no friendly Commanders remain on the table, this restriction is void.</td></tr>
 <tr><td>Rifle</td><td>No penalty for long-range shooting</td><td>At army building, all units including Commanders must be built with at least 2 Range ranks and no more than 2 ranks of Defense</td></tr>
 <tr><td>Scout</td><td>All units gain Ambush free</td><td>No unit may have more than 3 total Force</td></tr>
-<tr><td>Engineering</td><td>May include up to 3 Special Assets</td><td>All 3 must be Steam Powered Colossal Machines; include 1 Commander with the Engineer special ability</td></tr>
+<tr><td>Engineering</td><td>May include up to 3 Colossal Machine Special Assets</td><td>All Special Assets must have the Steam Power ability; must include 1 Commander with the Engineer ability; no other unit types permitted</td></tr>
 </table>
 
 <table class="rule-table">
@@ -2916,6 +2916,7 @@ ${ABILITIES.filter(a=>['Movement','Morale','Support'].includes(a.cat)).map(a=>`<
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>['Special','Tech'].includes(a.cat)).map(a=>`<tr><td><strong>${esc(a.name)}</strong>${a.commanderOnly?' <span style="font-size:10px;color:var(--gold);">(Commanders only)</span>':''}</td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
+<p><em>Steam Power &amp; Engineer:</em> These two abilities work as a pair. A Steam Power unit may use its once-per-activation boost freely, but may only Rally if the Commander who activated it has the Engineer ability. An Engineering Company (see Ch. IX) is built around this synergy — Colossal Machine Special Assets with Steam Power, led by a Commander with Engineer.</p>
 
 <h3>10.7 Stat Bonus Abilities</h3>
 <p>Each permanently adds 1 rank to a specific stat. The bonus rank does not count toward the per-stat maximum or the unit's total rank pool. Each costs 3 pts.</p>
@@ -2946,7 +2947,7 @@ scenarios: `
 <ul>
 <li><strong>Setup:</strong> Defender chooses table side, places half or more units in reserve. Attacker places 3 objectives at 6", 12", and 18" into defender's half.</li>
 <li><strong>Deployment:</strong> Attacker deploys outside 18" of center line. Defender deploys anywhere in their half.</li>
-<li><strong>Reserves:</strong> Starting Round 2, the defender rolls 1d6 + General's Courage for each reserve unit (7+ succeeds; +1 difficulty per previous successful reserve roll). Add +1 for each Captain currently in reserve, and +2 if the General is currently in reserve. After seeing the roll, the defender may purchase +1 modifiers any number of times, each costing the opponent +1 to their victory point score.</li>
+<li><strong>Reserves:</strong> Starting Round 2, the defender rolls 2d6 + General's Courage for each reserve unit (10+ succeeds; +1 difficulty per previous successful reserve roll). Add +1 for each Captain currently in reserve, and +2 if the General is currently in reserve. After seeing the roll, the defender may purchase +1 modifiers any number of times, each costing the opponent +1 to their victory point score.</li>
 <li><strong>Victory:</strong> 2 points per objective controlled at the start of each Round, beginning Round 2 (majority only scores if controlling 2 or more) + 2 points per enemy unit destroyed.</li>
 <li><strong>Army Morale:</strong> When a unit is destroyed, the owning player rolls 2d6 + their General's Courage vs. the opponent's current victory point total. Equal or lower = their army retreats and loses the game. If no General is present, use Courage 0.</li>
 </ul>
