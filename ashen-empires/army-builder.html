@@ -2556,7 +2556,7 @@ commanders: `
 <h3>3.3 Recovery &amp; Limits</h3>
 <table class="rule-table">
 <tr><th>Rule</th><th>Detail</th></tr>
-<tr><td>Shock recovery</td><td>All Commanders remove 2 shock at end of each Round.</td></tr>
+<tr><td>Shock recovery</td><td>All Commanders remove 6 shock at end of each Round.</td></tr>
 <tr><td>Rally limitation</td><td>Commanders cannot Rally themselves — only subordinates within 12".</td></tr>
 <tr><td>Command hierarchy</td><td>2 levels maximum: Generals may activate any subordinate; Captains may not activate other Commanders.</td></tr>
 <tr><td>Subordinate Captain</td><td>If activated as a subordinate, must make their own Command Test. Success: activates up to 2 of their own subordinates. Failure: gains Exhausted. Other activations in the turn are unaffected.</td></tr>
@@ -2567,7 +2567,7 @@ commanders: `
 <tr><td>Command Test</td><td>2d6 + Courage vs. current shock — success activates Commander + up to 2 subordinates within 12"</td></tr>
 <tr><td>Activation cost</td><td>Successful Commander gains +1 shock; failure = Exhausted, turn passes to opponent</td></tr>
 <tr><td>Attached</td><td>Within 1" — cannot be targeted, share shock allocation, +1 Fight Die if stat qualifies</td></tr>
-<tr><td>Recovery</td><td>Commanders remove 2 shock at Round End; cannot Rally themselves</td></tr>
+<tr><td>Recovery</td><td>Commanders remove 6 shock at Round End; cannot Rally themselves</td></tr>
 <tr><td>Max activations</td><td>1 General + 2 Captains + 4 non-Commanders = 7 units per Turn</td></tr>
 </table>
 `,
@@ -2592,7 +2592,7 @@ shock: `
 <li><strong>Courage Tests:</strong> current shock is the target number to beat.</li>
 <li><strong>Ability triggers:</strong> e.g. Berserk activates at 7+ shock.</li>
 </ul>
-<p><em>Shock is cumulative.</em> Shock only goes down through Rally orders and Commander round-end recovery (−2 per Round). Units that cannot be rallied will eventually become unable to activate.</p>
+<p><em>Shock is cumulative.</em> Shock only goes down through Rally orders and round-end recovery (−6 per Round for all units). Units that cannot be rallied will eventually become unable to activate.</p>
 
 <h3>4.3 Courage Tests</h3>
 <p>Roll <strong>2d6 + Courage</strong> vs. the unit's current shock. Required when charged, when losing melee, and where other rules specify. <strong>Double 1s always fail.</strong></p>
@@ -2647,7 +2647,7 @@ turns: `
 <p>When both players consecutively pass — choosing not to activate any unit — the Round ends.</p>
 <ul>
 <li>Remove all Exhausted tokens from all units.</li>
-<li>All Commanders remove 2 shock.</li>
+<li>All units remove 6 shock.</li>
 </ul>
 
 <table class="rule-table">
@@ -2656,7 +2656,7 @@ turns: `
 <tr><td>Sequence</td><td>All Movement → all Shooting → all Melee (fixed, cannot be changed)</td></tr>
 <tr><td>Failed test</td><td>Exhausted token; unit cannot act this Round except Retreat</td></tr>
 <tr><td>Commanders</td><td>Activate up to 2 subordinates within 12"; gain +1 shock on success</td></tr>
-<tr><td>Round end</td><td>Both players pass consecutively; Exhausted tokens removed; Commanders −2 shock</td></tr>
+<tr><td>Round end</td><td>Both players pass consecutively; Exhausted tokens removed; all units −6 shock</td></tr>
 </table>
 `,
 
