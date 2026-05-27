@@ -1135,7 +1135,7 @@ const ABILITIES = [
   // Combat
   { name: 'Long Weapons',       cost: 2,  cat: 'Combat',    desc: '+1 Fight Dice when charging or being charged', commanderOnly: false },
   { name: 'Great Weapons',      cost: 5,  cat: 'Combat',    desc: 'Each hit in melee inflicts 1 additional shock', commanderOnly: false },
-  { name: 'Impetuous',          cost: 4,  cat: 'Combat',    desc: 'Must charge nearest enemy; +2 Fight Dice when charging', commanderOnly: false },
+  { name: 'Impetuous',          cost: 4,  cat: 'Combat',    desc: 'Must charge nearest enemy (player chooses if two or more are equidistant); +2 Fight Dice when charging', commanderOnly: false },
   { name: 'Berserk',            cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when this unit has 7+ shock', commanderOnly: false },
   { name: 'Heavy Charge',       cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when charging 10"+ against units with equal or less Force', commanderOnly: false },
   { name: 'Anti-Heavy',         cost: 2,  cat: 'Combat',    desc: '+1 Fight Dice vs units with Force 2+ per model in melee', commanderOnly: false },
@@ -2627,7 +2627,7 @@ turns: `
 <ol>
 <li><strong>Select a Unit</strong> — Choose any unit in your force. Exhausted units cannot be selected except to issue a Retreat order.</li>
 <li><strong>Make a Command Test</strong> — Roll 2d6 + Courage vs. the unit's current shock. If the total beats shock: success. If not: the unit gains an <strong>Exhausted</strong> token, cannot act this round (except Retreat), and the turn passes immediately to your opponent. <em>Exception: Retreat requires no Command Test — skip this step if the selected unit is issuing a Retreat order.</em></li>
-<li><strong>Activation</strong> — On success, the unit activates. Commanders also activate up to 2 subordinates within 12". Subordinate Captains must make their own Command Test for their own subordinates. Successful Commanders gain +1 shock.</li>
+<li><strong>Activation</strong> — On success, the unit activates. Commanders also activate up to 2 subordinates within 12". Subordinates must not be Exhausted. Subordinate Captains must make their own Command Test for their own subordinates. Successful Commanders gain +1 shock.</li>
 <li><strong>Declare All Orders</strong> — All activated units declare their orders simultaneously before any unit begins acting. Orders cannot be changed once declared.</li>
 <li><strong>Execute: Movement</strong> — All activated units move. No shooting or melee until all movement is complete.</li>
 <li><strong>Execute: Shooting</strong> — All activated units with shooting orders resolve them. No melee until all shooting resolves.</li>
@@ -2682,7 +2682,7 @@ actions: `
 <ol>
 <li>Measure and move the <strong>leader model</strong> first.</li>
 <li>All other models maintain <strong>Unit Coherency</strong>: a chain of same-unit models with gaps no greater than 1".</li>
-<li>Models may not be placed within 1" of models of any other unit (except when Charging). Units may move through friendly unit spaces during their move.</li>
+<li>Models may not be placed within 1" of models of any other unit (except when Charging). Units may move through friendly unit spaces during their move. Movement must end with all models in coherency.</li>
 </ol>
 
 <h3>6.3 Terrain</h3>
@@ -2719,7 +2719,7 @@ actions: `
 
 shooting: `
 <h2>VII · Shooting</h2>
-<p>A unit may shoot if it has both a Shoot Dice stat and a Range stat. All shooting resolves after all movement and before any melee. Units currently in melee contact may not shoot. Units currently in melee combat may not be targeted.</p>
+<p>A unit may shoot if it has both a Shoot Dice stat and a Range stat. All shooting resolves after all movement and before any melee. Units in melee contact may not shoot and may not be targeted by shooting.</p>
 
 <h3>7.1 Line of Sight</h3>
 <p>Shooting uses the same Line of Sight rules as movement. See Ch. VI (Line of Sight &amp; Cover) for the full rules on friendly and enemy model blocking, woods, walls, Giants, and cover.</p>
@@ -2769,15 +2769,15 @@ melee: `
 <ol>
 <li><strong>Declare Target</strong> — Name the enemy unit before rolling movement.</li>
 <li><strong>Take Shock</strong> — The charging leader takes 1 shock.</li>
-<li><strong>Move</strong> — Move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 and 5 are skipped. The 1 shock taken in step 2 is still lost.</li>
+<li><strong>Move</strong> — Move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 and 5 are skipped. The 1 shock taken in step 2 is still lost. Remaining models move to maintain coherency with the leader.</li>
 <li><strong>Place Remaining Models</strong> — Models that can reach base contact in straight lines from their starting positions contribute their full Force to the combat. Remaining models are placed anywhere within unit coherency.</li>
 <li><strong>Courage Test</strong> — Target must pass (2d6 + Courage vs. current shock) or immediately Retreat. If they Retreat, the charger may pursue.</li>
 </ol>
-<p><em>Counter-Shooting:</em> If the charging unit moved more than 10" and the target passes their Courage Test, the target may shoot at the charger before melee resolves.</p>
+<p><em>Counter-Shooting:</em> If the charging unit moved more than 10" and the target passes their Courage Test, the target may shoot at the charger before melee resolves. Apply any shock from counter-shooting immediately — it affects the charger's shock total before melee dice pools are assembled.</p>
 <p><em>Pursuit:</em> Whenever an enemy Retreats as the result of a failed Courage Test, the unit that caused the Retreat may pursue — declaring a new Charge against the retreating unit and taking 1 shock. Pursuit follows the normal Charge procedure.</p>
 
 <h3>8.2 Melee Procedure</h3>
-<p>Both sides resolve simultaneously — neither acts before the other.</p>
+<p>Both sides resolve simultaneously — neither acts before the other. A unit always fights back when it is the target of a melee attack, regardless of whether it has been activated this Turn.</p>
 <ol>
 <li><strong>Assemble Dice Pool</strong> — Start with Fight Dice stat dice. Apply modifiers from the table below.</li>
 <li><strong>Roll for Shock</strong> — Both sides roll simultaneously. The target number is set by Fight Strength vs. target Defense (see table). Each die that meets the target number inflicts <strong>1 shock</strong> on the target.</li>
@@ -2856,7 +2856,7 @@ org: `
 <table class="rule-table">
 <tr><th>Type</th><th>Bonus</th><th>Restriction</th></tr>
 <tr><td>Assault</td><td>+1 Fight Die when charging</td><td>Must charge enemies within 12" if no friendly is closer</td></tr>
-<tr><td>Guard</td><td>All units gain Loyal free</td><td>Units must stay within 12" of any Commander</td></tr>
+<tr><td>Guard</td><td>All units gain Loyal free</td><td>Units must stay within 12" of any Commander. If no friendly Commanders remain on the table, this restriction is void.</td></tr>
 <tr><td>Rifle</td><td>No penalty for long-range shooting</td><td>At army building, all units including Commanders must be built with at least 2 Range ranks and no more than 2 ranks of Defense</td></tr>
 <tr><td>Scout</td><td>All units gain Ambush free</td><td>No unit may have more than 3 total Force</td></tr>
 <tr><td>Engineering</td><td>May include up to 3 Special Assets</td><td>All 3 must be Steam Powered Colossal Machines; include 1 Commander with the Engineer special ability</td></tr>
@@ -2937,7 +2937,7 @@ scenarios: `
 <ul>
 <li><strong>Setup:</strong> 3 objectives in a line across the table center, evenly spaced.</li>
 <li><strong>Deployment:</strong> Players alternate placing units in their deployment zones, 18" from the center line.</li>
-<li><strong>Victory:</strong> 2 points per objective controlled at Round start + 2 points per enemy unit destroyed.</li>
+<li><strong>Victory:</strong> 2 points per objective controlled at the start of each Round, beginning Round 2 + 2 points per enemy unit destroyed.</li>
 <li><strong>Army Morale:</strong> When a unit is destroyed, roll 2d6 + General's Courage vs. the opponent's current victory point total. Equal or lower = army retreats and loses.</li>
 </ul>
 
@@ -2947,7 +2947,7 @@ scenarios: `
 <li><strong>Setup:</strong> Defender chooses table side, places half or more units in reserve. Attacker places 3 objectives at 6", 12", and 18" into defender's half.</li>
 <li><strong>Deployment:</strong> Attacker deploys outside 18" of center line. Defender deploys anywhere in their half.</li>
 <li><strong>Reserves:</strong> Starting Round 2, the defender rolls 1d6 + General's Courage for each reserve unit (7+ succeeds; +1 difficulty per previous successful reserve roll). Add +1 for each Captain currently in reserve, and +2 if the General is currently in reserve. After seeing the roll, the defender may purchase +1 modifiers any number of times, each costing the opponent +1 to their victory point score.</li>
-<li><strong>Victory:</strong> 2 points per objective controlled at Round start (majority only scores if controlling 2 or more) + 2 points per enemy unit destroyed.</li>
+<li><strong>Victory:</strong> 2 points per objective controlled at the start of each Round, beginning Round 2 (majority only scores if controlling 2 or more) + 2 points per enemy unit destroyed.</li>
 <li><strong>Army Morale:</strong> When a unit is destroyed, the owning player rolls 2d6 + their General's Courage vs. the opponent's current victory point total. Equal or lower = their army retreats and loses the game. If no General is present, use Courage 0.</li>
 </ul>
 `,
