@@ -1028,6 +1028,7 @@
   }
   .modal-ability-card:hover { border-color: var(--mist); background: var(--navy4); }
   .modal-ability-card.selected { border-color: var(--red); background: rgba(192,57,43,0.12); }
+  .modal-ability-card.disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
   .modal-ability-check {
     width: 18px; height: 18px; border: 1px solid var(--navy4); border-radius: 2px;
     flex-shrink: 0; margin-top: 2px; display: flex; align-items: center;
@@ -1097,6 +1098,21 @@
   </div>
 </div>
 
+<!-- ARMY ABILITY MODAL -->
+<div class="modal-overlay" id="army-ability-modal">
+  <div class="modal" style="width:min(700px,96vw);">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Army Ability</div>
+        <div class="modal-subtitle">One ability applied to every unit · does not count toward the 3-ability limit per unit</div>
+      </div>
+      <button class="modal-close" onclick="closeArmyAbilityModal()">×</button>
+    </div>
+    <div class="modal-cats" id="army-ability-cats"></div>
+    <div class="modal-body" id="army-ability-grid"></div>
+  </div>
+</div>
+
 <!-- ABILITIES MODAL -->
 <div class="modal-overlay" id="abilities-modal">
   <div class="modal">
@@ -1123,6 +1139,13 @@
       </div>
       <div class="sidebar-section" style="padding-bottom:0; flex:1; overflow-y:auto;">
         <div id="regiment-list"></div>
+      </div>
+      <div class="sidebar-section" style="padding:8px 12px 10px;border-top:1px solid var(--faint);">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--mist);margin-bottom:6px;">Army Ability</div>
+        <button onclick="openArmyAbilityModal()" id="army-ability-sidebar-btn" style="width:100%;background:var(--faint);border:1px solid var(--navy4);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:6px 10px;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s,color 0.15s;">
+          <span id="army-ability-btn-label" style="color:var(--mist);">None set</span>
+          <span id="army-ability-btn-cost" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);"></span>
+        </button>
       </div>
       <div class="sidebar-section" style="padding:6px 12px 10px;">
         <button class="add-btn" id="add-company-btn" onclick="addCompany()" style="margin-bottom:4px;">+ Add Company</button>
@@ -1276,6 +1299,7 @@ let state = {
   activeCompanyId: null,
   activeRegimentId: null,
   budget: null,
+  armyAbility: null,
 };
 
 let nextId = 1;
@@ -1325,10 +1349,15 @@ function forceCost(unit) {
 }
 
 function abilityCost(unit) {
-  return unit.abilities.reduce((s, name) => {
+  let cost = unit.abilities.reduce((s, name) => {
     const a = ABILITIES.find(x => x.name === name);
     return s + (a ? a.cost : 0);
   }, 0);
+  if (state.armyAbility) {
+    const aa = ABILITIES.find(x => x.name === state.armyAbility);
+    if (aa) cost += aa.cost;
+  }
+  return cost;
 }
 
 function commanderBase(unit) {
@@ -1425,6 +1454,7 @@ function render() {
   document.getElementById('army-name-input').value = state.armyName;
   updatePtsDisplay();
   renderSidebar();
+  renderArmyAbilityDisplay();
   renderMainCanvas();
   renderInspector();
   autoSave();
@@ -1709,9 +1739,18 @@ function buildUnitCard(unit, company) {
         <div class="section-title">Special Abilities</div>
         <button class="abilities-open-btn" onclick="openAbilitiesModal('${unit.id}')">
           <span>Choose Abilities</span>
-          <span class="ab-count">${unit.abilities.length > 0 ? unit.abilities.length + ' selected · ' + abilityCost(unit) + 'pts' : 'none'}</span>
+          <span class="ab-count">${(() => {
+            const cnt = unit.abilities.length;
+            const hasArmy = !!state.armyAbility;
+            if (cnt === 0 && !hasArmy) return 'none';
+            return cnt + '/3' + (hasArmy ? ' + army' : '') + ' · ' + abilityCost(unit) + 'pts';
+          })()}</span>
         </button>
         <div class="selected-abilities-list">
+          ${state.armyAbility ? (() => {
+            const aa = ABILITIES.find(x => x.name === state.armyAbility);
+            return `<div class="sel-ab-tag" style="border-color:rgba(200,160,48,0.5);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.1em;color:var(--gold);margin-right:3px;">ARMY</span>${esc(state.armyAbility)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${aa ? aa.cost+'p' : ''}</span></div>`;
+          })() : ''}
           ${unit.abilities.map(name => {
             const a = ABILITIES.find(x => x.name === name);
             return `<div class="sel-ab-tag">${esc(name)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${a ? a.cost+'p' : ''}</span><button onclick="event.stopPropagation();toggleAbility('${unit.id}','${name.replace(/'/g,"\\'")}')" title="Remove">×</button></div>`;
@@ -2164,7 +2203,7 @@ function findUnit(id) {
 // ══════════════════════════════════════════════════════
 
 function exportJSON() {
-  const data = JSON.stringify({ armyName: state.armyName, budget: state.budget, regiments: state.regiments, companies: state.companies, nextId }, null, 2);
+  const data = JSON.stringify({ armyName: state.armyName, budget: state.budget, armyAbility: state.armyAbility, regiments: state.regiments, companies: state.companies, nextId }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2185,6 +2224,7 @@ function loadJSON(input) {
       const data = JSON.parse(e.target.result);
       state.armyName = data.armyName || 'My Army';
       state.budget = data.budget || null;
+      state.armyAbility = data.armyAbility || null;
       state.companies = data.companies || [];
       state.regiments = data.regiments || [];
       state.activeCompanyId = state.companies[0]?.id || null;
@@ -2363,7 +2403,7 @@ ${abilityGlossary}
 // ══════════════════════════════════════════════════════
 
 function stateSnapshot() {
-  return { armyName: state.armyName, budget: state.budget, regiments: state.regiments, companies: state.companies, nextId };
+  return { armyName: state.armyName, budget: state.budget, armyAbility: state.armyAbility, regiments: state.regiments, companies: state.companies, nextId };
 }
 
 function autoSave() {
@@ -2375,10 +2415,11 @@ function loadAutoSave() {
     const raw = localStorage.getItem('ae_autosave');
     if (!raw) return;
     const data = JSON.parse(raw);
-    state.armyName  = data.armyName  || 'My Army';
-    state.budget    = data.budget    || null;
-    state.regiments = data.regiments || [];
-    state.companies = data.companies || [];
+    state.armyName   = data.armyName   || 'My Army';
+    state.budget     = data.budget     || null;
+    state.armyAbility = data.armyAbility || null;
+    state.regiments  = data.regiments  || [];
+    state.companies  = data.companies  || [];
     state.activeCompanyId  = state.companies[0]?.id  || null;
     state.activeRegimentId = state.regiments[0]?.id  || null;
     nextId = data.nextId || 100;
@@ -2417,10 +2458,11 @@ function loadFromLibrary(idx) {
   const entry = lib[idx];
   if (!entry) return;
   const data = entry.data;
-  state.armyName  = data.armyName  || 'My Army';
-  state.budget    = data.budget    || null;
-  state.regiments = data.regiments || [];
-  state.companies = data.companies || [];
+  state.armyName    = data.armyName    || 'My Army';
+  state.budget      = data.budget      || null;
+  state.armyAbility = data.armyAbility || null;
+  state.regiments   = data.regiments   || [];
+  state.companies   = data.companies   || [];
   state.activeCompanyId  = state.companies[0]?.id  || null;
   state.activeRegimentId = state.regiments[0]?.id  || null;
   nextId = data.nextId || 100;
@@ -2937,6 +2979,10 @@ points: `
 </table>
 <p><em>Rank caps:</em> Regular units and Commanders: 16 ranks total, max 5 per stat. Special Assets: 20 ranks total, max 5 per stat (purchased ranks only). Special ability bonuses stack freely and are not subject to these caps.</p>
 
+<h3>10.1a Ability Limits</h3>
+<p>Each unit may have a maximum of <strong>3 special abilities</strong> (not counting the Army Trait, if one is selected).</p>
+<p><strong>Army Trait:</strong> Once per army, a player may designate one special ability as the Army Trait. That ability is applied to every unit in the army and does not count toward any unit's 3-ability limit. The cost is paid per unit as normal. Commander-only abilities may not be selected as the Army Trait. The Army Trait is set at the army level in the builder and cannot be purchased individually by units.</p>
+
 <h3>10.2 Special Abilities — Combat</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
@@ -3144,15 +3190,37 @@ function setModalCat(cat) {
 
 function renderModalGrid(unit) {
   const isCommander = unit.isCommander;
+  const abilityCount = unit.abilities.length;
+  const atLimit = abilityCount >= 3;
+
+  // Exclude army ability from individual selection
   const relevantAbilities = (isCommander ? ABILITIES : ABILITIES.filter(a => !a.commanderOnly))
-    .filter(a => modalActiveCat === 'All' || a.cat === modalActiveCat);
+    .filter(a => modalActiveCat === 'All' || a.cat === modalActiveCat)
+    .filter(a => a.name !== state.armyAbility);
+
   document.getElementById('modal-unit-name').textContent = unit.name + ' — Abilities';
-  document.getElementById('modal-unit-pts').textContent =
-    unit.abilities.length + ' selected · ' + abilityCost(unit) + 'pts';
-  document.getElementById('modal-ability-grid').innerHTML = relevantAbilities.map(a => `
-    <div class="modal-ability-card ${unit.abilities.includes(a.name) ? 'selected' : ''}"
+  const countText = abilityCount + '/3' + (state.armyAbility ? ' + army trait' : '') + ' · ' + abilityCost(unit) + 'pts total';
+  document.getElementById('modal-unit-pts').textContent = countText;
+
+  // Army trait banner
+  let armyBanner = '';
+  if (state.armyAbility) {
+    const aa = ABILITIES.find(x => x.name === state.armyAbility);
+    armyBanner = `<div style="background:rgba(200,160,48,0.08);border:1px solid rgba(200,160,48,0.3);padding:8px 12px;margin-bottom:10px;border-radius:2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="background:var(--gold);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.1em;padding:2px 5px;border-radius:1px;white-space:nowrap;">ARMY TRAIT</span>
+      <span style="color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;">${esc(state.armyAbility)}</span>
+      ${aa ? `<span style="color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:11px;">${aa.cost}pts</span>` : ''}
+      <span style="color:var(--mist);font-size:11px;margin-left:auto;font-family:'Libre Baskerville',serif;font-style:italic;">applied to all units · not counted in limit</span>
+    </div>`;
+  }
+
+  document.getElementById('modal-ability-grid').innerHTML = armyBanner + relevantAbilities.map(a => {
+    const selected = unit.abilities.includes(a.name);
+    const disabled = !selected && atLimit;
+    return `
+    <div class="modal-ability-card ${selected ? 'selected' : ''} ${disabled ? 'disabled' : ''}"
       onclick="modalToggleAbility('${a.name.replace(/'/g, "\\'")}')">
-      <div class="modal-ability-check">${unit.abilities.includes(a.name) ? '&#10003;' : ''}</div>
+      <div class="modal-ability-check">${selected ? '&#10003;' : ''}</div>
       <div class="modal-ability-info">
         <div class="modal-ability-top">
           <span class="modal-ability-name">${esc(a.name)}</span>
@@ -3160,8 +3228,8 @@ function renderModalGrid(unit) {
         </div>
         <div class="modal-ability-desc">${a.desc}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function modalToggleAbility(abilityName) {
@@ -3171,11 +3239,103 @@ function modalToggleAbility(abilityName) {
   if (unit.abilities.includes(abilityName)) {
     unit.abilities = unit.abilities.filter(a => a !== abilityName);
   } else {
+    if (unit.abilities.length >= 3) return; // 3-ability limit
     unit.abilities.push(abilityName);
   }
   renderModalGrid(unit);
   const badge = document.querySelector('#unit-' + unit.id + ' .unit-pts-badge');
   if (badge) badge.innerHTML = unitCost(unit) + ' <span class="pts-label">pts</span>';
+  updatePtsDisplay();
+}
+
+// ══════════════════════════════════════════════════════
+// ARMY ABILITY
+// ══════════════════════════════════════════════════════
+
+let armyAbilityActiveCat = 'All';
+
+function renderArmyAbilityDisplay() {
+  const btn = document.getElementById('army-ability-sidebar-btn');
+  const label = document.getElementById('army-ability-btn-label');
+  const costEl = document.getElementById('army-ability-btn-cost');
+  if (!label || !costEl) return;
+  if (state.armyAbility) {
+    const aa = ABILITIES.find(x => x.name === state.armyAbility);
+    label.textContent = state.armyAbility;
+    label.style.color = 'var(--gold)';
+    costEl.textContent = aa ? aa.cost + 'pts each' : '';
+    if (btn) btn.style.borderColor = 'rgba(200,160,48,0.5)';
+  } else {
+    label.textContent = 'None set';
+    label.style.color = 'var(--mist)';
+    costEl.textContent = '';
+    if (btn) btn.style.borderColor = 'var(--navy4)';
+  }
+}
+
+function openArmyAbilityModal() {
+  armyAbilityActiveCat = 'All';
+  renderArmyAbilityModal();
+  document.getElementById('army-ability-modal').classList.add('open');
+}
+
+function closeArmyAbilityModal() {
+  document.getElementById('army-ability-modal').classList.remove('open');
+  render();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('army-ability-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeArmyAbilityModal();
+  });
+});
+
+function renderArmyAbilityModal() {
+  // Only non-commander-only abilities (must apply to all units)
+  const eligible = ABILITIES.filter(a => !a.commanderOnly);
+  const usedCats = ['All', ...ABILITY_CATS.filter(cat => eligible.some(a => a.cat === cat))];
+
+  document.getElementById('army-ability-cats').innerHTML = usedCats.map(cat =>
+    `<button class="cat-btn ${armyAbilityActiveCat === cat ? 'active' : ''}" onclick="setArmyAbilityCat('${cat}')">${cat}</button>`
+  ).join('');
+
+  const filtered = eligible.filter(a => armyAbilityActiveCat === 'All' || a.cat === armyAbilityActiveCat);
+
+  document.getElementById('army-ability-grid').innerHTML = filtered.map(a => {
+    const selected = state.armyAbility === a.name;
+    return `
+    <div class="modal-ability-card ${selected ? 'selected' : ''}"
+      onclick="setArmyAbility('${a.name.replace(/'/g, "\\'")}')">
+      <div class="modal-ability-check">${selected ? '&#10003;' : ''}</div>
+      <div class="modal-ability-info">
+        <div class="modal-ability-top">
+          <span class="modal-ability-name">${esc(a.name)}</span>
+          <span class="modal-ability-cost">${a.cost}pts per unit</span>
+        </div>
+        <div class="modal-ability-desc">${a.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setArmyAbilityCat(cat) {
+  armyAbilityActiveCat = cat;
+  renderArmyAbilityModal();
+}
+
+function setArmyAbility(name) {
+  if (state.armyAbility === name) {
+    // Toggle off
+    state.armyAbility = null;
+  } else {
+    // Remove this ability from any unit that had it individually selected
+    state.companies.forEach(c => c.units.forEach(u => {
+      u.abilities = u.abilities.filter(a => a !== name);
+    }));
+    state.armyAbility = name;
+  }
+  renderArmyAbilityModal();
+  renderArmyAbilityDisplay();
   updatePtsDisplay();
 }
 
