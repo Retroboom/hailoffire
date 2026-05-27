@@ -1147,7 +1147,7 @@ const ABILITIES = [
   { name: 'Camouflaged',        cost: 4,  cat: 'Defense',   desc: 'Cannot be targeted by shooting attacks at long range', commanderOnly: false },
   { name: 'Disciplined',        cost: 2,  cat: 'Defense',   desc: '+1 Defense when charged', commanderOnly: false },
   { name: 'Shield Wall',        cost: 2,  cat: 'Defense',   desc: '+1 Defense when in base contact with another Shield Wall unit', commanderOnly: false },
-  { name: 'Bodyguard',          cost: 3,  cat: 'Defense',   desc: '+1 Defense when a Commander is attached', commanderOnly: false },
+  { name: 'Bodyguard',          cost: 3,  cat: 'Defense',   desc: '+1 Defense when a Commander is within 1"', commanderOnly: false },
   { name: 'Resilient',          cost: 5,  cat: 'Defense',   desc: 'Reduce shock taken from any single attacking unit to a maximum of 3', commanderOnly: false },
   { name: 'Hardened',            cost: 4,  cat: 'Defense',   desc: 'Ignore the first shock taken each activation', commanderOnly: false },
   { name: 'Indirect Fire',      cost: 2,  cat: 'Ranged',    desc: 'May reroll hits when shooting indirect; no LoS required; cannot fire within 16"', commanderOnly: false },
@@ -2608,14 +2608,14 @@ shock: `
 <p><em>Example:</em> A unit has 8 shock. Its Courage Test result is 4. Half of 8 is 4 — the result is half or lower, so the unit Breaks and is destroyed. A result of 5 would cause a normal Retreat instead.</p>
 
 <h3>Commander Courage Bonus</h3>
-<p>An attached Commander whose Courage stat equals or exceeds the unit's stat adds their Courage to the unit's Courage Test roll.</p>
+<p>A Commander within 1" of the unit whose Courage stat equals or exceeds the unit's stat adds their Courage to the unit's Courage Test roll.</p>
 
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
 <tr><td>Shock sources</td><td>Combat dice meeting target number, charges, retreats, Commander activations, Steam Power</td></tr>
 <tr><td>Courage Test</td><td>2d6 + Courage vs. current shock; Failure = Retreat; half or lower = Breaks and destroyed</td></tr>
 <tr><td>Double 1s</td><td>Always fail Courage Tests regardless of modifiers</td></tr>
-<tr><td>Commander bonus</td><td>Attached Commander adds Courage to unit's test if their stat equals or exceeds the unit's</td></tr>
+<tr><td>Commander bonus</td><td>Commander within 1" adds Courage to unit's test if their stat equals or exceeds the unit's</td></tr>
 </table>
 `,
 
