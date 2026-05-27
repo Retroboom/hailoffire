@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ashen Empires — Army Builder</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&family=Stardos+Stencil:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   :root {
     /* Surfaces: 4-level iron-ash hierarchy (near-neutral dark with warm undertone) */
@@ -906,27 +906,76 @@
   }
 
   select, input { color-scheme: dark; }
-  /* ── RULES REFERENCE CONTENT ── */
-  #rules-body h2 {
+  /* ── RULES REFERENCE FIELD MANUAL ── */
+  .rules-fm-panel {
+    display: flex; flex: 1; min-height: 0; overflow: hidden;
+  }
+  .rules-toc {
+    width: 186px; flex-shrink: 0;
+    border-right: 1px solid var(--navy4);
+    overflow-y: auto; padding: 12px 0;
+    background: var(--navy);
+  }
+  .rules-toc-header {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); padding: 0 14px 10px;
+    border-bottom: 1px solid var(--navy3); margin-bottom: 8px;
+  }
+  .rules-toc-item {
+    display: block; width: 100%; padding: 7px 14px;
+    background: none; border: none; cursor: pointer;
+    font-family: 'Special Elite', monospace; font-size: 11px;
+    color: var(--mist); text-align: left; line-height: 1.4;
+    border-left: 2px solid transparent; transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .rules-toc-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+  .rules-toc-item.active { color: var(--gold); border-left-color: var(--red); background: var(--navy2); }
+  .rules-content-area {
+    flex: 1; overflow-y: auto; padding: 14px 16px;
+    background: var(--navy2);
+  }
+  .rules-section { border: 1px solid var(--navy3); margin-bottom: 4px; }
+  .rules-section-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    background: var(--navy3); transition: background 0.15s;
+  }
+  .rules-section-hd:hover { background: var(--faint); }
+  .rules-section.open .rules-section-hd { background: var(--navy3); border-bottom: 1px solid var(--navy4); }
+  .rules-section-title {
+    font-family: 'Stardos Stencil', sans-serif;
+    font-size: 13px; color: var(--mist); letter-spacing: 0.04em;
+  }
+  .rules-section.open .rules-section-title { color: var(--gold); }
+  .rules-section-chev {
+    font-size: 9px; color: var(--mist); transition: transform 0.2s, color 0.15s; line-height: 1;
+  }
+  .rules-section.open .rules-section-chev { transform: rotate(180deg); color: var(--gold); }
+  .rules-section-body {
+    display: none; padding: 16px 18px;
+    font-family: 'Libre Baskerville', serif;
+  }
+  .rules-section.open .rules-section-body { display: block; }
+  .rules-section-body h2 {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px; font-weight: 800; letter-spacing: 0.05em;
+    font-size: 20px; font-weight: 800; letter-spacing: 0.05em;
     color: var(--white); margin: 0 0 12px; text-transform: uppercase;
     border-bottom: 2px solid var(--red); padding-bottom: 8px;
   }
-  #rules-body h3 {
+  .rules-section-body h3 {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
-    color: var(--red); text-transform: uppercase;
-    margin: 20px 0 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--red); text-transform: uppercase; margin: 18px 0 8px;
   }
-  #rules-body p { font-size: 13px; line-height: 1.65; color: var(--ink); margin-bottom: 10px; }
-  #rules-body ul, #rules-body ol { padding-left: 20px; margin-bottom: 10px; }
-  #rules-body li { font-size: 13px; line-height: 1.6; color: var(--ink); margin-bottom: 4px; }
-  #rules-body strong { color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-style: normal; }
-  #rules-body em { color: var(--mist); }
+  .rules-section-body p { font-size: 13px; line-height: 1.65; color: var(--ink); margin-bottom: 10px; }
+  .rules-section-body ul, .rules-section-body ol { padding-left: 20px; margin-bottom: 10px; }
+  .rules-section-body li { font-size: 13px; line-height: 1.6; color: var(--ink); margin-bottom: 4px; }
+  .rules-section-body strong { color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-style: normal; }
+  .rules-section-body em { color: var(--mist); }
   .rule-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
-  .rule-table th { background: var(--navy3); color: var(--gold); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--red); }
-  .rule-table td { padding: 6px 10px; border-bottom: 1px solid var(--faint); color: var(--ink); vertical-align: top; line-height: 1.45; }
+  .rule-table th { background: var(--navy3); color: var(--gold); font-family: 'Special Elite', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--red); }
+  .rule-table td { padding: 6px 10px; border-bottom: 1px solid var(--faint); color: var(--ink); vertical-align: top; line-height: 1.45; font-family: 'Libre Baskerville', serif; font-size: 12px; }
   .rule-table tr:nth-child(even) td { background: var(--navy3); }
   .rule-callout { background: var(--navy3); border-left: 3px solid var(--gold); padding: 10px 14px; margin: 12px 0; font-size: 12px; line-height: 1.5; color: var(--mist); border-radius: 0 2px 2px 0; }
   .rule-callout strong { color: var(--gold); }
@@ -1033,7 +1082,7 @@
 
 <!-- RULES REFERENCE MODAL -->
 <div class="modal-overlay" id="rules-modal" style="align-items:flex-start;padding:24px 0;">
-  <div class="modal" style="width:min(780px,96vw);max-height:92vh;">
+  <div class="modal" style="width:min(960px,96vw);max-height:92vh;">
     <div class="modal-header">
       <div>
         <div class="modal-title">Rules Reference</div>
@@ -1041,8 +1090,10 @@
       </div>
       <button class="modal-close" onclick="toggleRules()">×</button>
     </div>
-    <div class="modal-cats" id="rules-nav"></div>
-    <div class="modal-body" id="rules-body" style="display:block;padding:20px 24px;font-family:'Libre Baskerville',serif;"></div>
+    <div class="rules-fm-panel">
+      <nav class="rules-toc" id="rules-toc"></nav>
+      <div class="rules-content-area" id="rules-content"></div>
+    </div>
   </div>
 </div>
 
@@ -1149,7 +1200,7 @@ const ABILITIES = [
   { name: 'Shield Wall',        cost: 2,  cat: 'Defense',   desc: '+1 Defense when in base contact with another friendly Shield Wall unit', commanderOnly: false },
   { name: 'Bodyguard',          cost: 3,  cat: 'Defense',   desc: '+1 Defense when a Commander is within 1"', commanderOnly: false },
   { name: 'Resilient',          cost: 5,  cat: 'Defense',   desc: 'Reduce shock taken from any single attacking unit to a maximum of 3', commanderOnly: false },
-  { name: 'Hardened',            cost: 4,  cat: 'Defense',   desc: 'Ignore the first shock taken each activation', commanderOnly: false },
+  { name: 'Hardened',            cost: 4,  cat: 'Defense',   desc: 'Ignore the first shock taken from enemy attacks each activation', commanderOnly: false },
   { name: 'Indirect Fire',      cost: 2,  cat: 'Ranged',    desc: 'May reroll misses when shooting indirect; no LoS required; cannot fire within 18"', commanderOnly: false },
   { name: 'Piercing',           cost: 5,  cat: 'Ranged',    desc: '−1 to the target number of all Shoot Dice attacks', commanderOnly: false },
   { name: 'Explosive',          cost: 4,  cat: 'Ranged',    desc: '+1 Shoot Strength; all units (including friendlies) within 2" of target take 1 automatic shock', commanderOnly: false },
@@ -2462,8 +2513,6 @@ const RULES_CHAPTERS = [
   { id: 'scenarios',label:'XI · Scenarios' },
 ];
 
-let rulesActiveCh = 'core';
-
 const RULES_CONTENT = {
 
 core: `
@@ -2545,7 +2594,7 @@ commanders: `
 <p>Generals hold the highest command rank, followed by Captains, then all other units. A unit may only activate subordinates — friendly units of a lower command rank within 12". Company and Regiment structure determines army composition during building but does not restrict which units a Commander may activate in play.</p>
 
 <h3>3.1 Command Tests</h3>
-<p>Roll <strong>2d6 + Courage</strong> vs. current shock. On success: Commander and up to 2 subordinates within 12" activate. Commander gains +1 shock. Double 1s do not cause automatic failure on Command Tests — that rule applies to Courage Tests only.</p>
+<p>Roll <strong>2d6 + Courage</strong> and beat current shock. On success: Commander activates and may activate up to 2 subordinates within 12". Each activated subordinate then attempts their own Command Test — rolling 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. Commander gains +1 shock. Double 1s do not cause automatic failure on Command Tests — that rule applies to Courage Tests only.</p>
 <p><em>Command Range:</em> Measured from Commander's leader model to subordinate's leader model when the Command Test is made. Subordinates outside 12" cannot be activated.</p>
 
 <h3>3.2 Proximity Bonus</h3>
@@ -2554,6 +2603,8 @@ commanders: `
 <li>Cannot be individually targeted.</li>
 <li>Controlling player may allocate received shock between the unit and the Commander.</li>
 <li>Grants <strong>+1 Fight Die to the unit's pool</strong> if the Commander's Fight Dice stat equals or exceeds the unit's.</li>
+<li>Is treated as part of the unit's formation for area effects and does not take automatic shock as a separate target.</li>
+<li>When both the Commander and the unit are activated and taking a movement order, the Commander may use the unit's movement roll instead of rolling their own.</li>
 </ul>
 
 <h3>3.3 Recovery &amp; Limits</h3>
@@ -2566,9 +2617,9 @@ commanders: `
 
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
-<tr><td>Command Test</td><td>2d6 + Courage vs. current shock — success activates Commander + up to 2 subordinates within 12"</td></tr>
+<tr><td>Command Test</td><td>2d6 + Courage must beat current shock — success activates Commander; each activated subordinate then tests separately using higher of own or Commander's Courage</td></tr>
 <tr><td>Activation cost</td><td>Successful Commander gains +1 shock; failure = Exhausted, turn passes to opponent</td></tr>
-<tr><td>Within 1" of friendly unit</td><td>Cannot be targeted, share shock allocation, +1 Fight Die if stat qualifies</td></tr>
+<tr><td>Within 1" of friendly unit</td><td>Cannot be targeted, share shock allocation, +1 Fight Die if stat qualifies, not a separate target for area effects</td></tr>
 <tr><td>Recovery</td><td>Commanders remove 6 shock at Round End; may only Rally if activated by a Commander of higher rank</td></tr>
 <tr><td>Max activations</td><td>1 General + 2 Captains + 4 non-Commanders = 7 units per Turn</td></tr>
 </table>
@@ -2597,9 +2648,9 @@ shock: `
 <p><em>Shock is cumulative.</em> Shock only goes down through Rally orders and round-end recovery (−6 per Round for all units). Units that cannot be rallied will eventually become unable to activate.</p>
 
 <h3>4.3 Courage Tests</h3>
-<p>Roll <strong>2d6 + Courage</strong> vs. the unit's current shock. Required when charged, when losing melee, and where other rules specify. <strong>Double 1s always fail.</strong></p>
+<p>Roll <strong>2d6 + Courage</strong> and beat the unit's current shock. Required when charged, when losing melee, and where other rules specify. <strong>Double 1s always fail.</strong></p>
 <table class="rule-table">
-<tr><th>Roll vs. Current Shock</th><th>Outcome</th></tr>
+<tr><th>Roll vs. Current Shock (must beat)</th><th>Outcome</th></tr>
 <tr><td>Total beats shock</td><td>Unit stands.</td></tr>
 <tr><td>Failure</td><td>Unit must Retreat.</td></tr>
 <tr><td>Result is half or lower than current shock</td><td>Unit Breaks and is removed from play.</td></tr>
@@ -2613,7 +2664,7 @@ shock: `
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
 <tr><td>Shock sources</td><td>Combat dice meeting target number, charges, retreats, Commander activations, Steam Power</td></tr>
-<tr><td>Courage Test</td><td>2d6 + Courage vs. current shock; Failure = Retreat; half or lower = Breaks and destroyed</td></tr>
+<tr><td>Courage Test</td><td>2d6 + Courage must beat current shock; Failure = Retreat; half or lower = Breaks and destroyed</td></tr>
 <tr><td>Double 1s</td><td>Always fail Courage Tests regardless of modifiers</td></tr>
 <tr><td>Commander bonus</td><td>Commander within 1" adds Courage to unit's test if their stat equals or exceeds the unit's</td></tr>
 </table>
@@ -2627,7 +2678,7 @@ turns: `
 <ol>
 <li><strong>Select a Unit</strong> — Choose any unit in your force. Exhausted units cannot be selected except to issue a Retreat order.</li>
 <li><strong>Make a Command Test</strong> — Roll 2d6 + Courage vs. the unit's current shock. If the total beats shock: success. If not: the unit gains an <strong>Exhausted</strong> token, cannot act this round (except Retreat), and the turn passes immediately to your opponent. <em>Exception: Retreat requires no Command Test — skip this step if the selected unit is issuing a Retreat order.</em></li>
-<li><strong>Activation</strong> — On success, the unit activates. Commanders also activate up to 2 subordinates within 12". Subordinates must not be Exhausted. Subordinate Captains must make their own Command Test for their own subordinates. Successful Commanders gain +1 shock.</li>
+<li><strong>Activation</strong> — On success, the unit activates. Commanders also activate up to 2 subordinates within 12". Subordinates must not be Exhausted. Each activated subordinate then attempts their own Command Test, rolling 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. On failure the subordinate does not act and does not gain an Exhausted token. Subordinate Captains that pass their test may activate up to 2 of their own subordinates, who then attempt their own Command Tests using the Captain's Courage as the potential bonus. Successful Commanders gain +1 shock.</li>
 <li><strong>Declare All Orders</strong> — All activated units declare their orders simultaneously before any unit begins acting. Orders cannot be changed once declared.</li>
 <li><strong>Execute: Movement</strong> — All activated units move. No shooting or melee until all movement is complete.</li>
 <li><strong>Execute: Shooting</strong> — All activated units with shooting orders resolve them. No melee until all shooting resolves.</li>
@@ -2640,9 +2691,9 @@ turns: `
 <table class="rule-table">
 <tr><th>Unit Type</th><th>On Success</th></tr>
 <tr><td>Non-Commander</td><td>Only that unit activates.</td></tr>
-<tr><td>Captain</td><td>The Captain plus up to 2 subordinates within 12" activate.</td></tr>
-<tr><td>General</td><td>The General plus up to 2 subordinates (Captains or units) activate.</td></tr>
-<tr><td>Subordinate Captain</td><td>Must make their own Command Test. Success: activates up to 2 of their subordinates. Failure: gains Exhausted. Other activations unaffected.</td></tr>
+<tr><td>Captain</td><td>The Captain activates and may activate up to 2 subordinates within 12"; each subordinate attempts their own Command Test using the higher of their own or the Captain's Courage.</td></tr>
+<tr><td>General</td><td>The General activates and may activate up to 2 subordinates (Captains or units) within 12"; each subordinate attempts their own Command Test using the higher of their own or the General's Courage.</td></tr>
+<tr><td>Subordinate Captain</td><td>Attempts own Command Test using the higher of their own or the activating Commander's Courage. On success: may activate up to 2 of their own subordinates, each of whom also tests. On failure: does not act, no Exhausted token.</td></tr>
 </table>
 
 <h3>5.3 Round End</h3>
@@ -2657,7 +2708,7 @@ turns: `
 <tr><td>Each Turn</td><td>Select unit → Command Test (2d6 + Courage vs. shock) → activate</td></tr>
 <tr><td>Sequence</td><td>All Movement → all Shooting → all Melee (fixed, cannot be changed)</td></tr>
 <tr><td>Failed test</td><td>Exhausted token; unit cannot act this Round except Retreat</td></tr>
-<tr><td>Commanders</td><td>Activate up to 2 subordinates within 12"; gain +1 shock on success</td></tr>
+<tr><td>Commanders</td><td>Activate up to 2 subordinates within 12"; each subordinate tests separately; gain +1 shock on success</td></tr>
 <tr><td>Round end</td><td>Both players pass consecutively; Exhausted tokens removed; all units −6 shock</td></tr>
 </table>
 `,
@@ -2795,16 +2846,15 @@ melee: `
 <h3>8.4 Melee Modifiers</h3>
 <table class="rule-table">
 <tr><th>Condition</th><th>Dice Bonus</th></tr>
-<tr><td>Higher Force in contact than enemy</td><td>+1 die (doubled Force = +2, tripled = +3)</td></tr>
-<tr><td>Enemy has 3+ more shock than you</td><td>+1 die (6+ shock diff = +2, 9+ = +3, 12+ = +4)</td></tr>
-<tr><td>Charge distance bonus</td><td>+1 die per full 5" traveled by the charging leader model (capped at +4 dice total)</td></tr>
+<tr><td>Higher Force in contact than enemy</td><td>+1 die; +2 dice if double or more Force in contact</td></tr>
+<tr><td>Charge distance</td><td>+1 die; +2 dice if charge distance was 10" or more</td></tr>
 <tr><td>Charger crossed difficult terrain during the charge move, or the charge ends in difficult terrain where the defender stands</td><td>+2 dice to defender</td></tr>
 <tr><td>Charged from rear arc</td><td>Halve your total dice (round up)</td></tr>
 </table>
 <p><em>Force in Contact:</em> When charging, count each model's full Force value. In ongoing melee (already in contact at the start of the Turn), all models count as Force 1 regardless of type. Only models in base contact with the enemy, or in base contact with friendly models already in contact, contribute Force.</p>
 
 <h3>8.5 Courage Test — Combat Loser</h3>
-<p>Roll <strong>2d6 + Courage</strong> vs. the unit's current shock. <strong>Double 1s always fail.</strong></p>
+<p>Roll <strong>2d6 + Courage</strong> and beat the unit's current shock. <strong>Double 1s always fail.</strong></p>
 <table class="rule-table">
 <tr><th>Result</th><th>Outcome</th></tr>
 <tr><td>Total beats shock</td><td>Unit stands and continues fighting.</td></tr>
@@ -2956,6 +3006,7 @@ scenarios: `
 };
 
 let rulesOpen = false;
+let rulesBuilt = false;
 
 function toggleRules() {
   rulesOpen = !rulesOpen;
@@ -2966,8 +3017,11 @@ function toggleRules() {
     btn.style.background = 'var(--red)';
     btn.style.borderColor = 'var(--red)';
     btn.style.color = 'white';
-    renderRulesNav();
-    renderRulesChapter(rulesActiveCh);
+    if (!rulesBuilt) {
+      buildRulesAll();
+      rulesBuilt = true;
+    }
+    openRulesSection('core');
   } else {
     overlay.classList.remove('open');
     btn.style.background = 'var(--faint)';
@@ -2982,23 +3036,54 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-function renderRulesNav() {
-  document.getElementById('rules-nav').innerHTML = RULES_CHAPTERS.map(ch =>
-    `<button class="cat-btn ${rulesActiveCh === ch.id ? 'active' : ''}" onclick="renderRulesChapter('${ch.id}')">${ch.label}</button>`
-  ).join('');
+function buildRulesAll() {
+  // Build TOC sidebar
+  document.getElementById('rules-toc').innerHTML =
+    '<div class="rules-toc-header">Chapters</div>' +
+    RULES_CHAPTERS.map(ch =>
+      `<button class="rules-toc-item" id="toc-${ch.id}" onclick="openRulesSection('${ch.id}')">${ch.label}</button>`
+    ).join('');
+
+  // Build all chapter sections
+  document.getElementById('rules-content').innerHTML = RULES_CHAPTERS.map(ch => {
+    let html = RULES_CONTENT[ch.id];
+    html = html.replace(/\$\{([^}]+)\}/g, (_, expr) => {
+      try { return eval(expr); } catch(e) { return ''; }
+    });
+    return `<div class="rules-section" id="section-${ch.id}">
+      <div class="rules-section-hd" onclick="toggleRulesSection('${ch.id}')">
+        <span class="rules-section-title">${ch.label}</span>
+        <span class="rules-section-chev">&#9660;</span>
+      </div>
+      <div class="rules-section-body">${html}</div>
+    </div>`;
+  }).join('');
 }
 
-function renderRulesChapter(id) {
-  rulesActiveCh = id;
-  renderRulesNav();
-  // Evaluate template literals that reference ABILITIES
-  let html = RULES_CONTENT[id];
-  // The abilities tables use template literal expressions — eval them
-  html = html.replace(/\$\{([^}]+)\}/g, (_, expr) => {
-    try { return eval(expr); } catch(e) { return ''; }
-  });
-  document.getElementById('rules-body').innerHTML = html;
-  document.getElementById('rules-body').scrollTop = 0;
+function toggleRulesSection(id) {
+  const section = document.getElementById('section-' + id);
+  if (!section) return;
+  const isOpen = section.classList.contains('open');
+  section.classList.toggle('open');
+  document.querySelectorAll('.rules-toc-item').forEach(el => el.classList.remove('active'));
+  if (!isOpen) {
+    const tocItem = document.getElementById('toc-' + id);
+    if (tocItem) tocItem.classList.add('active');
+  }
+}
+
+function openRulesSection(id) {
+  document.querySelectorAll('.rules-section').forEach(s => s.classList.remove('open'));
+  document.querySelectorAll('.rules-toc-item').forEach(el => el.classList.remove('active'));
+  const section = document.getElementById('section-' + id);
+  const tocItem = document.getElementById('toc-' + id);
+  if (section) {
+    section.classList.add('open');
+    requestAnimationFrame(() => {
+      section.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+  if (tocItem) tocItem.classList.add('active');
 }
 
 
