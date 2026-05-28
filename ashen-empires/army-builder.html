@@ -1594,26 +1594,26 @@
 const ABILITIES = [
   // Combat
   { name: 'Long Weapons',       cost: 2,  cat: 'Combat',    desc: '+1 Fight Dice when charging or being charged', commanderOnly: false },
-  { name: 'Great Weapons',      cost: 5,  cat: 'Combat',    desc: 'Each hit in melee inflicts 1 additional shock', commanderOnly: false },
+  { name: 'Great Weapons',      cost: 5,  cat: 'Combat',    desc: '+1 shock per attack in melee', commanderOnly: false },
   { name: 'Impetuous',          cost: 4,  cat: 'Combat',    desc: 'Must charge nearest enemy (player chooses if two or more are equidistant); +2 Fight Dice when charging', commanderOnly: false },
-  { name: 'Berserk',            cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when this unit has 7+ shock', commanderOnly: false },
-  { name: 'Heavy Charge',       cost: 3,  cat: 'Combat',    desc: '+2 Fight Dice when charging 10"+ against units with equal or lower Force per model', commanderOnly: false },
-  { name: 'Anti-Heavy',         cost: 2,  cat: 'Combat',    desc: '+1 Fight Dice vs units with Force 2+ per model in melee', commanderOnly: false },
+  { name: 'Berserk',            cost: 4,  cat: 'Combat',    desc: '+2 Fight Dice when this unit has 7+ shock', commanderOnly: false },
+  { name: 'Heavy Charge',       cost: 4,  cat: 'Combat',    desc: '+2 Fight Dice when charging 10"+ against units with equal or lower Force per model', commanderOnly: false },
+  { name: 'Anti-Heavy',         cost: 4,  cat: 'Combat',    desc: '+2 Fight Dice vs units with Force 2+ per model in melee', commanderOnly: false },
   { name: 'Giant Slayer',       cost: 2,  cat: 'Combat',    desc: '+2 Fight Dice against Giant units', commanderOnly: false },
-  { name: 'Veteran',            cost: 5,  cat: 'Combat',    desc: 'Reroll 1s in all rolls', commanderOnly: false },
-  { name: 'Rending',            cost: 5,  cat: 'Combat',    desc: '−1 to the target number of all Fight Dice attacks', commanderOnly: false },
+  { name: 'Veteran',            cost: 6,  cat: 'Combat',    desc: 'Reroll 1s in all rolls', commanderOnly: false },
+  { name: 'Rending',            cost: 5,  cat: 'Combat',    desc: '−1 to the target number of all Fight Dice attacks (minimum 3+)', commanderOnly: false },
   // Defense & Ranged
-  { name: 'Shields',            cost: 4,  cat: 'Defense',   desc: '+1 Defense vs all attacks, +2 Defense vs shooting', commanderOnly: false },
-  { name: 'Camouflaged',        cost: 4,  cat: 'Defense',   desc: 'Cannot be targeted by shooting attacks at long range', commanderOnly: false },
+  { name: 'Shields',            cost: 5,  cat: 'Defense',   desc: '+1 Defense vs all attacks, +2 Defense vs shooting', commanderOnly: false },
+  { name: 'Camouflaged',        cost: 3,  cat: 'Defense',   desc: 'Cannot be targeted by shooting attacks at long range', commanderOnly: false },
   { name: 'Disciplined',        cost: 2,  cat: 'Defense',   desc: '+1 Defense when charged', commanderOnly: false },
-  { name: 'Shield Wall',        cost: 2,  cat: 'Defense',   desc: '+1 Defense when in base contact with another friendly Shield Wall unit', commanderOnly: false },
+  { name: 'Shield Wall',        cost: 2,  cat: 'Defense',   desc: '+2 Defense when within 2" of another friendly Shield Wall unit', commanderOnly: false },
   { name: 'Bodyguard',          cost: 3,  cat: 'Defense',   desc: '+1 Defense when a Commander is within 1"', commanderOnly: false },
   { name: 'Resilient',          cost: 5,  cat: 'Defense',   desc: 'Reduce shock taken from any single attacking unit to a maximum of 3', commanderOnly: false },
   { name: 'Hardened',            cost: 4,  cat: 'Defense',   desc: 'Ignore the first shock taken from enemy attacks each activation', commanderOnly: false },
-  { name: 'Indirect Fire',      cost: 2,  cat: 'Ranged',    desc: 'May reroll misses when shooting indirect; no LoS required; cannot fire within 18"', commanderOnly: false },
-  { name: 'Piercing',           cost: 5,  cat: 'Ranged',    desc: '−1 to the target number of all Shoot Dice attacks', commanderOnly: false },
-  { name: 'Explosive',          cost: 4,  cat: 'Ranged',    desc: '+1 Shoot Strength; all units (including friendlies) within 2" of target take 1 automatic shock', commanderOnly: false },
-  { name: 'Massively Explosive',cost: 10, cat: 'Ranged',    desc: '+2 Shoot Strength; all units (including friendlies) within 4" of target take 1 automatic shock', commanderOnly: false },
+  { name: 'Indirect Fire',      cost: 3,  cat: 'Ranged',    desc: 'May reroll misses when shooting indirect; no LoS required; cannot fire within 18"', commanderOnly: false },
+  { name: 'Piercing',           cost: 5,  cat: 'Ranged',    desc: '−1 to the target number of all Shoot Dice attacks (minimum 3+)', commanderOnly: false },
+  { name: 'Explosive',          cost: 10, cat: 'Ranged',    desc: '+1 Shoot Strength; all units (including friendlies) within 2" of target take 1 automatic shock; +1 shock if target has 4+ models (+2 if 8+ models); ignores cover', commanderOnly: false },
+  { name: 'Massively Explosive',cost: 18, cat: 'Ranged',    desc: '+2 Shoot Strength; all units (including friendlies) within 4" of target take 1 automatic shock; +1 shock if target has 4+ models (+2 if 8+ models); ignores cover', commanderOnly: false },
   // Movement & Morale
   { name: 'Nimble',             cost: 2,  cat: 'Movement',  desc: 'Ignore terrain movement penalties when moving', commanderOnly: false },
   { name: 'Flying',             cost: 8,  cat: 'Movement',  desc: 'As Nimble; may move over impassable terrain and enemy units', commanderOnly: false },
@@ -1660,7 +1660,7 @@ const FORCE_TYPES = [
 ];
 
 const ASSET_TYPES = [
-  { label: 'Artillery',         bonus: 'Giant (free) · +2 Shoot Dice · +1 Shoot Strength' },
+  { label: 'Artillery',         bonus: 'Giant (free) · +3 Shoot Dice · +1 Shoot Strength · Immobile (cannot move or charge)' },
   { label: 'Monstrous Creature',bonus: 'Giant (free) · +2 Fight Dice · +1 Fight Strength' },
   { label: 'Colossal Machine',  bonus: 'Giant (free) · +2 Defense · Steam Power' },
 ];
@@ -3037,13 +3037,13 @@ function printRoster() {
     'Impetuous':    { fighting: '+2 (charge)' },
     'Heavy Charge': { fighting: '+2 (10"+)' },
     'Berserk':      { fighting: '+2 (7+ shock)' },
-    'Anti-Heavy':   { fighting: '+1 (vs F2+)' },
+    'Anti-Heavy':   { fighting: '+2 (vs F2+)' },
     'Giant Slayer': { fighting: '+2 (Giants)' },
     'Steam Power':  { fighting: '+2/act', shooting: '+2/act' },
     'Shields':      { defense: '+1 / +2↗' },
     'Disciplined':  { defense: '+1 (charged)' },
     'Bodyguard':    { defense: '+1 (cmd 1")' },
-    'Shield Wall':  { defense: '+1 (wall)' },
+    'Shield Wall':  { defense: '+2 (2")' },
     'Rending':      { fStrength: '−1 TN' },
     'Piercing':     { sStrength: '−1 TN' },
   };
@@ -3213,7 +3213,7 @@ function printRoster() {
   .regiment-spacer{height:3pt;}
   .general-block{margin-bottom:5pt;break-inside:avoid;page-break-inside:avoid;}
   .general-header .company-name{font-style:italic;color:#444;font-size:8pt;}
-  .company-block{margin-bottom:8pt;break-inside:avoid;page-break-inside:avoid;display:inline-block;width:100%;}
+  .company-block{margin-bottom:8pt;break-inside:avoid;page-break-inside:avoid;}
   .unit-block{break-inside:avoid;page-break-inside:avoid;}
   .unit-block.commander-gap-after{margin-bottom:4pt;}
   .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:1pt;margin-bottom:0;}
@@ -3254,7 +3254,7 @@ function printRoster() {
   .dt-army-trait{color:#8a6820;}
   .trait-badge{font-weight:normal;font-style:normal;font-size:5.5pt;border:1px solid #c8a030;color:#8a6820;padding:0 2pt;margin-left:3pt;white-space:nowrap;vertical-align:middle;}
   .total{text-align:right;font-size:9pt;font-weight:bold;margin-top:7pt;border-top:2px solid #1a1a1a;padding-top:3pt;}
-  .companies-grid{column-count:2;column-gap:14pt;}
+  .companies-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:14pt;align-items:start;}
   @page{size:landscape;}
   @media print{body{margin:0.7cm 0.9cm;}.company-block{break-inside:avoid;page-break-inside:avoid;}.unit-block{break-inside:avoid;page-break-inside:avoid;}}
 </style>
@@ -3716,6 +3716,7 @@ shooting: `
 <tr><td>Within 1 either direction</td><td>4+</td></tr>
 <tr><td>Defense 2+ higher than Shoot Strength</td><td>5+</td></tr>
 </table>
+<p><strong>Target number floor:</strong> No effect may reduce a combat dice target number below 3+. This applies to all modifiers including Piercing.</p>
 
 <h3>7.5 Cover</h3>
 <p>Cover requires that attackers cannot see the target's entire base. <strong>Soft Cover</strong> (woods, brush): +1 Defense vs shooting. <strong>Hard Cover</strong> (stone walls, ruins): +2 Defense vs shooting. Giant units cannot claim cover.</p>
@@ -3762,12 +3763,13 @@ melee: `
 <tr><td>Within 1 either direction</td><td>4+</td></tr>
 <tr><td>Defense 2+ higher than Fight Strength</td><td>5+</td></tr>
 </table>
+<p><strong>Target number floor:</strong> No effect may reduce a combat dice target number below 3+. This applies to all modifiers including Rending.</p>
 
 <h3>8.4 Melee Modifiers</h3>
 <table class="rule-table">
 <tr><th>Condition</th><th>Dice Bonus</th></tr>
+<tr><td>Charging</td><td>+1 die; +2 dice if charge distance was 10" or more</td></tr>
 <tr><td>Higher Force in contact than enemy</td><td>+1 die; +2 dice if double or more Force in contact</td></tr>
-<tr><td>Charge distance</td><td>+1 die; +2 dice if charge distance was 10" or more</td></tr>
 <tr><td>Charger crossed difficult terrain during the charge move, or the charge ends in difficult terrain where the defender stands</td><td>+2 dice to defender</td></tr>
 <tr><td>Charged from rear arc</td><td>Halve your total dice (round up)</td></tr>
 </table>
@@ -3816,7 +3818,7 @@ org: `
 <p>A Special Asset is an elite unit designated at army building. Paying the <strong>10 pt designation fee</strong> raises the unit's rank cap to <strong>20 ranks</strong> and grants the type bonus below. Special Assets <strong>do not count toward Company unit limits</strong> and therefore do not contribute to unlocking additional Commanders. Type bonuses and special ability bonuses are not subject to the per-stat cap. The Giant ability is included free in all Special Asset type bonuses and may not be purchased separately by Special Assets.</p>
 <table class="rule-table">
 <tr><th>Asset Type</th><th>Type Bonus</th></tr>
-<tr><td>Artillery</td><td>Giant ability (free) · +2 Shoot Dice · +1 Shoot Strength</td></tr>
+<tr><td>Artillery</td><td>Giant ability (free) · +3 Shoot Dice · +1 Shoot Strength · Immobile (cannot move or charge)</td></tr>
 <tr><td>Monstrous Creature</td><td>Giant ability (free) · +2 Fight Dice · +1 Fight Strength</td></tr>
 <tr><td>Colossal Machine</td><td>Giant ability (free) · +2 Defense · Steam Power</td></tr>
 </table>
