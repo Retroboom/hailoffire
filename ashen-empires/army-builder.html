@@ -2496,7 +2496,8 @@ function printRoster() {
   .roster-table td{padding:5pt 6pt;vertical-align:top;}
   /* Unit separator sits at the bottom of each unit's last row — never crosses the stat area */
   tr.unit-end td{border-bottom:2px solid #bbb;}
-  tr.commander-gap td{height:4pt;padding:0;border:none;border-bottom:2px solid #bbb;border-left:hidden;}
+  tr.commander-gap td{height:4pt;padding:0;border:none;border-bottom:2px solid #bbb;}
+  .roster-table tr.commander-gap td:first-child{border-left:hidden;}
   tr.desc-row td{border-top:none;}
   .commander-row td{background:#f7f5f0;}
   .col-unit{width:22%;}
