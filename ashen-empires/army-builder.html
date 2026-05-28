@@ -1783,9 +1783,9 @@ function renderMainCanvas() {
         ${ct.bonus !== '—' ? `<div style="font-size:10px;color:var(--gold);background:var(--faint);border-left:2px solid var(--gold);padding:3px 8px;margin-top:6px;font-family:'Libre Baskerville',serif;font-style:italic;">${esc(ct.bonus)}</div>` : ''}
       </div>
       ${ct.restriction !== '—' ? `
-      <div style="text-align:right;max-width:200px;">
-        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);margin-bottom:3px;">Restriction</div>
-        <div style="font-size:10px;color:var(--amber);font-family:'Libre Baskerville',serif;font-style:italic;line-height:1.4;">${esc(ct.restriction)}</div>
+      <div style="max-width:220px;background:rgba(192,120,48,0.08);border:1px solid rgba(192,120,48,0.35);border-left:3px solid var(--amber);border-radius:2px;padding:6px 10px;">
+        <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:3px;font-family:'Barlow Condensed',sans-serif;">Restriction</div>
+        <div style="font-size:11px;color:var(--ink);font-family:'Libre Baskerville',serif;font-style:italic;line-height:1.45;">${esc(ct.restriction)}</div>
       </div>` : ''}
     </div>
   `;
@@ -1854,8 +1854,43 @@ function buildUnitCard(unit, company) {
   const capClass = pct >= 100 ? 'over' : pct >= 80 ? 'warn' : 'ok';
   const pts = unitCost(unit);
 
-  // Filter abilities for commander-only
-  const relevantAbilities = unit.isCommander ? ABILITIES : ABILITIES.filter(a => !a.commanderOnly);
+  // Feature 5a: check if this General conflicts with another in the regiment
+  let generalConflictMsg = '';
+  if (unit.isCommander && unit.commanderType === 'General' && company) {
+    const regiment = state.regiments.find(r => r.id === company.regimentId);
+    if (regiment) {
+      const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
+      const regGenerals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General' && u.id !== unit.id));
+      if (regGenerals.length > 0) {
+        generalConflictMsg = `This regiment already has a General (${esc(regGenerals[0].name)}). Only one General is allowed per regiment.`;
+      }
+    }
+  }
+
+  // Feature 7a: special asset slot info for this unit's company
+  let assetSlotHtml = '';
+  let specialAssetBlockedMsg = '';
+  if (!unit.isCommander && company) {
+    const isEngineering = company.type === 5;
+    const maxAssets = isEngineering ? 3 : 1;
+    const existingAssets = company.units.filter(u => u.isSpecialAsset);
+    const assetCount = existingAssets.length;
+    // If this unit itself is a special asset, count includes it
+    const slotUsed = assetCount;
+    const slotClass = slotUsed >= maxAssets ? 'used' : '';
+    assetSlotHtml = `<div class="asset-slot-indicator ${slotClass}">Special Asset: ${slotUsed}/${maxAssets}${slotUsed >= maxAssets ? ' (full)' : ''}</div>`;
+
+    // Feature 7b: blocked message
+    if (unit._specialAssetBlocked) {
+      specialAssetBlockedMsg = 'This company already has a Special Asset. Only Engineering companies may have more than one.';
+      unit._specialAssetBlocked = false; // clear after showing
+    }
+  }
+
+  // Feature 4a: ability slot count label
+  const abilityCnt = unit.abilities.length;
+  const abilityLimitReached = abilityCnt >= 3;
+  const abSlotLabel = `<span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:${abilityLimitReached ? 'var(--amber)' : 'var(--mist)'};">${abilityCnt}/3 abilities${state.armyAbility ? ' + army' : ''}</span>`;
 
   card.innerHTML = `
     <div class="unit-card-header">
@@ -1875,6 +1910,7 @@ function buildUnitCard(unit, company) {
       <button class="delete-btn" onclick="duplicateUnit('${company.id}', '${unit.id}')" title="Duplicate unit" style="font-size:13px;">⧉</button>
       <button class="delete-btn" onclick="deleteUnit('${company.id}', '${unit.id}')" title="Delete unit">×</button>
     </div>
+    ${generalConflictMsg ? `<div class="inline-error" style="margin:0 14px 0;">${generalConflictMsg}</div>` : ''}
     <div class="unit-card-body">
       <div class="stats-section">
         <div class="section-title">Stats &amp; Force</div>
@@ -1914,6 +1950,8 @@ function buildUnitCard(unit, company) {
           </div>
         </div>
         ${!unit.isCommander ? `
+          ${assetSlotHtml}
+          ${specialAssetBlockedMsg ? `<div class="inline-error" style="margin-top:4px;">${specialAssetBlockedMsg}</div>` : ''}
           <div class="special-asset-toggle" onclick="toggleSpecialAsset('${unit.id}')">
             <div class="toggle-switch ${unit.isSpecialAsset ? 'on' : ''}"></div>
             <span class="toggle-label">Special Asset <strong>+10pts</strong> · raises cap to 24</span>
@@ -1927,7 +1965,11 @@ function buildUnitCard(unit, company) {
         ` : ''}
       </div>
       <div class="abilities-section">
-        <div class="section-title">Special Abilities</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--faint);">
+          <div class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Special Abilities</div>
+          ${abSlotLabel}
+        </div>
+        ${abilityLimitReached ? `<div class="ability-limit-note">Ability limit reached (3/3). Remove one to add another.</div>` : ''}
         <button class="abilities-open-btn" onclick="openAbilitiesModal('${unit.id}')">
           <span>Choose Abilities</span>
           <span class="ab-count">${(() => {
@@ -2423,9 +2465,29 @@ function toggleAbility(unitId, abilityName) {
   render();
 }
 
+function findCompanyForUnit(unitId) {
+  return state.companies.find(c => c.units.some(u => u.id === unitId)) || null;
+}
+
 function toggleSpecialAsset(unitId) {
   const unit = findUnit(unitId);
   if (!unit) return;
+  // Feature 7b: prevent enabling if company already has a Special Asset (non-Engineering)
+  if (!unit.isSpecialAsset) {
+    const company = findCompanyForUnit(unitId);
+    if (company && company.type !== 5) {
+      const existingAssets = company.units.filter(u => u.isSpecialAsset && u.id !== unitId);
+      if (existingAssets.length >= 1) {
+        // Don't toggle — the card will show an inline error via render
+        unit._specialAssetBlocked = true;
+        render();
+        return;
+      }
+    }
+    unit._specialAssetBlocked = false;
+  } else {
+    unit._specialAssetBlocked = false;
+  }
   unit.isSpecialAsset = !unit.isSpecialAsset;
   render();
 }
