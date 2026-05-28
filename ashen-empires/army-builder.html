@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ashen Empires — Army Builder</title>
+<title>Ashen Empires: Army Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600;700;800&family=Stardos+Stencil:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1434,12 +1434,12 @@
 <body>
 
 <header>
-  <div class="header-left" style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span><span class="header-title-sub"> — Army Builder</span></div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'"><span class="rules-btn-long">Rules Reference</span><span class="rules-btn-short">Rules</span></button></div>
+  <div class="header-left" style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span><span class="header-title-sub">: Army Builder</span></div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'"><span class="rules-btn-long">Rules Reference</span><span class="rules-btn-short">Rules</span></button></div>
   <div class="header-pts">
     <div class="pts-display" id="total-pts-display">0 <span>pts</span></div>
     <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mist);white-space:nowrap;">
       <span class="header-limit-label" style="letter-spacing:0.05em;text-transform:uppercase;font-size:10px;">Limit</span>
-      <input id="budget-input" type="number" min="0" step="25" placeholder="—" title="Points limit"
+      <input id="budget-input" type="number" min="0" step="25" placeholder="No limit" title="Points limit"
         style="background:var(--faint);border:1px solid var(--navy4);color:var(--ink);font-family:'Share Tech Mono',monospace;font-size:13px;width:58px;padding:2px 6px;border-radius:2px;outline:none;text-align:center;">
       <span class="header-limit-pts" style="font-size:10px;">pts</span>
     </div>
@@ -1455,7 +1455,7 @@
     <div class="modal-header">
       <div>
         <div class="modal-title">Rules Reference</div>
-        <div class="modal-subtitle">Ashen Empires — Playtest Document · May 28, 2026</div>
+        <div class="modal-subtitle">Ashen Empires · Playtest Document · May 28, 2026</div>
       </div>
       <button class="modal-close" onclick="toggleRules()">×</button>
     </div>
@@ -1617,7 +1617,7 @@ const ABILITIES = [
   // Movement & Morale
   { name: 'Nimble',             cost: 2,  cat: 'Movement',  desc: 'Ignore terrain movement penalties when moving', commanderOnly: false },
   { name: 'Flying',             cost: 8,  cat: 'Movement',  desc: 'As Nimble; may move over impassable terrain and enemy units', commanderOnly: false },
-  { name: 'Aerial',             cost: 6,  cat: 'Movement',  desc: 'Single-model units only. While airborne: as Flying; may shoot and be shot at over non-Giants; may only shoot and be shot at (no melee, cannot charge, cannot be charged by non-Flying units). When taking shock from enemy attacks: make a Courage Test — failure causes the unit to become Grounded permanently (loses Aerial and all Flying benefits; cannot move; may be charged normally; may still shoot at ground level).', commanderOnly: false },
+  { name: 'Aerial',             cost: 6,  cat: 'Movement',  desc: 'Single-model units only. While airborne: as Flying; may shoot and be shot at over non-Giants; may only shoot and be shot at (no melee, cannot charge, cannot be charged by non-Flying units). When taking shock from enemy attacks: make a Courage Test; failure causes the unit to become Grounded permanently (loses Aerial and all Flying benefits; cannot move; may be charged normally; may still shoot at ground level).', commanderOnly: false },
   { name: 'Ambush',             cost: 4,  cat: 'Movement',  desc: 'Deploy anywhere 16"+ from all enemy units after all other units on both sides have deployed, overriding normal deployment zone restrictions. If no valid position exists, deploy as a normal unit.', commanderOnly: false },
   { name: 'Fearless',           cost: 5,  cat: 'Morale',    desc: 'May ignore Retreat results on Courage Tests', commanderOnly: false },
   { name: 'Inspiring',          cost: 8,  cat: 'Morale',    desc: 'Friendly units within 12" reroll failed Courage Tests', commanderOnly: false },
@@ -1643,14 +1643,14 @@ const ABILITIES = [
 const ABILITY_CATS = ['Combat','Defense','Ranged','Movement','Morale','Support','Special','Tech','Stat'];
 
 const STATS = [
-  { key: 'move',      label: 'Move',          short: 'MOV', max: 5, fmt: r => r ? `${r*2}"` : '—' },
-  { key: 'fighting',  label: 'Fight Dice',    short: 'FD',  max: 5, fmt: r => r || '—' },
-  { key: 'fStrength', label: 'Fight Str',     short: 'FS',  max: 5, fmt: r => r || '—' },
-  { key: 'shooting',  label: 'Shoot Dice',    short: 'SD',  max: 5, fmt: r => r || '—' },
-  { key: 'sStrength', label: 'Shoot Str',     short: 'SS',  max: 5, fmt: r => r || '—' },
-  { key: 'defense',   label: 'Defense',       short: 'DEF', max: 5, fmt: r => r || '—' },
-  { key: 'courage',   label: 'Courage',       short: 'CRG', max: 5, fmt: r => r || '—' },
-  { key: 'range',     label: 'Range',         short: 'RNG', max: 5, fmt: r => r ? `${r*6}"` : '—' },
+  { key: 'move',      label: 'Move',          short: 'MOV', max: 5, fmt: r => r ? `${r*2}"` : '-' },
+  { key: 'fighting',  label: 'Fight Dice',    short: 'FD',  max: 5, fmt: r => r || '-' },
+  { key: 'fStrength', label: 'Fight Str',     short: 'FS',  max: 5, fmt: r => r || '-' },
+  { key: 'shooting',  label: 'Shoot Dice',    short: 'SD',  max: 5, fmt: r => r || '-' },
+  { key: 'sStrength', label: 'Shoot Str',     short: 'SS',  max: 5, fmt: r => r || '-' },
+  { key: 'defense',   label: 'Defense',       short: 'DEF', max: 5, fmt: r => r || '-' },
+  { key: 'courage',   label: 'Courage',       short: 'CRG', max: 5, fmt: r => r || '-' },
+  { key: 'range',     label: 'Range',         short: 'RNG', max: 5, fmt: r => r ? `${r*6}"` : '-' },
 ];
 
 const FORCE_TYPES = [
@@ -1666,7 +1666,7 @@ const ASSET_TYPES = [
 ];
 
 const COMPANY_TYPES = [
-  { label: 'Standard', bonus: '—', restriction: '—' },
+  { label: 'Standard', bonus: '', restriction: '' },
   { label: 'Assault',  bonus: '+1 Fight Die when charging', restriction: 'Must charge enemies within 12" if no friendly closer' },
   { label: 'Guard',    bonus: 'All units gain Loyal free', restriction: 'Units must stay within 12" of any Commander' },
   { label: 'Rifle',    bonus: 'No long-range shooting penalty', restriction: 'All units need 12"+ Range; max 2 Defense ranks' },
@@ -2048,7 +2048,7 @@ function renderStructureView() {
     div.className = 'regiment-block';
     div.innerHTML = `
       <div class="regiment-header">
-        <span>${esc(regiment.name)} — <strong>${esc(generalName)}</strong></span>
+        <span>${esc(regiment.name)}: <strong>${esc(generalName)}</strong></span>
       </div>
       <div style="padding:4px 8px 6px;">
         ${companies.map(c => `<div style="font-size:11px;color:var(--mist);padding:2px 0;">↳ ${esc(c.name)} (${c.units.length} unit${c.units.length !== 1 ? 's' : ''})</div>`).join('')}
@@ -2126,9 +2126,9 @@ function renderMainCanvas() {
         <select class="unit-type-select" style="font-size:13px;" onchange="setCompanyType('${company.id}', this.value)">
           ${COMPANY_TYPES.map((t, i) => `<option value="${i}" ${company.type === i ? 'selected' : ''}>${t.label}</option>`).join('')}
         </select>
-        ${ct.bonus !== '—' ? `<div style="font-size:10px;color:var(--gold);background:var(--faint);border-left:2px solid var(--gold);padding:3px 8px;margin-top:6px;font-family:'Libre Baskerville',serif;font-style:italic;">${esc(ct.bonus)}</div>` : ''}
+        ${ct.bonus ? `<div style="font-size:10px;color:var(--gold);background:var(--faint);border-left:2px solid var(--gold);padding:3px 8px;margin-top:6px;font-family:'Libre Baskerville',serif;font-style:italic;">${esc(ct.bonus)}</div>` : ''}
       </div>
-      ${ct.restriction !== '—' ? `
+      ${ct.restriction ? `
       <div style="max-width:220px;background:rgba(192,120,48,0.08);border:1px solid rgba(192,120,48,0.35);border-left:3px solid var(--amber);border-radius:2px;padding:6px 10px;">
         <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:3px;font-family:'Barlow Condensed',sans-serif;">Restriction</div>
         <div style="font-size:11px;color:var(--ink);font-family:'Libre Baskerville',serif;font-style:italic;line-height:1.45;">${esc(ct.restriction)}</div>
@@ -2169,7 +2169,7 @@ function renderMainCanvas() {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.style.padding = '30px';
-    empty.innerHTML = '<p>No units yet — add a unit or commander above.</p>';
+    empty.innerHTML = '<p>No units yet. Add a unit or commander above.</p>';
     unitList.appendChild(empty);
     return;
   }
@@ -2576,10 +2576,10 @@ function validate() {
     }
   });
 
-  // Shoot Dice without Range ranks — unit literally cannot fire
+  // Shoot Dice without Range ranks: unit literally cannot fire
   allUnits.forEach(u => {
     if (u.stats.shooting > 0 && u.stats.range === 0) {
-      issues.push({ type: 'warn', msg: `"${u.name}": has Shoot Dice but no Range — unit cannot shoot. Add Range ranks or remove Shoot Dice.` });
+      issues.push({ type: 'warn', msg: `"${u.name}": has Shoot Dice but no Range; unit cannot shoot. Add Range ranks or remove Shoot Dice.` });
     }
   });
 
@@ -2592,7 +2592,7 @@ function validate() {
     // No regular (non-commander, non-special-asset) units permitted
     const regularUnits = c.units.filter(u => !u.isCommander && !u.isSpecialAsset);
     if (regularUnits.length > 0) {
-      issues.push({ type: 'error', msg: `"${c.name}" (Engineering): regular units are not permitted — only Colossal Machine Special Assets.` });
+      issues.push({ type: 'error', msg: `"${c.name}" (Engineering): only Colossal Machine Special Assets are permitted; remove any regular units.` });
     }
     // Must have a Commander with Engineer ability (only matters once assets exist)
     if (c.units.some(u => u.isSpecialAsset)) {
@@ -2959,7 +2959,7 @@ function toggleSpecialAsset(unitId) {
     if (company && company.type !== 5) {
       const existingAssets = company.units.filter(u => u.isSpecialAsset && u.id !== unitId);
       if (existingAssets.length >= 1) {
-        // Don't toggle — flag it so the card can show an inline error
+        // Don't toggle; flag it so the card can show an inline error
         _specialAssetBlockedIds.add(unitId);
         render();
         return;
@@ -3048,7 +3048,7 @@ function printRoster() {
     'Piercing':     { sStrength: '−1 TN' },
   };
 
-  // Stat columns — labels appear inside each unit's own mini-table
+  // Stat columns: labels appear inside each unit's own mini-table
   const STAT_GRID = [
     { key: 'move',      short: 'MOV',     fmt: v => (v*2)+'"' },
     { key: 'fighting',  short: 'FI.DICE', fmt: v => v },
@@ -3085,7 +3085,7 @@ function printRoster() {
     const base = u.stats;
     const tds = STAT_GRID.map(s => {
       const v = eff[s.key] || 0;
-      const display = v === 0 ? '—' : s.fmt(v);
+      const display = v === 0 ? '-' : s.fmt(v);
       const boosted = v > (base[s.key] || 0);
       const notes = allAbilNames
         .map(n => { const m = ABILITY_STAT_NOTES[n]; return m ? m[s.key] : null; })
@@ -3122,7 +3122,7 @@ function printRoster() {
       abilEntries.push({ name: at.label, desc: at.bonus, isAsset: true });
     }
 
-    // Separator sits as border-bottom on the last row of each unit — never crosses the stat area
+    // Separator sits as border-bottom on the last row of each unit; never crosses the stat area
     let descSubRow = '';
     if (abilEntries.length > 0) {
       const descItems = abilEntries.map(({ name, desc, isArmyTrait }) => {
@@ -3274,7 +3274,7 @@ ${companyBlocksHtml}
 }
 
 // ══════════════════════════════════════════════════════
-// LOCAL STORAGE — AUTO-SAVE & ARMY LIBRARY
+// LOCAL STORAGE: AUTO-SAVE & ARMY LIBRARY
 // ══════════════════════════════════════════════════════
 
 function stateSnapshot() {
@@ -3438,21 +3438,21 @@ const RULES_CONTENT = {
 core: `
 <h2>I · Core Concepts</h2>
 <p>Ashen Empires is a tabletop wargame for two players fought with miniature models. Armies are structured into Companies and Regiments, commanded through a layered hierarchy.</p>
-<p>Battles are decided by <strong>shock</strong> — the accumulation of fatigue, disruption, and fear — as much as by outright casualties. A heavily shocked unit may have models still standing, but its will to fight is crumbling.</p>
+<p>Battles are decided by <strong>shock</strong> (the accumulation of fatigue, disruption, and fear) as much as by outright casualties. A heavily shocked unit may have models still standing, but its will to fight is crumbling.</p>
 
 <h3>Rule Zero</h3>
-<p>When a rule contradicts itself or an edge case arises, agree on the most sensible interpretation and note it. The goal is a good game, not a perfect rulebook.</p>
+<p>When a rule contradicts itself or an edge case arises, agree on the most sensible interpretation and record it for future reference. The goal is a good game, not a perfect rulebook.</p>
 
 <h3>1.1 Dice</h3>
 <p>The game uses two dice mechanics:</p>
 <ul>
-<li><strong>Dice pools:</strong> roll a number of d6 equal to a stat. Each die is compared to a target number — determined by the attacker's Strength vs. the target's Defense. Dice that meet the target number inflict shock.</li>
+<li><strong>Dice pools:</strong> roll a number of d6 equal to a stat. Each die is compared to a target number, determined by the attacker's Strength vs. the target's Defense. Dice that meet the target number inflict shock.</li>
 <li><strong>2d6 tests:</strong> roll two dice, add a stat, and beat a target number. Used for Command and Courage tests.</li>
 </ul>
 <p>Both types are always stated explicitly in the rules.</p>
 
 <h3>1.2 Shock</h3>
-<p>Shock is the sole damage currency in Ashen Empires. It is tracked per unit on its leader model using tokens or a dial. Shock degrades command reliability, triggers morale crises, and ultimately destroys units. Shock is not automatically removed — Rally orders and round-end recovery are required.</p>
+<p>Shock is the sole damage currency in Ashen Empires. It is tracked per unit on its leader model using tokens or a dial. Shock degrades command reliability, triggers morale crises, and ultimately destroys units. Shock is not automatically removed; Rally orders and round-end recovery are required.</p>
 <p>Each die that meets the target number in combat inflicts shock directly. Units do not lose models during battle. They stand at full strength until a failed Courage Test Breaks them entirely.</p>
 
 <h3>Leader Model</h3>
@@ -3460,9 +3460,9 @@ core: `
 
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
-<tr><td>Dice pools</td><td>Combat — roll dice equal to stat, each meeting target number = 1 shock</td></tr>
-<tr><td>2d6 tests</td><td>Command and Courage — roll 2d6 + stat and beat a target number</td></tr>
-<tr><td>Units</td><td>Do not lose models during battle — shock is the only damage currency</td></tr>
+<tr><td>Dice pools</td><td>Combat: roll dice equal to stat, each meeting target number = 1 shock</td></tr>
+<tr><td>2d6 tests</td><td>Command and Courage: roll 2d6 + stat and beat a target number</td></tr>
+<tr><td>Units</td><td>Do not lose models during battle; shock is the only damage currency</td></tr>
 <tr><td>All measurements</td><td>Taken from the leader model</td></tr>
 </table>
 `,
@@ -3475,17 +3475,17 @@ stats: `
 <table class="rule-table">
 <tr><th>Stat</th><th>Ranks</th><th>Used for</th></tr>
 <tr><td><strong>Move</strong></td><td>0–5</td><td>Each rank adds 2" to movement rolls.</td></tr>
-<tr><td><strong>Fight Dice</strong></td><td>0–5</td><td>Dice pool for melee — number of d6 rolled when fighting. Requires Fight Strength &gt; 0.</td></tr>
-<tr><td><strong>Fight Strength</strong></td><td>0–5</td><td>Determines how easily melee hits cause shock — compared against target's Defense.</td></tr>
-<tr><td><strong>Shoot Dice</strong></td><td>0–5</td><td>Dice pool for shooting — requires Range ranks to function.</td></tr>
-<tr><td><strong>Shoot Strength</strong></td><td>0–5</td><td>Determines how easily shooting hits cause shock — compared against target's Defense.</td></tr>
+<tr><td><strong>Fight Dice</strong></td><td>0–5</td><td>Dice pool for melee: number of d6 rolled when fighting. Requires Fight Strength &gt; 0.</td></tr>
+<tr><td><strong>Fight Strength</strong></td><td>0–5</td><td>Determines how easily melee hits cause shock, compared against target's Defense.</td></tr>
+<tr><td><strong>Shoot Dice</strong></td><td>0–5</td><td>Dice pool for shooting; requires Range ranks to function.</td></tr>
+<tr><td><strong>Shoot Strength</strong></td><td>0–5</td><td>Determines how easily shooting hits cause shock, compared against target's Defense.</td></tr>
 <tr><td><strong>Defense</strong></td><td>0–5</td><td>Raises the target number attackers must meet.</td></tr>
 <tr><td><strong>Courage</strong></td><td>0–5</td><td>Added to Command Tests and Courage Tests (2d6 + Courage ranks).</td></tr>
-<tr><td><strong>Range</strong></td><td>0–5</td><td>Shooting range in 6" increments — 1 rank = 6", 5 ranks = 30".</td></tr>
+<tr><td><strong>Range</strong></td><td>0–5</td><td>Shooting range in 6" increments: 1 rank = 6", 5 ranks = 30".</td></tr>
 </table>
 
 <h3>2.2 Force &amp; Unit Composition</h3>
-<p><strong>Force</strong> is determined by model type — it represents the physical mass and impact a model brings to melee. Force is not purchased as ranks; it is fixed by the type of model you field. Force costs <strong>1 pt per Force point per model</strong>.</p>
+<p><strong>Force</strong> is determined by model type; it represents the physical mass and impact a model brings to melee. Force is not purchased as ranks; it is fixed by the type of model you field. Force costs <strong>1 pt per Force value per model</strong>.</p>
 <table class="rule-table">
 <tr><th>Model Type</th><th>Force per Model</th><th>Max Unit Size</th><th>Examples</th></tr>
 <tr><td>Infantry</td><td>1</td><td>Up to 10 models</td><td>Soldiers, militia, skirmishers</td></tr>
@@ -3511,10 +3511,11 @@ commanders: `
 <p>Commanders direct other units and are the engine of your army. Every army must include at least one Captain. Managing Commander shock and positioning is as important as your fighting units.</p>
 
 <h3>Command Rank</h3>
-<p>Generals hold the highest command rank, followed by Captains, then all other units. A unit may only activate subordinates — friendly units of a lower command rank within 12". Company and Regiment structure determines army composition during building but does not restrict which units a Commander may activate in play.</p>
+<p>Generals hold the highest command rank, followed by Captains, then all other units. A unit may only activate subordinates (friendly units of a lower command rank within 12"). Company and Regiment structure determines army composition during building but does not restrict which units a Commander may activate in play.</p>
 
 <h3>3.1 Command Tests</h3>
-<p>Roll <strong>2d6 + Courage</strong> and beat current shock. On success: Commander activates and may activate up to 2 subordinates within 12". Each activated subordinate then attempts their own Command Test — rolling 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. Commander gains +1 shock. Double 1s do not cause automatic failure on Command Tests — that rule applies to Courage Tests only.</p>
+<p>Roll <strong>2d6 + Courage</strong> and beat current shock. On success: Commander activates and may activate up to 2 subordinates within 12". Each activated subordinate then attempts their own Command Test, rolling 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. Commander gains +1 shock.</p>
+<p><strong>Note:</strong> Double 1s do not cause automatic failure on Command Tests; that rule applies to Courage Tests only.</p>
 <p><em>Command Range:</em> Measured from Commander's leader model to subordinate's leader model when the Command Test is made. Subordinates outside 12" cannot be activated.</p>
 
 <h3>3.2 Proximity Bonus</h3>
@@ -3537,11 +3538,11 @@ commanders: `
 
 <table class="rule-table">
 <tr><th colspan="2">Summary</th></tr>
-<tr><td>Command Test</td><td>2d6 + Courage must beat current shock — success activates Commander; each activated subordinate then tests separately using higher of own or Commander's Courage</td></tr>
+<tr><td>Command Test</td><td>2d6 + Courage must beat current shock: success activates Commander; each activated subordinate then tests separately using higher of own or Commander's Courage</td></tr>
 <tr><td>Activation cost</td><td>Successful Commander gains +1 shock; failure = Exhausted, turn passes to opponent</td></tr>
 <tr><td>Within 1" of friendly unit</td><td>Cannot be targeted, share shock allocation, +1 Fight Die if stat qualifies, not a separate target for area effects</td></tr>
 <tr><td>Recovery</td><td>Commanders remove 6 shock at Round End; may only Rally if activated by a Commander of higher rank</td></tr>
-<tr><td>Max activations</td><td>1 General + 2 Captains + 4 non-Commanders = 7 units per Turn</td></tr>
+<tr><td>Max activations</td><td>7 units per Turn (a General activating 2 Captains, each of whom activates 2 further units)</td></tr>
 </table>
 `,
 
@@ -3563,7 +3564,7 @@ shock: `
 <ul>
 <li><strong>Command Tests:</strong> must roll 2d6 + Courage and beat current shock to activate.</li>
 <li><strong>Courage Tests:</strong> current shock is the target number to beat.</li>
-<li><strong>Ability triggers:</strong> e.g. Berserk activates at 7+ shock.</li>
+<li><strong>Ability triggers:</strong> some abilities activate at shock thresholds (for example, Berserk grants +2 Fight Dice once a unit reaches 7+ shock).</li>
 </ul>
 <p><em>Shock is cumulative.</em> Shock only goes down through Rally orders and round-end recovery (−6 per Round for all units). Units that cannot be rallied will eventually become unable to activate.</p>
 
@@ -3576,7 +3577,7 @@ shock: `
 <tr><td>Result is half or lower than current shock</td><td>Unit Breaks and is removed from play.</td></tr>
 <tr><td>Double 1s</td><td>Automatic failure regardless of other modifiers.</td></tr>
 </table>
-<p><em>Example:</em> A unit has 8 shock. Its Courage Test result is 4. Half of 8 is 4 — the result is half or lower, so the unit Breaks and is destroyed. A result of 5 would cause a normal Retreat instead.</p>
+<p><em>Example:</em> A unit has 8 shock. Its Courage Test result is 4. Half of 8 is 4, so the result is half or lower and the unit Breaks and is destroyed. A result of 5 would cause a normal Retreat instead.</p>
 
 <h3>Commander Courage Bonus</h3>
 <p>A Commander within 1" of the unit whose Courage stat equals or exceeds the unit's stat adds their Courage to the unit's Courage Test roll.</p>
@@ -3596,16 +3597,21 @@ turns: `
 
 <h3>5.1 The Turn Sequence</h3>
 <ol>
-<li><strong>Select a Unit</strong> — Choose any unit in your force. Exhausted units cannot be selected except to issue a Retreat order.</li>
-<li><strong>Make a Command Test</strong> — Roll 2d6 + Courage vs. the unit's current shock. If the total beats shock: success. If not: the unit gains an <strong>Exhausted</strong> token, cannot act this round (except Retreat), and the turn passes immediately to your opponent. <em>Exception: Retreat requires no Command Test — skip this step if the selected unit is issuing a Retreat order.</em></li>
-<li><strong>Activation</strong> — On success, the unit activates. Commanders also activate up to 2 subordinates within 12". Subordinates must not be Exhausted. Each activated subordinate then attempts their own Command Test, rolling 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. On failure the subordinate does not act and does not gain an Exhausted token. Subordinate Captains that pass their test may activate up to 2 of their own subordinates, who then attempt their own Command Tests using the Captain's Courage as the potential bonus. Successful Commanders gain +1 shock.</li>
-<li><strong>Declare All Orders</strong> — All activated units declare their orders simultaneously before any unit begins acting. Orders cannot be changed once declared.</li>
-<li><strong>Execute: Movement</strong> — All activated units move. No shooting or melee until all movement is complete.</li>
-<li><strong>Execute: Shooting</strong> — All activated units with shooting orders resolve them. No melee until all shooting resolves.</li>
-<li><strong>Execute: Melee</strong> — All melee combats resolve simultaneously.</li>
+<li><strong>Select a Unit:</strong> choose any unit in your force. Exhausted units cannot be selected except to issue a Retreat order.</li>
+<li><strong>Make a Command Test:</strong> roll 2d6 + Courage vs. the unit's current shock. If the total beats shock, proceed to step 3. If not, the unit gains an <strong>Exhausted</strong> token, cannot act this Round (except Retreat), and the turn passes immediately to your opponent. (Exception: if the selected unit is issuing a Retreat order, no Command Test is required; skip to step 4.)</li>
+<li><strong>Activation:</strong> the unit activates. Commanders additionally activate up to 2 non-Exhausted subordinates within 12" and gain +1 shock on success.
+<ul>
+<li>Each subordinate attempts their own Command Test: 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. On failure, the subordinate does not act and does not gain an Exhausted token.</li>
+<li>A subordinate Captain that passes may activate up to 2 of their own subordinates, who each attempt their own Command Tests using the Captain's Courage as the potential bonus.</li>
+</ul>
+</li>
+<li><strong>Declare All Orders:</strong> all activated units declare their orders simultaneously before any unit begins acting. Orders cannot be changed once declared.</li>
+<li><strong>Execute Movement:</strong> all activated units move. No shooting or melee until all movement is complete.</li>
+<li><strong>Execute Shooting:</strong> all activated units with shooting orders resolve them. No melee until all shooting resolves.</li>
+<li><strong>Execute Melee:</strong> all melee combats resolve simultaneously.</li>
 </ol>
-<p><em>Sequence is fixed:</em> All movement must complete before any shooting begins. All shooting must complete before any melee begins. This cannot be altered by any order or ability.</p>
-<p><em>Maximum activations per Turn:</em> 1 General + 2 Captains + 4 non-Commanders = <strong>7 units maximum</strong>.</p>
+<p><em>Sequence is fixed:</em> all movement must complete before any shooting begins. All shooting must complete before any melee begins. This cannot be altered by any order or ability.</p>
+<p><em>Maximum activations per Turn:</em> <strong>7 units</strong> (a General activating 2 Captains, each of whom activates 2 further units).</p>
 
 <h3>5.2 Activation by Unit Type</h3>
 <table class="rule-table">
@@ -3617,7 +3623,7 @@ turns: `
 </table>
 
 <h3>5.3 Round End</h3>
-<p>When both players consecutively pass — choosing not to activate any unit — the Round ends.</p>
+<p>When both players consecutively pass (choosing not to activate any unit), the Round ends.</p>
 <ul>
 <li>Remove all Exhausted tokens from all units.</li>
 <li>All units remove 6 shock.</li>
@@ -3644,16 +3650,16 @@ actions: `
 <tr><td><strong>MANEUVER</strong></td><td>Move, rolling 2d6 + Move (in inches) for distance.</td></tr>
 <tr><td><strong>REPOSITION</strong></td><td>Move up to 1d6" (max 6"), then Shoot at −2 Shoot Dice penalty.</td></tr>
 <tr><td><strong>CHARGE</strong></td><td>Leader takes 1 shock. Move full Move + 2d6" toward a declared enemy, ending in base contact. See Ch. VIII.</td></tr>
-<tr><td><strong>RETREAT</strong></td><td>Free action — no Command Test required. Leader takes 1 shock, moves full Move + 2d6" away from all visible enemies. If unable to increase its distance from all enemies within LoS: unit is destroyed. Units in melee may Retreat, taking 1 shock to break contact.</td></tr>
+<tr><td><strong>RETREAT</strong></td><td>Free action; no Command Test required. Leader takes 1 shock, moves full Move + 2d6" away from all visible enemies. If unable to increase distance from all visible enemies, the unit is destroyed. Units in melee may Retreat, taking 1 shock to break contact.</td></tr>
 <tr><td><strong>RALLY</strong></td><td>Available only to units activated by a Commander of higher rank. Remove 1d6 shock.</td></tr>
 </table>
-<p><em>Retreat is always available</em> to any unit at any time — it requires no Command Test. This is the only action available to Exhausted units.</p>
+<p><em>Retreat is always available</em> to any unit at any time; it requires no Command Test. This is the only action available to Exhausted units.</p>
 
 <h3>6.2 Movement Procedure</h3>
 <ol>
 <li>Measure and move the <strong>leader model</strong> first.</li>
 <li>All other models maintain <strong>Unit Coherency</strong>: a chain of same-unit models with gaps no greater than 1".</li>
-<li>Models may not be placed within 1" of models of any other unit (except when Charging). Units may move through friendly unit spaces during their move. Movement must end with all models in coherency.</li>
+<li>Models may not end their movement within 1" of any other unit (except when Charging). Units may move through friendly unit spaces during their move, but must end with all models outside that 1" exclusion. Movement must also end with all models in coherency.</li>
 </ol>
 
 <h3>6.3 Terrain</h3>
@@ -3692,8 +3698,8 @@ shooting: `
 <h2>VII · Shooting</h2>
 <p>A unit may shoot if it has both a Shoot Dice stat and a Range stat. All shooting resolves after all movement and before any melee. Units in melee contact may not shoot and may not be targeted by shooting.</p>
 
-<h3>7.1 Line of Sight</h3>
-<p>Shooting uses the same Line of Sight rules as movement. See Ch. VI (Line of Sight &amp; Cover) for the full rules on friendly and enemy model blocking, woods, walls, Giants, and cover.</p>
+<h3>7.1 Line of Sight &amp; Cover</h3>
+<p>Shooting uses the same Line of Sight and Cover rules as movement. See Ch. VI (Line of Sight &amp; Cover) for the full rules on friendly and enemy model blocking, woods, walls, Giants, and cover bonuses.</p>
 
 <h3>7.2 Range Bands</h3>
 <table class="rule-table">
@@ -3705,8 +3711,8 @@ shooting: `
 
 <h3>7.3 Shoot Dice Procedure</h3>
 <ol>
-<li><strong>Assemble Dice Pool</strong> — Start with dice equal to the unit's Shoot Dice stat. Apply all modifiers: +1 die if 4+ models in the shooting unit have LoS (+2 if 8+ models); +1 die if the target has 4+ models (+2 if 8+ models); −2 if using Reposition. Then, if at long range, halve the total pool (round up). A unit with 2 or more base Shoot Dice cannot have its pool reduced below 1 die by modifiers.</li>
-<li><strong>Roll for Shock</strong> — Roll all dice. The target number is set by Shoot Strength vs. target Defense (see table). Each die that meets the target number inflicts <strong>1 shock</strong> on the target.</li>
+<li><strong>Assemble Dice Pool:</strong> start with dice equal to the unit's Shoot Dice stat. Apply all modifiers: +1 die if 4+ models in the shooting unit have LoS (+2 if 8+ models); +1 die if the target has 4+ models (+2 if 8+ models); −2 if using Reposition. Then, if at long range, halve the total pool (round up). A unit with 2 or more base Shoot Dice cannot have its pool reduced below 1 die by modifiers.</li>
+<li><strong>Roll for Shock:</strong> roll all dice. The target number is set by Shoot Strength vs. target Defense (see table). Each die that meets the target number inflicts <strong>1 shock</strong> on the target.</li>
 </ol>
 
 <h3>7.4 Target Number</h3>
@@ -3717,9 +3723,6 @@ shooting: `
 <tr><td>Defense 2+ higher than Shoot Strength</td><td>5+</td></tr>
 </table>
 <p><strong>Target number floor:</strong> No effect may reduce a combat dice target number below 3+. This applies to all modifiers including Piercing.</p>
-
-<h3>7.5 Cover</h3>
-<p>Cover requires that attackers cannot see the target's entire base. <strong>Soft Cover</strong> (woods, brush): +1 Defense vs shooting. <strong>Hard Cover</strong> (stone walls, ruins): +2 Defense vs shooting. Giant units cannot claim cover.</p>
 
 <p><em>Example:</em> A 6-model unit (Shoot Dice 4, Shoot Strength 2) fires at a 5-model unit (Defense 2) at medium range. Pool: 4 base + 1 (4+ shooters with LoS) + 1 (target 4+ models) = 6 dice. Strength equals Defense, target number is 4+. Rolls 6,5,3,2,4,1 → four dice meet 4+ → target takes 4 shock.</p>
 
@@ -3739,21 +3742,21 @@ melee: `
 
 <h3>8.1 Charging</h3>
 <ol>
-<li><strong>Declare Target</strong> — Name the enemy unit before rolling movement.</li>
-<li><strong>Take Shock</strong> — The charging leader takes 1 shock.</li>
-<li><strong>Move</strong> — Move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 and 5 are skipped. The 1 shock taken in step 2 is still lost. Remaining models move to maintain coherency with the leader.</li>
-<li><strong>Place Remaining Models</strong> — Models that can reach base contact in straight lines from their starting positions contribute their full Force to the combat. Remaining models are placed anywhere within unit coherency.</li>
-<li><strong>Courage Test</strong> — Target must pass (2d6 + Courage vs. current shock) or immediately Retreat. If they Retreat, the charger may pursue.</li>
+<li><strong>Declare Target:</strong> name the enemy unit before rolling movement.</li>
+<li><strong>Take Shock:</strong> the charging leader takes 1 shock.</li>
+<li><strong>Move:</strong> move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 and 5 are skipped. The 1 shock gained in step 2 is still applied. Remaining models move to maintain coherency with the leader.</li>
+<li><strong>Place Remaining Models:</strong> models that can reach base contact in straight lines from their starting positions contribute their full Force to the combat. Remaining models are placed anywhere within unit coherency.</li>
+<li><strong>Courage Test:</strong> the target must pass (2d6 + Courage vs. current shock) or immediately Retreat. If they Retreat, the charger may pursue.</li>
 </ol>
-<p><em>Counter-Shooting:</em> If the charging unit moved more than 10" and the target passes their Courage Test, the target may shoot at the charger before melee resolves. Apply any shock from counter-shooting immediately — it affects the charger's shock total before melee dice pools are assembled.</p>
-<p><em>Pursuit:</em> Whenever an enemy Retreats as the result of a failed Courage Test, the unit that caused the Retreat may pursue — declaring a new Charge against the retreating unit and taking 1 shock. Pursuit follows the normal Charge procedure.</p>
+<p><em>Counter-Shooting:</em> If the charging unit moved more than 10" and the target passes their Courage Test, the target may shoot at the charger before melee resolves. Apply any shock from counter-shooting immediately; it affects the charger's shock total before melee dice pools are assembled.</p>
+<p><em>Pursuit:</em> Whenever an enemy Retreats as the result of a failed Courage Test, the unit that caused the Retreat may pursue, declaring a new Charge against the retreating unit and taking 1 shock. Pursuit follows the normal Charge procedure.</p>
 
 <h3>8.2 Melee Procedure</h3>
-<p>Both sides resolve simultaneously — neither acts before the other. A unit always fights back when it is the target of a melee attack, regardless of whether it has been activated this Turn.</p>
+<p>Both sides resolve simultaneously; neither acts before the other. A unit always fights back when it is the target of a melee attack, regardless of whether it has been activated this Turn.</p>
 <ol>
-<li><strong>Assemble Dice Pool</strong> — Start with Fight Dice stat dice. Apply modifiers from the table below.</li>
-<li><strong>Roll for Shock</strong> — Both sides roll simultaneously. The target number is set by Fight Strength vs. target Defense (see table). Each die that meets the target number inflicts <strong>1 shock</strong> on the target.</li>
-<li><strong>Determine Winner</strong> — Compare total shock inflicted by each side. More shock = winner; the loser makes a Courage Test. On a tie (equal shock from both sides), neither unit tests Courage — both hold their ground and remain in contact.</li>
+<li><strong>Assemble Dice Pool:</strong> start with Fight Dice stat dice. Apply modifiers from the table below.</li>
+<li><strong>Roll for Shock:</strong> both sides roll simultaneously. The target number is set by Fight Strength vs. target Defense (see table). Each die that meets the target number inflicts <strong>1 shock</strong> on the target.</li>
+<li><strong>Determine Winner:</strong> compare total shock inflicted by each side. The side that inflicted more shock wins; the loser makes a Courage Test. On a tie, neither unit tests Courage; both hold their ground and remain in contact.</li>
 </ol>
 
 <h3>8.3 Target Number</h3>
@@ -3775,7 +3778,7 @@ melee: `
 </table>
 <p><em>Force in Contact:</em> When charging, count each model's full Force value. In ongoing melee (already in contact at the start of the Turn), all models count as Force 1 regardless of type. Only models in base contact with the enemy, or in base contact with friendly models already in contact, contribute Force.</p>
 
-<h3>8.5 Courage Test — Combat Loser</h3>
+<h3>8.5 Courage Test: Combat Loser</h3>
 <p>Roll <strong>2d6 + Courage</strong> and beat the unit's current shock. <strong>Double 1s always fail.</strong></p>
 <table class="rule-table">
 <tr><th>Result</th><th>Outcome</th></tr>
@@ -3787,8 +3790,8 @@ melee: `
 
 <h3>8.6 Ongoing Melee &amp; Multiple Units</h3>
 <ul>
-<li>Units remaining in contact continue fighting in subsequent Turns. A unit may Retreat from melee — taking 1 shock to break contact.</li>
-<li>Add Fight Dice of all friendly units in contact with the same enemy target (unless those units are also touching a different enemy). Defender allocates received shock among their engaged units, distributing at least 1 to as many units as possible before adding additional shock to any single unit.</li>
+<li>Units remaining in contact continue fighting in subsequent Turns. A unit may Retreat from melee, taking 1 shock to break contact.</li>
+<li>Combine the Fight Dice pools of all friendly units in contact with the same enemy target (unless those units are also touching a different enemy). The defender allocates received shock among their engaged units, distributing at least 1 to as many units as possible before adding additional shock to any single unit.</li>
 </ul>
 
 <table class="rule-table">
@@ -3809,7 +3812,7 @@ org: `
 <table class="rule-table">
 <tr><th>Level</th><th>Size</th><th>Leadership</th><th>Optional</th></tr>
 <tr><td>Company</td><td>1–3 units</td><td>0–1 Captains; up to 2 Commanders total</td><td>1 Special Asset (3 for Engineering)</td></tr>
-<tr><td>Regiment</td><td>1–3 Companies</td><td>0–1 Generals</td><td>—</td></tr>
+<tr><td>Regiment</td><td>1–3 Companies</td><td>0–1 Generals</td><td>None</td></tr>
 </table>
 <p>A Company must be filled to its maximum of 3 units before a new Company may be added to the same Regiment. A Regiment must have 3 Companies before a new Regiment may be added. <strong>At least 1 Captain required across the entire army.</strong></p>
 <p><em>Commander limits:</em> Max 1 Captain per company. Max 1 General per regiment. Max 2 Commanders total per company. Commanders do not count toward the 3-unit company limit.</p>
@@ -3822,7 +3825,7 @@ org: `
 <tr><td>Monstrous Creature</td><td>Giant ability (free) · +2 Fight Dice · +1 Fight Strength</td></tr>
 <tr><td>Colossal Machine</td><td>Giant ability (free) · +2 Defense · Steam Power</td></tr>
 </table>
-<p><em>Giant ability (included free):</em> +1 Defense, shoot and be shot at over non-Giant units, cannot claim cover bonuses, counts full Force in melee regardless of charging.</p>
+<p><em>Giant ability (included free):</em> +1 Defense; may shoot and be shot at over non-Giant units; cannot claim cover bonuses; counts full Force in melee regardless of charging.</p>
 
 <h3>9.3 Company Types</h3>
 <p>A Company may specialise at army building, gaining a bonus and accepting a restriction.</p>
@@ -3832,7 +3835,7 @@ org: `
 <tr><td>Guard</td><td>All units gain Loyal free</td><td>Units must stay within 12" of any Commander. If no friendly Commanders remain on the table, this restriction is void.</td></tr>
 <tr><td>Rifle</td><td>No penalty for long-range shooting</td><td>At army building, all units including Commanders must be built with at least 2 Range ranks and no more than 2 ranks of Defense</td></tr>
 <tr><td>Scout</td><td>All units gain Ambush free</td><td>No unit may have more than 3 total Force</td></tr>
-<tr><td>Engineering</td><td>May include up to 3 Colossal Machine Special Assets</td><td>All Special Assets must have the Steam Power ability; must include 1 Commander with the Engineer ability; no other unit types permitted</td></tr>
+<tr><td>Engineering</td><td>May include up to 3 Colossal Machine Special Assets</td><td>All Special Assets must have the Steam Power ability; must include 1 Commander with the Engineer ability; all non-Commander units must be Colossal Machine Special Assets</td></tr>
 </table>
 
 <table class="rule-table">
@@ -3840,23 +3843,23 @@ org: `
 <tr><td>Structure</td><td>1–3 units = Company · 1–3 Companies = Regiment · must fill each to max before adding a new one</td></tr>
 <tr><td>Leadership</td><td>Max 1 Captain per company · max 2 Commanders per company · max 1 General per regiment · Commanders do not fill unit slots · army needs at least 1 Captain</td></tr>
 <tr><td>Special Assets</td><td>10 pt fee · raises rank cap to 20 · Giant free · do not fill Company unit slots</td></tr>
-<tr><td>Company types</td><td>Assault, Guard, Rifle, Scout, Engineering — each adds a bonus and a restriction</td></tr>
+<tr><td>Company types</td><td>Assault, Guard, Rifle, Scout, Engineering; each adds a bonus and a restriction</td></tr>
 </table>
 `,
 
 points: `
 <h2>X · Points &amp; Army Building</h2>
-<p>All stats are purchased as <strong>ranks</strong> at a flat cost. Every unit — including Commanders — starts with 0 in every stat. Regular units may purchase up to <strong>16 ranks total</strong>, with a maximum of <strong>5 ranks in any single stat</strong>. Special ability bonuses exceed these caps freely.</p>
+<p>All stats are purchased as <strong>ranks</strong> at a flat cost. Every unit (including Commanders) starts with 0 in every stat. Regular units may purchase up to <strong>16 ranks total</strong>, with a maximum of <strong>5 ranks in any single stat</strong>. Special ability bonuses exceed these caps freely.</p>
 
 <h3>10.1 Base Costs</h3>
 <table class="rule-table">
 <tr><th>Item</th><th>Cost</th></tr>
-<tr><td>All stats (per rank)</td><td>1 pt per rank · max 5 per stat · 16 total ranks (20 for Special Assets)</td></tr>
-<tr><td>Move (per rank)</td><td>1 pt per rank · max 5 ranks · each rank adds 2" to movement rolls</td></tr>
+<tr><td>All stats except Move (per rank)</td><td>1 pt per rank · max 5 per stat · 16 total ranks (20 for Special Assets)</td></tr>
+<tr><td>Move (per rank)</td><td>1 pt per rank · max 5 ranks · each rank adds 2" to movement distance</td></tr>
 <tr><td>Force (per model)</td><td>1 pt per Force value per model · Infantry=1pt, Cavalry/Large=2pts, Hero/Creature=3pts</td></tr>
-<tr><td>Captain</td><td>15 pts + Force cost + rank purchases (army must include at least 1)</td></tr>
+<tr><td>Captain</td><td>15 pts + Force cost + rank purchases · army must include at least 1</td></tr>
 <tr><td>General</td><td>30 pts + Force cost + rank purchases</td></tr>
-<tr><td>Special Asset designation</td><td>10 pts — raises rank cap to 20; unit does not fill Company slots</td></tr>
+<tr><td>Special Asset designation</td><td>10 pts; raises rank cap to 20; unit does not fill Company slots</td></tr>
 </table>
 <p><em>Rank caps:</em> Regular units and Commanders: 16 ranks total, max 5 per stat. Special Assets: 20 ranks total, max 5 per stat (purchased ranks only). Special ability bonuses stack freely and are not subject to these caps.</p>
 
@@ -3864,36 +3867,36 @@ points: `
 <p>Each unit may have a maximum of <strong>3 special abilities</strong> (not counting the Army Trait, if one is selected).</p>
 <p><strong>Army Trait:</strong> Once per army, a player may designate one special ability as the Army Trait. That ability is applied to every unit in the army and does not count toward any unit's 3-ability limit. The cost is paid per unit as normal. Commander-only abilities may not be selected as the Army Trait. The Army Trait is set at the army level in the builder and cannot be purchased individually by units.</p>
 
-<h3>10.2 Special Abilities — Combat</h3>
+<h3>10.2 Special Abilities: Combat</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>a.cat==='Combat').map(a=>`<tr><td><strong>${esc(a.name)}</strong></td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
 
-<h3>10.3 Special Abilities — Defense</h3>
+<h3>10.3 Special Abilities: Defense</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>a.cat==='Defense').map(a=>`<tr><td><strong>${esc(a.name)}</strong></td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
 
-<h3>10.4 Special Abilities — Ranged</h3>
+<h3>10.4 Special Abilities: Ranged</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>a.cat==='Ranged').map(a=>`<tr><td><strong>${esc(a.name)}</strong></td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
 
-<h3>10.5 Special Abilities — Movement, Morale &amp; Support</h3>
+<h3>10.5 Special Abilities: Movement, Morale &amp; Support</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>['Movement','Morale','Support'].includes(a.cat)).map(a=>`<tr><td><strong>${esc(a.name)}</strong></td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
 
-<h3>10.6 Special Abilities — Special &amp; Tech</h3>
+<h3>10.6 Special Abilities: Special &amp; Tech</h3>
 <table class="rule-table">
 <tr><th>Ability</th><th>Cost</th><th>Effect</th></tr>
 ${ABILITIES.filter(a=>['Special','Tech'].includes(a.cat)).map(a=>`<tr><td><strong>${esc(a.name)}</strong>${a.commanderOnly?' <span style="font-size:10px;color:var(--gold);">(Commanders only)</span>':''}</td><td>${a.cost}pts</td><td>${a.desc}</td></tr>`).join('')}
 </table>
-<p><em>Steam Power &amp; Engineer:</em> These two abilities work as a pair. A Steam Power unit may use its once-per-activation boost freely, but may only Rally if the Commander who activated it has the Engineer ability. An Engineering Company (see Ch. IX) is built around this synergy — Colossal Machine Special Assets with Steam Power, led by a Commander with Engineer.</p>
+<p><em>Steam Power &amp; Engineer:</em> These two abilities work as a pair. A Steam Power unit may use its once-per-activation boost freely, but may only Rally if the Commander who activated it has the Engineer ability. An Engineering Company (see Ch. IX) is built around this synergy: Colossal Machine Special Assets with Steam Power, led by a Commander with Engineer.</p>
 
 <h3>10.7 Stat Bonus Abilities</h3>
 <p>Each permanently adds 1 rank to a specific stat. The bonus rank does not count toward the per-stat maximum or the unit's total rank pool. Each costs 3 pts.</p>
@@ -3905,12 +3908,12 @@ ${ABILITIES.filter(a=>a.cat==='Stat').map(a=>`<tr><td><strong>${esc(a.name)}</st
 
 scenarios: `
 <h2>XI · Test Scenarios</h2>
-<p>Two scenarios for initial playtesting — one symmetric, one asymmetric.</p>
+<p>Two scenarios for initial playtesting, one symmetric and one asymmetric.</p>
 
 <h3>Objective Control</h3>
 <p>A unit controls an objective if its leader model is within 3" of the objective marker and no enemy leader model is also within 3". If both sides have a leader model within 3", the objective is contested and neither player scores it.</p>
 
-<h3>Scenario I — Meeting Engagement</h3>
+<h3>Scenario I: Meeting Engagement</h3>
 <p><em>A clash of equal forces for the ground between them. Both sides advance onto three contested objectives.</em></p>
 <ul>
 <li><strong>Setup:</strong> 3 objectives in a line across the table center, evenly spaced.</li>
@@ -3919,7 +3922,7 @@ scenarios: `
 <li><strong>Army Morale:</strong> When a unit is destroyed, roll 2d6 + General's Courage vs. the opponent's current victory point total. Equal or lower = army retreats and loses.</li>
 </ul>
 
-<h3>Scenario II — Defensive Battle</h3>
+<h3>Scenario II: Defensive Battle</h3>
 <p><em>One force holds prepared positions; the other must crack them.</em></p>
 <ul>
 <li><strong>Setup:</strong> Defender chooses table side, places half or more units in reserve. Attacker places 3 objectives at 6", 12", and 18" into defender's half.</li>
@@ -4094,7 +4097,7 @@ function renderModalGrid(unit) {
     .filter(a => modalActiveCat === 'All' || a.cat === modalActiveCat)
     .filter(a => a.name !== state.armyAbility);
 
-  document.getElementById('modal-unit-name').textContent = unit.name + ' — Abilities';
+  document.getElementById('modal-unit-name').textContent = unit.name + ': Abilities';
   const countText = abilityCount + '/3' + (state.armyAbility ? ' + army trait' : '') + ' · ' + abilityCost(unit) + 'pts total';
   document.getElementById('modal-unit-pts').textContent = countText;
 
