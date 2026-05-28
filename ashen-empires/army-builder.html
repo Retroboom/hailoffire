@@ -2426,7 +2426,12 @@ function printRoster() {
         ...nonGenerals.filter(u => u.isSpecialAsset),
       ];
 
-      const unitRows = sortedUnits.map(u => unitRowHtml(u)).join('');
+      const unitRows = sortedUnits.map((u, i) => {
+        const next = sortedUnits[i + 1];
+        const gap = (u.isCommander && next && !next.isCommander)
+          ? '<tr class="commander-gap"><td colspan="3"></td></tr>' : '';
+        return unitRowHtml(u) + gap;
+      }).join('');
 
       return `<div class="company-block">
         <div class="company-header">
@@ -2467,6 +2472,7 @@ function printRoster() {
   .roster-table td{padding:5pt 6pt;vertical-align:top;}
   /* Unit separator sits at the bottom of each unit's last row — never crosses the stat area */
   tr.unit-end td{border-bottom:2px solid #bbb;}
+  tr.commander-gap td{height:6pt;padding:0;border:none;}
   tr.desc-row td{border-top:none;}
   .commander-row td{background:#f7f5f0;}
   .col-unit{width:22%;}
