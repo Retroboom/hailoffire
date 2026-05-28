@@ -2345,14 +2345,29 @@ function printRoster() {
     const forceInfo = u.isCommander ? ''
       : `<div class="unit-meta">${ft.label} \xd7${u.models} \xb7 Force ${ft.force * u.models}</div>`;
     const rowClass = (u.isCommander ? 'commander-row ' : '') + 'unit-main';
-    // Army Trait stripped from per-unit descriptions (shown in callout at top)
+
+    // Build ordered ability entries: army trait first, then unit abilities, then asset description
+    const abilEntries = [];
+    if (state.armyAbility) {
+      const aa = ABILITIES.find(a => a.name === state.armyAbility);
+      abilEntries.push({ name: state.armyAbility, desc: aa ? aa.desc : '', isArmyTrait: true });
+    }
+    u.abilities.forEach(name => {
+      const ab = ABILITIES.find(a => a.name === name);
+      abilEntries.push({ name, desc: ab ? ab.desc : '' });
+    });
+    if (u.isSpecialAsset) {
+      const at = ASSET_TYPES[u.assetType];
+      abilEntries.push({ name: at.label, desc: at.bonus, isAsset: true });
+    }
+
     // Separator sits as border-bottom on the last row of each unit — never crosses the stat area
-    const unitAbils = u.abilities;
     let descSubRow = '';
-    if (unitAbils.length > 0) {
-      const descItems = unitAbils.map(name => {
-        const ab = ABILITIES.find(a => a.name === name);
-        return `<dt>${esc(name)}</dt><dd>${ab ? esc(ab.desc) : ''}</dd>`;
+    if (abilEntries.length > 0) {
+      const descItems = abilEntries.map(({ name, desc, isArmyTrait }) => {
+        const badge = isArmyTrait ? '<span class="trait-badge">Army Trait</span>' : '';
+        const dtClass = isArmyTrait ? ' class="dt-army-trait"' : '';
+        return `<dt${dtClass}>• ${esc(name)}${badge}</dt><dd>${esc(desc)}</dd>`;
       }).join('');
       descSubRow = `<tr class="${u.isCommander ? 'commander-row ' : ''}desc-row unit-end"><td colspan="${TOTAL_COLS}" class="desc-cell"><dl class="ability-list">${descItems}</dl></td></tr>`;
     }
@@ -2477,6 +2492,8 @@ function printRoster() {
   .ability-list{display:grid;grid-template-columns:max-content 1fr;column-gap:10pt;row-gap:1.5pt;font-size:7.5pt;line-height:1.4;margin:0;padding:0;list-style:none;}
   .ability-list dt{font-weight:bold;white-space:nowrap;padding:0;}
   .ability-list dd{margin:0;color:#444;}
+  .dt-army-trait{color:#8a6820;}
+  .trait-badge{font-weight:normal;font-style:italic;font-size:5.5pt;color:#a07828;margin-left:3pt;}
   .total{text-align:right;font-size:10.5pt;font-weight:bold;margin-top:10pt;border-top:2px solid #1a1a1a;padding-top:4pt;}
   @media print{body{margin:0.8cm 1cm;}.company-block{break-inside:avoid;}}
 </style>
