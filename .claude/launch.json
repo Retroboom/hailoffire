@@ -6,6 +6,18 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8081"],
       "port": 8081
+    },
+    {
+      "name": "arsenal",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8082", "--directory", "/Users/brandonfraley/Library/Mobile Documents/com~apple~CloudDocs/retroboom/arsenal"],
+      "port": 8082
+    },
+    {
+      "name": "army-builder",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8083", "--directory", "/Users/brandonfraley/Library/Mobile Documents/com~apple~CloudDocs/retroboom/ashen-empires"],
+      "port": 8083
     }
   ]
 }
