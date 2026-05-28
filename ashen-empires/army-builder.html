@@ -657,6 +657,35 @@
     font-family: 'Libre Baskerville', serif;
   }
 
+  /* ── GENERAL ROW (sidebar, under regiment header) ── */
+  .general-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 10px 6px 10px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: border-color 0.15s, background 0.1s;
+  }
+  .general-row:hover { background: var(--faint); border-left-color: var(--navy4); }
+  .general-row.active { background: var(--faint); border-left-color: var(--gold); }
+  .general-row-name { font-size: 11px; color: var(--gold); letter-spacing: 0.03em; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; }
+  .add-general-btn {
+    background: transparent;
+    border: 1px dashed var(--navy4);
+    color: var(--mist);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .add-general-btn:hover { border-color: var(--gold); color: var(--gold); }
+
   /* ── INSPECTOR PANEL ── */
   .inspector {
     background: var(--navy2);
@@ -1646,6 +1675,7 @@ let state = {
   companies: [],
   activeCompanyId: null,
   activeRegimentId: null,
+  activeGeneralRegimentId: null,
   budget: null,
   armyAbility: null,
 };
@@ -1669,7 +1699,7 @@ function newUnit(isCommander = false) {
 }
 
 function newRegiment() {
-  return { id: uid(), name: `Regiment ${state.regiments.length + 1}` };
+  return { id: uid(), name: `Regiment ${state.regiments.length + 1}`, general: null };
 }
 
 function newCompany(regimentId) {
@@ -1747,7 +1777,15 @@ function companyIsFull(company) {
 }
 
 function totalArmyPts() {
-  return state.companies.reduce((s, c) => s + c.units.reduce((t, u) => t + unitCost(u), 0), 0);
+  const companyPts = state.companies.reduce((s, c) => s + c.units.reduce((t, u) => t + unitCost(u), 0), 0);
+  const generalPts = state.regiments.reduce((s, r) => s + (r.general ? unitCost(r.general) : 0), 0);
+  return companyPts + generalPts;
+}
+
+function allArmyUnits() {
+  const companyUnits = state.companies.flatMap(c => c.units);
+  const generals = state.regiments.filter(r => r.general).map(r => r.general);
+  return [...companyUnits, ...generals];
 }
 
 function updatePtsDisplay() {
@@ -1893,17 +1931,29 @@ function renderSidebar() {
   state.regiments.forEach(regiment => {
     const isActiveReg = regiment.id === state.activeRegimentId;
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
-    const generals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General'));
 
-    // Feature 2b: company slot usage on regiment header
+    // Company slot usage badge
     const compCount = regCompanies.length;
     const compSlotClass = compCount >= 3 ? 'full' : '';
     const compSlotBadge = `<span class="slot-badge ${compSlotClass}">${compCount}/3</span>`;
 
-    // Feature 3b / 5b: General indicator on regiment header
-    const generalLine = generals.length > 0
-      ? `<div style="padding:0 10px 5px;font-size:10px;color:var(--gold);letter-spacing:0.03em;">⚔ ${generals.map(g => esc(g.name)).join(', ')}</div>`
-      : `<div style="padding:0 10px 5px;"><span class="no-general-badge">No General assigned</span></div>`;
+    // General row: clickable if exists, add-button if not
+    const isActiveGeneral = state.activeGeneralRegimentId === regiment.id;
+    let generalLine;
+    if (regiment.general) {
+      const genPts = unitCost(regiment.general);
+      generalLine = `<div class="general-row${isActiveGeneral ? ' active' : ''}" onclick="selectGeneral('${regiment.id}')">
+        <span class="general-row-name">⚔ ${esc(regiment.general.name)}</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:10px;color:var(--mist);font-family:'Share Tech Mono',monospace;">${genPts}pts</span>
+          <button class="delete-btn" onclick="event.stopPropagation();deleteGeneral('${regiment.id}')" title="Remove General">×</button>
+        </div>
+      </div>`;
+    } else {
+      generalLine = `<div style="padding:2px 10px 6px;">
+        <button class="add-general-btn" onclick="addGeneral('${regiment.id}')">+ Add General</button>
+      </div>`;
+    }
 
     const regDiv = document.createElement('div');
     regDiv.className = 'regiment-group' + (isActiveReg ? ' active-regiment' : '');
@@ -1984,12 +2034,12 @@ function renderStructureView() {
 
   state.regiments.forEach((regiment) => {
     const companies = state.companies.filter(c => c.regimentId === regiment.id);
-    const generals = companies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General'));
+    const generalName = regiment.general ? regiment.general.name : 'No General';
     const div = document.createElement('div');
     div.className = 'regiment-block';
     div.innerHTML = `
       <div class="regiment-header">
-        <span>${esc(regiment.name)} — <strong>${generals.length > 0 ? generals.map(g => esc(g.name)).join(', ') : 'No General'}</strong></span>
+        <span>${esc(regiment.name)} — <strong>${esc(generalName)}</strong></span>
       </div>
       <div style="padding:4px 8px 6px;">
         ${companies.map(c => `<div style="font-size:11px;color:var(--mist);padding:2px 0;">↳ ${esc(c.name)} (${c.units.length} unit${c.units.length !== 1 ? 's' : ''})</div>`).join('')}
@@ -2002,11 +2052,33 @@ function renderStructureView() {
 function renderMainCanvas() {
   const emptyState = document.getElementById('empty-state');
   const unitList = document.getElementById('unit-list');
+  const ctxEl = document.getElementById('mobile-company-context');
+
+  // ── General editing mode ──
+  if (state.activeGeneralRegimentId) {
+    const regiment = state.regiments.find(r => r.id === state.activeGeneralRegimentId);
+    if (regiment && regiment.general) {
+      emptyState.style.display = 'none';
+      unitList.style.display = '';
+      unitList.innerHTML = '';
+      if (ctxEl) {
+        ctxEl.innerHTML = `<span class="ctx-regiment">${esc(regiment.name)}</span><span class="ctx-sep">›</span><span class="ctx-company">General</span>`;
+        ctxEl.classList.add('active');
+      }
+      const hdr = document.createElement('div');
+      hdr.className = 'company-canvas-breadcrumb';
+      hdr.style.cssText = 'font-size:10px;color:var(--mist);padding:0 0 10px;margin-bottom:4px;border-bottom:1px solid var(--faint);letter-spacing:0.02em;';
+      hdr.innerHTML = `<span style="color:var(--gold);font-family:'Cinzel',serif;">${esc(regiment.name)}</span><span style="color:var(--navy4);margin:0 6px;">›</span><span>General</span>`;
+      unitList.appendChild(hdr);
+      unitList.appendChild(buildUnitCard(regiment.general, null, regiment));
+      return;
+    }
+    state.activeGeneralRegimentId = null;
+  }
 
   const company = state.companies.find(c => c.id === state.activeCompanyId);
 
   // Update mobile context breadcrumb
-  const ctxEl = document.getElementById('mobile-company-context');
   if (ctxEl) {
     if (company) {
       const ctxReg = state.regiments.find(r => r.id === company.regimentId);
@@ -2107,10 +2179,13 @@ function renderMainCanvas() {
   renderGroup(specials, 'Special Assets');
 }
 
-function buildUnitCard(unit, company) {
+function buildUnitCard(unit, company, regiment = null) {
   const card = document.createElement('div');
   card.className = 'unit-card';
   card.id = `unit-${unit.id}`;
+
+  // Generals belong to a regiment, not a company
+  const isGeneral = unit.isCommander && unit.commanderType === 'General';
 
   const ft = FORCE_TYPES[unit.forceType];
   const ranks = totalRanks(unit);
@@ -2118,19 +2193,6 @@ function buildUnitCard(unit, company) {
   const pct = Math.min(100, (ranks / cap) * 100);
   const capClass = pct >= 100 ? 'over' : pct >= 80 ? 'warn' : 'ok';
   const pts = unitCost(unit);
-
-  // Feature 5a: check if this General conflicts with another in the regiment
-  let generalConflictMsg = '';
-  if (unit.isCommander && unit.commanderType === 'General' && company) {
-    const regiment = state.regiments.find(r => r.id === company.regimentId);
-    if (regiment) {
-      const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
-      const regGenerals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General' && u.id !== unit.id));
-      if (regGenerals.length > 0) {
-        generalConflictMsg = `This regiment already has a General (${esc(regGenerals[0].name)}). Only one General is allowed per regiment.`;
-      }
-    }
-  }
 
   // Feature 7a: special asset slot info for this unit's company
   let assetSlotHtml = '';
@@ -2163,20 +2225,19 @@ function buildUnitCard(unit, company) {
       <input class="unit-name-input" value="${esc(unit.name)}"
         onchange="updateUnitField('${unit.id}', 'name', this.value)">
       ${unit.isCommander ? `
-        <select class="unit-type-select" onchange="updateCommanderType('${unit.id}', this.value)">
-          <option value="Captain" ${unit.commanderType === 'Captain' ? 'selected' : ''}>Captain</option>
-          <option value="General" ${unit.commanderType === 'General' ? 'selected' : ''}>General</option>
-        </select>
+        <span class="unit-type-select" style="cursor:default;user-select:none;">${unit.commanderType}</span>
       ` : `
         <select class="unit-type-select" onchange="updateUnitForceType('${unit.id}', this.value)">
           ${FORCE_TYPES.map((ft, i) => `<option value="${i}" ${unit.forceType === i ? 'selected' : ''}>${ft.short}</option>`).join('')}
         </select>
       `}
       <div class="unit-pts-badge">${pts} <span class="pts-label">pts</span></div>
-      <button class="delete-btn dup" onclick="duplicateUnit('${company.id}', '${unit.id}')" title="Duplicate unit" style="font-size:13px;">⧉</button>
-      <button class="delete-btn" onclick="deleteUnit('${company.id}', '${unit.id}')" title="Delete unit">×</button>
+      ${isGeneral
+        ? `<button class="delete-btn" onclick="deleteGeneral('${regiment ? regiment.id : ''}')" title="Remove General">×</button>`
+        : `<button class="delete-btn dup" onclick="duplicateUnit('${company.id}', '${unit.id}')" title="Duplicate unit" style="font-size:13px;">⧉</button>
+           <button class="delete-btn" onclick="deleteUnit('${company.id}', '${unit.id}')" title="Delete unit">×</button>`
+      }
     </div>
-    ${generalConflictMsg ? `<div class="inline-error" style="margin:0 14px 0;">${generalConflictMsg}</div>` : ''}
     <div class="unit-card-body">
       <div class="stats-section">
         <div class="section-title">Stats &amp; Force</div>
@@ -2363,24 +2424,20 @@ function renderRosterView() {
     regDiv.style.cssText = 'margin-bottom:14px;';
     regDiv.innerHTML = `<div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--faint);">${esc(regiment.name)}</div>`;
 
-    // Generals command the regiment; show them above companies
-    const regGenerals = regCompanies.flatMap(c =>
-      c.units.filter(u => u.isCommander && u.commanderType === 'General')
-    );
-    regGenerals.forEach(u => regDiv.appendChild(buildUnitCard(u)));
+    // General commands the regiment; show above companies
+    if (regiment.general) regDiv.appendChild(buildUnitCard(regiment.general, null, regiment));
 
     regCompanies.forEach(company => {
-      const nonGenerals = company.units.filter(u => !(u.isCommander && u.commanderType === 'General'));
-      if (nonGenerals.length === 0) return;
+      if (company.units.length === 0) return;
 
       const cdiv = document.createElement('div');
       cdiv.style.cssText = 'margin-bottom:10px;';
-      const compPts = nonGenerals.reduce((s, u) => s + unitCost(u), 0);
+      const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
       cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
 
       const sortedUnits = [
-        ...nonGenerals.filter(u => u.isCommander),
-        ...nonGenerals.filter(u => !u.isCommander),
+        ...company.units.filter(u => u.isCommander),
+        ...company.units.filter(u => !u.isCommander),
       ];
 
       sortedUnits.forEach((u, i) => {
@@ -2402,7 +2459,7 @@ function renderRosterView() {
 
 function renderBreakdown() {
   const bv = document.getElementById('breakdown-view');
-  const allUnits = state.companies.flatMap(c => c.units);
+  const allUnits = allArmyUnits();
 
   const statsPts    = allUnits.reduce((s, u) => s + statCost(u), 0);
   const forcePts    = allUnits.reduce((s, u) => s + forceCost(u), 0);
@@ -2454,7 +2511,7 @@ function renderValidation() {
 
 function validate() {
   const issues = [];
-  const allUnits = state.companies.flatMap(c => c.units);
+  const allUnits = allArmyUnits();
 
   // Must have at least 1 Captain
   const hasCaptain = allUnits.some(u => u.isCommander && u.commanderType === 'Captain');
@@ -2481,12 +2538,10 @@ function validate() {
     if (specials > maxSpecials) issues.push({ type: 'error', msg: `"${c.name}": max ${maxSpecials} Special Asset(s) for this company type.` });
   });
 
-  // Regiment limits: max 3 companies per regiment, max 1 General per regiment
+  // Regiment limits: max 3 companies per regiment
   state.regiments.forEach((regiment) => {
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
     if (regCompanies.length > 3) issues.push({ type: 'error', msg: `${regiment.name}: max 3 companies per regiment.` });
-    const generals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General'));
-    if (generals.length > 1) issues.push({ type: 'error', msg: `${regiment.name}: max 1 General per regiment.` });
   });
 
   // Rifle company
@@ -2587,13 +2642,16 @@ function deleteCompany(id) {
 
 function deleteRegiment(id) {
   const hasCompanies = state.companies.some(c => c.regimentId === id);
-  if (hasCompanies && !confirm('Delete this regiment and all its companies and units?')) return;
+  const reg = state.regiments.find(r => r.id === id);
+  const hasGeneral = reg && reg.general;
+  if ((hasCompanies || hasGeneral) && !confirm('Delete this regiment and all its companies, units, and General?')) return;
   state.companies = state.companies.filter(c => c.regimentId !== id);
   state.regiments = state.regiments.filter(r => r.id !== id);
   if (state.activeRegimentId === id) {
     state.activeRegimentId = state.regiments[0]?.id || null;
     state.activeCompanyId = state.companies[0]?.id || null;
   }
+  if (state.activeGeneralRegimentId === id) state.activeGeneralRegimentId = null;
   render();
 }
 
@@ -2604,6 +2662,7 @@ function newArmy() {
   state.companies = [];
   state.activeCompanyId = null;
   state.activeRegimentId = null;
+  state.activeGeneralRegimentId = null;
   state.budget = null;
   state.armyAbility = null;
   nextId = 1;
@@ -2616,15 +2675,67 @@ function newArmy() {
 
 function selectCompany(id) {
   state.activeCompanyId = id;
+  state.activeGeneralRegimentId = null;
   const canvas = document.getElementById('main-canvas');
   if (canvas) canvas.scrollTop = 0;
-  if (isMobile()) setMobileTab(1); // jump to Builder on mobile
+  if (isMobile()) setMobileTab(1);
   render();
 }
 
 function selectRegiment(id) {
   state.activeRegimentId = id;
   render();
+}
+
+function selectGeneral(regimentId) {
+  const r = state.regiments.find(r => r.id === regimentId);
+  if (!r || !r.general) return;
+  state.activeGeneralRegimentId = regimentId;
+  state.activeCompanyId = null;
+  const canvas = document.getElementById('main-canvas');
+  if (canvas) canvas.scrollTop = 0;
+  if (isMobile()) setMobileTab(1);
+  render();
+}
+
+function addGeneral(regimentId) {
+  const r = state.regiments.find(r => r.id === regimentId);
+  if (!r || r.general) return;
+  const g = newUnit(true);
+  g.name = 'General';
+  g.commanderType = 'General';
+  r.general = g;
+  state.activeGeneralRegimentId = regimentId;
+  state.activeCompanyId = null;
+  const canvas = document.getElementById('main-canvas');
+  if (canvas) canvas.scrollTop = 0;
+  if (isMobile()) setMobileTab(1);
+  render();
+}
+
+function deleteGeneral(regimentId) {
+  if (!confirm('Remove this General?')) return;
+  const r = state.regiments.find(r => r.id === regimentId);
+  if (!r) return;
+  r.general = null;
+  if (state.activeGeneralRegimentId === regimentId) state.activeGeneralRegimentId = null;
+  render();
+}
+
+// Move generals from legacy company units to regiment.general (backward-compat migration)
+function migrateLegacyGenerals() {
+  state.regiments.forEach(r => {
+    if (!Object.prototype.hasOwnProperty.call(r, 'general')) r.general = null;
+    if (r.general) return;
+    const regCompanies = state.companies.filter(c => c.regimentId === r.id);
+    for (const c of regCompanies) {
+      const idx = c.units.findIndex(u => u.isCommander && u.commanderType === 'General');
+      if (idx !== -1) {
+        r.general = c.units.splice(idx, 1)[0];
+        break;
+      }
+    }
+  });
 }
 
 function renameRegiment(id, name) {
@@ -2710,11 +2821,15 @@ function duplicateCompany(id) {
 
 function duplicateRegiment(regimentId) {
   const regCompanies = state.companies.filter(c => c.regimentId === regimentId);
-  if (regCompanies.length === 0) return;
+  const srcReg = state.regiments.find(r => r.id === regimentId);
+  if (!srcReg) return;
   const newReg = newRegiment();
   const allRegNames = state.regiments.map(r => r.name);
-  const srcReg = state.regiments.find(r => r.id === regimentId);
-  newReg.name = nextCopyName(srcReg ? srcReg.name : newReg.name, allRegNames);
+  newReg.name = nextCopyName(srcReg.name, allRegNames);
+  // Copy the general if one exists
+  if (srcReg.general) {
+    newReg.general = { ...JSON.parse(JSON.stringify(srcReg.general)), id: uid() };
+  }
   state.regiments.push(newReg);
   const copies = regCompanies.map(c => {
     const copy = JSON.parse(JSON.stringify(c));
@@ -2727,7 +2842,7 @@ function duplicateRegiment(regimentId) {
   });
   state.companies.push(...copies);
   state.activeRegimentId = newReg.id;
-  state.activeCompanyId = copies[0].id;
+  state.activeCompanyId = copies[0]?.id || null;
   render();
 }
 
@@ -2842,6 +2957,9 @@ function findUnit(id) {
     const u = c.units.find(u => u.id === id);
     if (u) return u;
   }
+  for (const r of state.regiments) {
+    if (r.general && r.general.id === id) return r.general;
+  }
   return null;
 }
 
@@ -2875,7 +2993,10 @@ function loadJSON(input) {
       state.companies = data.companies || [];
       state.regiments = data.regiments || [];
       state.activeCompanyId = state.companies[0]?.id || null;
+      state.activeRegimentId = state.regiments[0]?.id || null;
+      state.activeGeneralRegimentId = null;
       nextId = data.nextId || 100;
+      migrateLegacyGenerals();
       const bi = document.getElementById('budget-input');
       if (bi) bi.value = state.budget || '';
       render();
@@ -3016,33 +3137,26 @@ function printRoster() {
 
     const regHeader = `<div class="regiment-header">${esc(regiment.name)}</div><div class="regiment-spacer"></div>`;
 
-    // Generals command the regiment, not a single company; render them between the
-    // regiment header and the first company block
-    const regGenerals = regCompanies.flatMap(c =>
-      c.units.filter(u => u.isCommander && u.commanderType === 'General')
-    );
+    // General commands the regiment; render above the company blocks
     let generalBlock = '';
-    if (regGenerals.length > 0) {
-      const generalRows = regGenerals.map(u => unitRowHtml(u)).join('');
+    if (regiment.general) {
       generalBlock = `<div class="general-block">
         <table class="roster-table">
           ${ROSTER_THEAD}
-          <tbody>${generalRows}</tbody>
+          <tbody>${unitRowHtml(regiment.general)}</tbody>
         </table>
       </div>`;
     }
 
     const compBlocks = regCompanies.map(company => {
-      // Generals are already rendered above; exclude them from the company list
-      const nonGenerals = company.units.filter(u => !(u.isCommander && u.commanderType === 'General'));
-      if (nonGenerals.length === 0) return '';
+      if (company.units.length === 0) return '';
 
-      const compPts = nonGenerals.reduce((s, u) => s + unitCost(u), 0);
+      const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
       const typeName = COMPANY_TYPES[company.type].label;
       const sortedUnits = [
-        ...nonGenerals.filter(u => u.isCommander),
-        ...nonGenerals.filter(u => !u.isCommander && !u.isSpecialAsset),
-        ...nonGenerals.filter(u => u.isSpecialAsset),
+        ...company.units.filter(u => u.isCommander),
+        ...company.units.filter(u => !u.isCommander && !u.isSpecialAsset),
+        ...company.units.filter(u => u.isSpecialAsset),
       ];
 
       const unitRows = sortedUnits.map((u, i) => {
@@ -3166,6 +3280,7 @@ function loadAutoSave() {
     state.activeCompanyId  = state.companies[0]?.id  || null;
     state.activeRegimentId = state.regiments[0]?.id  || null;
     nextId = data.nextId || 100;
+    migrateLegacyGenerals();
     document.getElementById('army-name-input').value = state.armyName;
     const bi = document.getElementById('budget-input');
     if (bi) bi.value = state.budget || '';
@@ -3208,7 +3323,9 @@ function loadFromLibrary(idx) {
   state.companies   = data.companies   || [];
   state.activeCompanyId  = state.companies[0]?.id  || null;
   state.activeRegimentId = state.regiments[0]?.id  || null;
+  state.activeGeneralRegimentId = null;
   nextId = data.nextId || 100;
+  migrateLegacyGenerals();
   document.getElementById('army-name-input').value = state.armyName;
   const bi = document.getElementById('budget-input');
   if (bi) bi.value = state.budget || '';
