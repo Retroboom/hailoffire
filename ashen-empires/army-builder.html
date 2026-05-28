@@ -2463,10 +2463,12 @@ function printRoster() {
   .general-block{margin-bottom:8pt;break-inside:avoid;}
   .general-header .company-name{font-style:italic;color:#444;font-size:9pt;}
   .company-block{margin-bottom:14pt;break-inside:avoid;}
-  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;border-left:3px solid #1a1a1a;padding-bottom:2pt;padding-left:6pt;margin-bottom:0;}
+  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:2pt;margin-bottom:0;}
   .company-name{font-size:10pt;font-weight:bold;}
   .company-meta{font-size:8pt;color:#555;}
-  table.roster-table{width:100%;border-collapse:collapse;border-left:3px solid #bbb;}
+  table.roster-table{width:100%;border-collapse:collapse;}
+  .roster-table thead th:first-child{border-left:3px solid #1a1a1a;}
+  .roster-table tbody td:first-child{border-left:3px solid #bbb;}
   .roster-table thead th{background:#2a2a2a;color:#fff;font-size:7pt;text-transform:uppercase;letter-spacing:0.1em;padding:3pt 6pt;text-align:left;}
   .roster-table thead th.col-pts{text-align:right;}
   .roster-table td{padding:5pt 6pt;vertical-align:top;}
