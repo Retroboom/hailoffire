@@ -909,6 +909,123 @@
   ::-webkit-scrollbar-thumb { background: var(--navy4); }
   ::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 
+  /* ── MOBILE TAB NAV (base: hidden on desktop) ── */
+  .mobile-tab-nav { display: none; }
+  .mobile-tab-btn {
+    flex: 1; background: transparent; border: none; border-top: 3px solid transparent;
+    color: var(--mist); cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px; padding: 4px 0 6px;
+    font-family: 'Barlow Condensed', sans-serif; transition: color 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  .mobile-tab-btn:hover { color: var(--ink); }
+  .mobile-tab-btn.active { color: var(--gold); border-top-color: var(--gold); }
+  .mtb-icon { font-size: 18px; line-height: 1; }
+  .mtb-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE: MOBILE (≤700px) ── */
+  @media (max-width: 700px) {
+    /* Compact header */
+    header { padding: 0 12px; }
+    .header-title-sub { display: none; }
+    #army-name-container { display: none; }
+    .header-pts { gap: 8px; }
+    .header-title { font-size: 17px; }
+
+    /* Single-panel tab layout: override all desktop grid and collapsed states */
+    .layout,
+    .layout.left-collapsed,
+    .layout.right-collapsed,
+    .layout.left-collapsed.right-collapsed {
+      display: block !important; position: relative;
+      height: calc(100vh - 56px - 52px);
+      height: calc(100vh - 56px - 52px - env(safe-area-inset-bottom, 0px));
+    }
+
+    /* All panels absolutely positioned, hidden by default */
+    .sidebar,
+    .layout.left-collapsed .sidebar {
+      position: absolute !important; inset: 0;
+      display: none !important; border-right: none; min-width: 0;
+    }
+    .main {
+      position: absolute !important; inset: 0;
+      display: none !important; padding: 14px; overflow-y: auto;
+    }
+    .inspector,
+    .layout.right-collapsed .inspector {
+      position: absolute !important; inset: 0;
+      display: none !important; border-left: none; min-width: 0;
+    }
+
+    /* Show the active tab's panel */
+    .layout[data-tab="0"] .sidebar   { display: flex !important; }
+    .layout[data-tab="1"] .main      { display: block !important; }
+    .layout[data-tab="2"] .inspector { display: flex !important; }
+
+    /* Override inner-panel collapsed states */
+    .sidebar-inner, .layout.left-collapsed .sidebar-inner {
+      display: flex !important; min-width: 0 !important; width: 100%;
+    }
+    .inspector-inner, .layout.right-collapsed .inspector-inner {
+      display: flex !important; min-width: 0 !important; width: 100%;
+    }
+
+    /* Hide all collapse strips and buttons */
+    .sidebar-strip, .layout.left-collapsed .sidebar-strip,
+    .inspector-strip, .layout.right-collapsed .inspector-strip,
+    .collapse-btn { display: none !important; }
+
+    /* Show mobile nav */
+    .mobile-tab-nav {
+      display: flex !important; position: fixed; bottom: 0; left: 0; right: 0;
+      height: 52px; height: calc(52px + env(safe-area-inset-bottom, 0px));
+      z-index: 200; background: var(--navy2); border-top: 2px solid var(--navy4);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Larger touch targets for rank +/- buttons */
+    .rank-btn { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+    .rank-value { font-size: 18px !important; width: 30px !important; }
+    .delete-btn { padding: 2px 8px !important; font-size: 18px !important; }
+
+    /* Unit card body: stack stats above abilities */
+    .unit-card-body { grid-template-columns: 1fr !important; }
+
+    /* Ability modal: single column */
+    .modal-body { grid-template-columns: 1fr !important; padding: 12px !important; }
+
+    /* Stat row labels: larger, auto-width */
+    .stat-name { font-size: 13px !important; width: auto !important; min-width: 36px; }
+
+    /* Scale up small labels */
+    .company-type-badge { font-size: 11px; }
+    .slot-badge { font-size: 11px; padding: 2px 6px; }
+    .mini-unit { font-size: 11px; padding: 3px 7px; }
+    .toggle-label { font-size: 12px; }
+    .val-item { font-size: 12px; padding: 5px 0; }
+    .breakdown-row { font-size: 13px; padding: 5px 0; }
+    .modal-ability-desc { font-size: 12px; }
+    .unit-name-input { font-size: 18px !important; }
+    .add-btn { padding: 12px 14px; font-size: 15px; }
+    .modal-ability-name { font-size: 15px; }
+
+    /* Larger touch area on company and sidebar items */
+    .company-header { padding: 12px 10px; }
+    .sidebar-section { padding: 12px; }
+    .roster-section { padding: 12px 14px; }
+    .inspector-header { padding: 12px 16px; }
+
+    /* Rules modal full-screen on mobile */
+    .rules-fm-panel { flex-direction: column; }
+    .rules-toc { width: 100%; height: 48px; display: flex; overflow-x: auto; overflow-y: hidden; padding: 0; border-right: none; border-bottom: 1px solid var(--navy4); flex-shrink: 0; }
+    .rules-toc-header { display: none; }
+    .rules-toc-item { white-space: nowrap; padding: 14px 12px; font-size: 10px; border-left: none; border-bottom: 3px solid transparent; }
+    .rules-toc-item.active { border-bottom-color: var(--red); border-left-color: transparent; }
+  }
+
   /* ── PRINT STYLES ── */
   @media print {
     /* Hide everything except the main unit editor */
@@ -1119,7 +1236,7 @@
   .modal-ability-name { font-size: 14px; font-weight: 700; color: var(--white); }
   .modal-ability-cost { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold); }
   .modal-ability-desc { font-size: 11px; color: var(--mist); line-height: 1.4; font-family: 'Libre Baskerville', serif; font-style: italic; }
-  .stat-row.stat-zero { opacity: 0.38; }
+  .stat-row.stat-zero { opacity: 0.50; }
   .stat-row.stat-zero .rank-value { color: var(--mist); }
 
   .abilities-open-btn {
@@ -1203,7 +1320,7 @@
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span> — Army Builder</div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'">Rules Reference</button></div>
+  <div style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span><span class="header-title-sub"> — Army Builder</span></div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'">Rules Reference</button></div>
   <div class="header-pts">
     <div class="pts-display" id="total-pts-display">0 <span>pts</span></div>
     <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mist);white-space:nowrap;">
@@ -1265,7 +1382,7 @@
   </div>
 </div>
 
-<div class="layout" id="layout">
+<div class="layout" id="layout" data-tab="0">
 
   <!-- SIDEBAR: Structure -->
   <div class="sidebar" id="sidebar">
@@ -1335,6 +1452,22 @@
     </div>
   </div>
 
+</div>
+
+<!-- MOBILE BOTTOM TAB NAV -->
+<div class="mobile-tab-nav" id="mobile-tab-nav">
+  <button class="mobile-tab-btn active" id="mtb-0" onclick="setMobileTab(0)">
+    <span class="mtb-icon">⚔</span>
+    <span class="mtb-label">Structure</span>
+  </button>
+  <button class="mobile-tab-btn" id="mtb-1" onclick="setMobileTab(1)">
+    <span class="mtb-icon">⊕</span>
+    <span class="mtb-label">Builder</span>
+  </button>
+  <button class="mobile-tab-btn" id="mtb-2" onclick="setMobileTab(2)">
+    <span class="mtb-icon">≡</span>
+    <span class="mtb-label">Roster</span>
+  </button>
 </div>
 
 <script>
@@ -1971,7 +2104,7 @@ function buildUnitCard(unit, company) {
           const isZero = rank === 0;
           return `
           <div class="stat-row${isZero ? ' stat-zero' : ''}">
-            <span class="stat-name">${s.short}</span>
+            <span class="stat-name" title="${s.label}">${s.short}</span>
             <div class="stat-controls">
               <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', -1)" ${rank <= 0 ? 'disabled' : ''}>−</button>
               <span class="rank-value">${s.fmt(rank)}</span>
@@ -2339,6 +2472,7 @@ function addCompany() {
   const c = newCompany(state.activeRegimentId);
   state.companies.push(c);
   state.activeCompanyId = c.id;
+  if (isMobile()) setMobileTab(1); // jump to Builder on mobile
   render();
 }
 
@@ -2363,6 +2497,7 @@ function deleteRegiment(id) {
 
 function selectCompany(id) {
   state.activeCompanyId = id;
+  if (isMobile()) setMobileTab(1); // jump to Builder on mobile
   render();
 }
 
@@ -3629,6 +3764,21 @@ function toggleLeft() {
 function toggleRight() {
   document.getElementById('layout').classList.toggle('right-collapsed');
 }
+
+// ══════════════════════════════════════════════════════
+// MOBILE TAB NAV
+// ══════════════════════════════════════════════════════
+
+function setMobileTab(n) {
+  const layout = document.getElementById('layout');
+  if (layout) layout.setAttribute('data-tab', String(n));
+  for (let i = 0; i < 3; i++) {
+    const btn = document.getElementById('mtb-' + i);
+    if (btn) btn.classList.toggle('active', i === n);
+  }
+}
+
+function isMobile() { return window.innerWidth <= 700; }
 
 // ══════════════════════════════════════════════════════
 // ABILITIES MODAL
