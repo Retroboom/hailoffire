@@ -2314,7 +2314,7 @@ function printRoster() {
         : total === budget ? ' (exact)' : ' (' + (budget - total) + 'pts remaining)')
     : '';
 
-  // Per-unit stat mini-table with its own header row of labels
+  // Per-unit stat mini-table: value + label below in each cell, no separate header row
   function statMiniTable(u) {
     const allAbilNames = [
       ...(state.armyAbility ? [state.armyAbility] : []),
@@ -2322,7 +2322,6 @@ function printRoster() {
     ];
     const eff = effectiveStats(u);
     const base = u.stats;
-    const ths = STAT_GRID.map(s => `<th>${s.short}</th>`).join('');
     const tds = STAT_GRID.map(s => {
       const v = eff[s.key] || 0;
       const display = v === 0 ? '—' : s.fmt(v);
@@ -2331,9 +2330,9 @@ function printRoster() {
         .map(n => { const m = ABILITY_STAT_NOTES[n]; return m ? m[s.key] : null; })
         .filter(Boolean);
       const notesHtml = notes.map(n => `<span class="stat-note">${esc(n)}</span>`).join('');
-      return `<td class="${v === 0 ? 'sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}${notesHtml ? '<br>' + notesHtml : ''}</td>`;
+      return `<td class="${v === 0 ? 'sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}${notesHtml ? '<br>' + notesHtml : ''}<span class="sb-lbl">${s.short}</span></td>`;
     }).join('');
-    return `<table class="stat-mini"><thead><tr>${ths}</tr></thead><tbody><tr>${tds}</tr></tbody></table>`;
+    return `<table class="stat-mini"><tbody><tr>${tds}</tr></tbody></table>`;
   }
 
   const companyBlocksHtml = state.regiments.flatMap(regiment => {
@@ -2440,10 +2439,10 @@ function printRoster() {
   .unit-meta{font-size:7.5pt;color:#888;}
   .pts-cell{text-align:right;font-weight:bold;font-size:9pt;white-space:nowrap;vertical-align:middle;}
   .stats-cell{padding:4pt 6pt;}
-  /* Per-unit stat mini-table — no borders, integrated into the row */
+  /* Per-unit stat mini-table — column borders, label below value */
   table.stat-mini{border-collapse:collapse;width:100%;font-size:8.5pt;}
-  .stat-mini thead th{text-align:center;padding:0 4pt 2pt;font-size:5.5pt;font-weight:bold;letter-spacing:0.07em;color:#999;text-transform:uppercase;}
-  .stat-mini tbody td{text-align:center;padding:2pt 4pt;line-height:1.3;vertical-align:top;min-width:22pt;}
+  .stat-mini tbody td{border:1px solid #ccc;text-align:center;padding:3pt 4pt 2pt;line-height:1.3;vertical-align:top;min-width:22pt;}
+  .sb-lbl{display:block;font-size:5.5pt;text-transform:uppercase;letter-spacing:0.05em;color:#999;margin-top:2pt;}
   .sb-zero{color:#ccc;}
   .sb-boosted{font-weight:bold;background:#fdf5dc;}
   .stat-note{display:block;font-size:5.5pt;color:#888;font-style:italic;line-height:1.2;margin-top:1pt;white-space:nowrap;}
