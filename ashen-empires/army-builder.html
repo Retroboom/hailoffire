@@ -1798,6 +1798,57 @@ function renderRosterView() {
     rv.appendChild(aaDiv);
   }
 
+  // Helper: build one unit card element for the live roster
+  function buildUnitCard(u) {
+    const card = document.createElement('div');
+    card.className = 'roster-unit-card';
+
+    const tags = [];
+    if (u.isCommander) tags.push(`<span class="tag tag-commander">${u.commanderType}</span>`);
+    if (u.isSpecialAsset) tags.push(`<span class="tag tag-special">Special Asset</span>`);
+
+    const eff = effectiveStats(u);
+    const base = u.stats;
+    const statChips = ROSTER_STAT_LABELS
+      .filter(s => eff[s.key] > 0)
+      .map(s => {
+        const boosted = eff[s.key] > (base[s.key] || 0);
+        return `<span class="stat-chip${boosted ? ' stat-boosted' : ''}">${s.short} ${s.fmt(eff[s.key])}</span>`;
+      }).join('');
+
+    // Ability lines: army trait first, unit abilities, then asset description
+    const armyLine = state.armyAbility ? (() => {
+      const ab = ABILITIES.find(a => a.name === state.armyAbility);
+      return `<div class="roster-ability-line"><span class="roster-ability-name" style="color:var(--gold);">• ${esc(state.armyAbility)}</span>&thinsp;<span style="font-size:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:0.08em;color:var(--gold);border:1px solid rgba(200,160,48,0.4);padding:0 2px;vertical-align:middle;">ARMY</span>&nbsp;${ab ? esc(ab.desc) : ''}</div>`;
+    })() : '';
+    const abilityLines = u.abilities.map(name => {
+      const ab = ABILITIES.find(a => a.name === name);
+      if (!ab) return '';
+      return `<div class="roster-ability-line"><span class="roster-ability-name">• ${esc(name)}</span>${esc(ab.desc)}</div>`;
+    }).join('');
+    const assetLine = u.isSpecialAsset ? (() => {
+      const at = ASSET_TYPES[u.assetType];
+      return `<div class="roster-ability-line"><span class="roster-ability-name">• ${esc(at.label)}</span>${esc(at.bonus)}</div>`;
+    })() : '';
+
+    const ft = FORCE_TYPES[u.forceType];
+    const metaText = u.isCommander
+      ? ''
+      : `<span class="roster-unit-meta">${ft.label} &times;${u.models} &middot; Force ${ft.force * u.models}</span>`;
+
+    const allAbilLines = armyLine + abilityLines + assetLine;
+    card.innerHTML = `
+      <div class="roster-unit-header">
+        <span class="roster-unit-name${u.isCommander ? ' commander' : ''}">${esc(u.name)}${tags.join('')}</span>
+        <span class="roster-unit-pts">${unitCost(u)}pts</span>
+      </div>
+      ${metaText}
+      ${statChips ? `<div class="roster-stat-row">${statChips}</div>` : ''}
+      ${allAbilLines ? `<div class="roster-abilities">${allAbilLines}</div>` : ''}
+    `;
+    return card;
+  }
+
   // Group by regiment
   state.regiments.forEach(regiment => {
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
@@ -1807,66 +1858,39 @@ function renderRosterView() {
     regDiv.style.cssText = 'margin-bottom:14px;';
     regDiv.innerHTML = `<div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--faint);">${esc(regiment.name)}</div>`;
 
+    // Generals command the regiment; show them above companies
+    const regGenerals = regCompanies.flatMap(c =>
+      c.units.filter(u => u.isCommander && u.commanderType === 'General')
+    );
+    regGenerals.forEach(u => regDiv.appendChild(buildUnitCard(u)));
+
     regCompanies.forEach(company => {
-    const cdiv = document.createElement('div');
-    cdiv.style.cssText = 'margin-bottom:10px;';
-    const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
-    cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
+      const nonGenerals = company.units.filter(u => !(u.isCommander && u.commanderType === 'General'));
+      if (nonGenerals.length === 0) return;
 
-    const sortedUnits = [
-      ...company.units.filter(u => u.isCommander),
-      ...company.units.filter(u => !u.isCommander),
-    ];
+      const cdiv = document.createElement('div');
+      cdiv.style.cssText = 'margin-bottom:10px;';
+      const compPts = nonGenerals.reduce((s, u) => s + unitCost(u), 0);
+      cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
 
-    sortedUnits.forEach(u => {
-      const card = document.createElement('div');
-      card.className = 'roster-unit-card';
+      const sortedUnits = [
+        ...nonGenerals.filter(u => u.isCommander),
+        ...nonGenerals.filter(u => !u.isCommander),
+      ];
 
-      const tags = [];
-      if (u.isCommander) tags.push(`<span class="tag tag-commander">${u.commanderType}</span>`);
-      if (u.isSpecialAsset) tags.push(`<span class="tag tag-special">${ASSET_TYPES[u.assetType].label}</span>`);
+      sortedUnits.forEach((u, i) => {
+        // Visual gap between captain entry and first regular unit
+        if (i > 0 && sortedUnits[i - 1].isCommander && !u.isCommander) {
+          const gap = document.createElement('div');
+          gap.style.cssText = 'height:4px;border-top:1px solid var(--faint);border-bottom:1px solid var(--faint);margin:2px 0;';
+          cdiv.appendChild(gap);
+        }
+        cdiv.appendChild(buildUnitCard(u));
+      });
 
-      const eff = effectiveStats(u);
-      const base = u.stats;
-
-      const statChips = ROSTER_STAT_LABELS
-        .filter(s => eff[s.key] > 0)
-        .map(s => {
-          const boosted = eff[s.key] > (base[s.key] || 0);
-          return `<span class="stat-chip${boosted ? ' stat-boosted' : ''}">${s.short} ${s.fmt(eff[s.key])}</span>`;
-        }).join('');
-
-      // Army trait line + unit ability lines
-      const armyLine = state.armyAbility ? (() => {
-        const ab = ABILITIES.find(a => a.name === state.armyAbility);
-        return `<div class="roster-ability-line"><span class="roster-ability-name" style="color:var(--gold);">${esc(state.armyAbility)}</span>&thinsp;<span style="font-size:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:0.08em;color:var(--gold);border:1px solid rgba(200,160,48,0.4);padding:0 2px;vertical-align:middle;">ARMY</span>&nbsp;${ab ? esc(ab.desc) : ''}</div>`;
-      })() : '';
-      const abilityLines = armyLine + u.abilities.map(name => {
-        const ab = ABILITIES.find(a => a.name === name);
-        if (!ab) return '';
-        return `<div class="roster-ability-line"><span class="roster-ability-name">${esc(name)}</span>${esc(ab.desc)}</div>`;
-      }).join('');
-
-      const ft = FORCE_TYPES[u.forceType];
-      const metaText = u.isCommander
-        ? ''
-        : `<span class="roster-unit-meta">${ft.label} &times;${u.models} &middot; Force ${ft.force * u.models}</span>`;
-
-      card.innerHTML = `
-        <div class="roster-unit-header">
-          <span class="roster-unit-name${u.isCommander ? ' commander' : ''}">${esc(u.name)}${tags.join('')}</span>
-          <span class="roster-unit-pts">${unitCost(u)}pts</span>
-        </div>
-        ${metaText}
-        ${statChips ? `<div class="roster-stat-row">${statChips}</div>` : ''}
-        ${abilityLines ? `<div class="roster-abilities">${abilityLines}</div>` : ''}
-      `;
-
-      cdiv.appendChild(card);
+      regDiv.appendChild(cdiv);
     });
 
-    regDiv.appendChild(cdiv);
-    });
     rv.appendChild(regDiv);
   });
 }
