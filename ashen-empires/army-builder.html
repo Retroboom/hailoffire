@@ -32,12 +32,14 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html { overflow-x: hidden; }
   body {
     background: var(--navy);
     color: var(--ink);
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 15px;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* ── HEADER ── */
@@ -931,8 +933,15 @@
     header { padding: 0 12px; }
     .header-title-sub { display: none; }
     #army-name-container { display: none; }
-    .header-pts { gap: 8px; }
+    .header-pts { gap: 5px !important; }
     .header-title { font-size: 17px; }
+    .header-left { gap: 10px !important; }
+    .rules-btn-long { display: none !important; }
+    .rules-btn-short { display: inline !important; }
+    .header-limit-label { display: none !important; }
+    .header-limit-pts { display: none !important; }
+    #budget-input { width: 46px !important; }
+    .pts-display { font-size: 13px !important; padding: 3px 8px !important; }
 
     /* Single-panel tab layout: override all desktop grid and collapsed states */
     .layout,
@@ -1255,6 +1264,9 @@
   /* Stat label: full name on desktop, abbreviation on mobile */
   .stat-label-short { display: none; }
 
+  /* Rules button: full text on desktop, short on mobile */
+  .rules-btn-short { display: none; }
+
   /* Effective stat bonus from ability/asset bonuses */
   .stat-eff-bonus {
     font-family: 'Share Tech Mono', monospace;
@@ -1384,14 +1396,14 @@
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span><span class="header-title-sub"> — Army Builder</span></div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'">Rules Reference</button></div>
+  <div class="header-left" style="display:flex;align-items:center;gap:16px;"><div class="header-title">Ashen <span>Empires</span><span class="header-title-sub"> — Army Builder</span></div><button onclick="toggleRules()" id="rules-toggle-btn" style="background:var(--faint);border:1px solid var(--navy4);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='var(--navy4)';this.style.color='var(--ink)'" onmouseout="this.style.background='var(--faint)';this.style.color='var(--mist)'"><span class="rules-btn-long">Rules Reference</span><span class="rules-btn-short">Rules</span></button></div>
   <div class="header-pts">
     <div class="pts-display" id="total-pts-display">0 <span>pts</span></div>
     <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mist);white-space:nowrap;">
-      <span style="letter-spacing:0.05em;text-transform:uppercase;font-size:10px;">Limit</span>
+      <span class="header-limit-label" style="letter-spacing:0.05em;text-transform:uppercase;font-size:10px;">Limit</span>
       <input id="budget-input" type="number" min="0" step="25" placeholder="—" title="Points limit"
         style="background:var(--faint);border:1px solid var(--navy4);color:var(--ink);font-family:'Share Tech Mono',monospace;font-size:13px;width:58px;padding:2px 6px;border-radius:2px;outline:none;text-align:center;">
-      <span style="font-size:10px;">pts</span>
+      <span class="header-limit-pts" style="font-size:10px;">pts</span>
     </div>
     <div id="army-name-container">
       <input id="army-name-input" style="background:transparent;border:none;border-bottom:1px solid var(--faint);color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-size:13px;outline:none;width:160px;text-align:right;" placeholder="Army Name..." value="My Army">
