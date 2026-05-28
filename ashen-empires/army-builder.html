@@ -2340,7 +2340,7 @@ function printRoster() {
     const ft = FORCE_TYPES[u.forceType];
     const tags = [];
     if (u.isCommander) tags.push(u.commanderType);
-    if (u.isSpecialAsset) tags.push(ASSET_TYPES[u.assetType].label);
+    if (u.isSpecialAsset) tags.push('Special Asset');
     const tagsHtml = tags.map(t => `<span class="tag">${esc(t)}</span>`).join(' ');
     const forceInfo = u.isCommander ? ''
       : `<div class="unit-meta">${ft.label} \xd7${u.models} \xb7 Force ${ft.force * u.models}</div>`;
