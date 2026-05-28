@@ -3455,7 +3455,7 @@ core: `
 <p>Shock is the sole damage currency in Ashen Empires. It is tracked per unit on its leader model using tokens or a dial. Shock degrades command reliability, triggers morale crises, and ultimately destroys units. Shock is not automatically removed; Rally orders and round-end recovery are required.</p>
 <p>Each die that meets the target number in combat inflicts shock directly. Units do not lose models during battle. They stand at full strength until a failed Courage Test Breaks them entirely.</p>
 
-<h3>Leader Model</h3>
+<h3>1.3 Leader Model</h3>
 <p>Every unit has one uniquely identifiable leader model. All measurements (range, command distance, line of sight) are taken from this model. Shock is tracked on it.</p>
 
 <table class="rule-table">
@@ -3501,7 +3501,7 @@ stats: `
 <tr><th colspan="2">Summary</th></tr>
 <tr><td>Rank cost</td><td>1 pt per rank · max 5 per stat · 16 total (20 for Special Assets)</td></tr>
 <tr><td>Fight Dice</td><td>Requires Fight Strength &gt; 0</td></tr>
-<tr><td>Force</td><td>Fixed by model type: Infantry 1, Cavalry/Large 2, Hero/Creature 3; 1 pt per Force per model</td></tr>
+<tr><td>Force</td><td>Fixed by model type: Infantry 1, Cavalry/Large 2, Hero/Creature 3; 1 pt per Force value per model</td></tr>
 <tr><td>Commanders</td><td>Single-model units; army needs at least 1 Captain; do not count toward company unit limits</td></tr>
 </table>
 `,
@@ -3510,7 +3510,7 @@ commanders: `
 <h2>III · Commanders</h2>
 <p>Commanders direct other units and are the engine of your army. Every army must include at least one Captain. Managing Commander shock and positioning is as important as your fighting units.</p>
 
-<h3>Command Rank</h3>
+<h3>3.0 Command Rank</h3>
 <p>Generals hold the highest command rank, followed by Captains, then all other units. A unit may only activate subordinates (friendly units of a lower command rank within 12"). Company and Regiment structure determines army composition during building but does not restrict which units a Commander may activate in play.</p>
 
 <h3>3.1 Command Tests</h3>
@@ -3521,11 +3521,11 @@ commanders: `
 <h3>3.2 Proximity Bonus</h3>
 <p>While a Commander is within 1" of a friendly non-Commander unit:</p>
 <ul>
-<li>Cannot be individually targeted.</li>
-<li>Controlling player may allocate received shock between the unit and the Commander.</li>
-<li>Grants <strong>+1 Fight Die to the unit's pool</strong> if the Commander's Fight Dice stat equals or exceeds the unit's.</li>
-<li>Is treated as part of the unit's formation for area effects and does not take automatic shock as a separate target.</li>
-<li>When both the Commander and the unit are activated and taking a movement order, the Commander may use the unit's movement roll instead of rolling their own.</li>
+<li>The Commander cannot be individually targeted.</li>
+<li>The controlling player may allocate any shock received between the unit and the Commander.</li>
+<li>The unit gains <strong>+1 Fight Die</strong> if the Commander's Fight Dice stat equals or exceeds the unit's.</li>
+<li>The Commander is treated as part of the unit's formation for area effects and does not take automatic shock as a separate target.</li>
+<li>If both the Commander and the unit are activated and take a movement order, the Commander may use the unit's movement roll instead of rolling their own.</li>
 </ul>
 
 <h3>3.3 Recovery &amp; Limits</h3>
@@ -3533,7 +3533,7 @@ commanders: `
 <tr><th>Rule</th><th>Detail</th></tr>
 <tr><td>Shock recovery</td><td>All Commanders remove 6 shock at end of each Round.</td></tr>
 <tr><td>Command hierarchy</td><td>2 levels maximum: Generals may activate any subordinate; Captains may not activate other Commanders.</td></tr>
-<tr><td>Subordinate Captain</td><td>If activated as a subordinate, must make their own Command Test. Success: activates up to 2 of their own subordinates. Failure: gains Exhausted. Other activations in the turn are unaffected.</td></tr>
+<tr><td>Subordinate Captain</td><td>If activated as a subordinate, must make their own Command Test. Success: activates up to 2 of their own subordinates. Failure: does not act; no Exhausted token given. Other activations in the turn are unaffected.</td></tr>
 </table>
 
 <table class="rule-table">
@@ -3579,7 +3579,7 @@ shock: `
 </table>
 <p><em>Example:</em> A unit has 8 shock. Its Courage Test result is 4. Half of 8 is 4, so the result is half or lower and the unit Breaks and is destroyed. A result of 5 would cause a normal Retreat instead.</p>
 
-<h3>Commander Courage Bonus</h3>
+<h3>4.4 Commander Courage Bonus</h3>
 <p>A Commander within 1" of the unit whose Courage stat equals or exceeds the unit's stat adds their Courage to the unit's Courage Test roll.</p>
 
 <table class="rule-table">
@@ -3602,7 +3602,7 @@ turns: `
 <li><strong>Activation:</strong> the unit activates. Commanders additionally activate up to 2 non-Exhausted subordinates within 12" and gain +1 shock on success.
 <ul>
 <li>Each subordinate attempts their own Command Test: 2d6 + the higher of their own Courage or the activating Commander's Courage vs. their own shock. On failure, the subordinate does not act and does not gain an Exhausted token.</li>
-<li>A subordinate Captain that passes may activate up to 2 of their own subordinates, who each attempt their own Command Tests using the Captain's Courage as the potential bonus.</li>
+<li>A subordinate Captain that passes may activate up to 2 of their own subordinates, who each attempt their own Command Tests using the same formula: 2d6 + the higher of their own Courage or the Captain's Courage vs. their own shock.</li>
 </ul>
 </li>
 <li><strong>Declare All Orders:</strong> all activated units declare their orders simultaneously before any unit begins acting. Orders cannot be changed once declared.</li>
@@ -3659,11 +3659,11 @@ actions: `
 <ol>
 <li>Measure and move the <strong>leader model</strong> first.</li>
 <li>All other models maintain <strong>Unit Coherency</strong>: a chain of same-unit models with gaps no greater than 1".</li>
-<li>Models may not end their movement within 1" of any other unit (except when Charging). Units may move through friendly unit spaces during their move, but must end with all models outside that 1" exclusion. Movement must also end with all models in coherency.</li>
+<li>Models may not end their movement within 1" of models from any other unit (except when Charging). Units may move through friendly unit spaces during their move, but must end with all models outside that 1" exclusion. Movement must also end with all models in coherency.</li>
 </ol>
 
 <h3>6.3 Terrain</h3>
-<p><strong>Difficult Terrain</strong> (woods, rough ground, walls, streams, hills, rubble) reduces movement by <strong>3" per terrain piece crossed</strong> during the move.</p>
+<p><strong>Difficult Terrain</strong> (woods, rough ground, walls, streams, hills, rubble) reduces movement by <strong>3" per terrain feature entered</strong> during the move.</p>
 
 <h3>6.4 Line of Sight &amp; Cover</h3>
 <p>Draw an imaginary line from the attacking model to any part of the target model.</p>
@@ -3681,7 +3681,7 @@ actions: `
 <li>Giant units cannot claim cover bonuses.</li>
 </ul>
 
-<h3>Facing &amp; Arcs</h3>
+<h3>6.5 Facing &amp; Arcs</h3>
 <p>Model facing is determined by the direction the leader model's head is pointing. The <strong>front arc</strong> is the forward 180°; the <strong>rear arc</strong> is the rear 180°. Rear arc charge rules apply when the charging unit's leader's starting position is within the rear arc of the target's leader.</p>
 
 <table class="rule-table">
@@ -3744,7 +3744,7 @@ melee: `
 <ol>
 <li><strong>Declare Target:</strong> name the enemy unit before rolling movement.</li>
 <li><strong>Take Shock:</strong> the charging leader takes 1 shock.</li>
-<li><strong>Move:</strong> move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 and 5 are skipped. The 1 shock gained in step 2 is still applied. Remaining models move to maintain coherency with the leader.</li>
+<li><strong>Move:</strong> move the leader model in a straight line toward the target for the full Move + 2d6" distance, ending in base contact. If the distance rolled is insufficient to reach the target, the unit moves as far as possible and halts. No Courage Test is triggered on the target and steps 4 (Place Remaining Models) and 5 (Courage Test) are skipped. The 1 shock gained in step 2 is still applied. Remaining models move to maintain coherency with the leader.</li>
 <li><strong>Place Remaining Models:</strong> models that can reach base contact in straight lines from their starting positions contribute their full Force to the combat. Remaining models are placed anywhere within unit coherency.</li>
 <li><strong>Courage Test:</strong> the target must pass (2d6 + Courage vs. current shock) or immediately Retreat. If they Retreat, the charger may pursue.</li>
 </ol>
@@ -3774,7 +3774,7 @@ melee: `
 <tr><td>Charging</td><td>+1 die; +2 dice if charge distance was 10" or more</td></tr>
 <tr><td>Higher Force in contact than enemy</td><td>+1 die; +2 dice if double or more Force in contact</td></tr>
 <tr><td>Charger crossed difficult terrain during the charge move, or the charge ends in difficult terrain where the defender stands</td><td>+2 dice to defender</td></tr>
-<tr><td>Charged from rear arc</td><td>Halve your total dice (round up)</td></tr>
+<tr><td>Charged from rear arc</td><td>Defender halves their total dice (round up)</td></tr>
 </table>
 <p><em>Force in Contact:</em> When charging, count each model's full Force value. In ongoing melee (already in contact at the start of the Turn), all models count as Force 1 regardless of type. Only models in base contact with the enemy, or in base contact with friendly models already in contact, contribute Force.</p>
 
@@ -3818,7 +3818,7 @@ org: `
 <p><em>Commander limits:</em> Max 1 Captain per company. Max 1 General per regiment. Max 2 Commanders total per company. Commanders do not count toward the 3-unit company limit.</p>
 
 <h3>9.2 Special Assets</h3>
-<p>A Special Asset is an elite unit designated at army building. Paying the <strong>10 pt designation fee</strong> raises the unit's rank cap to <strong>20 ranks</strong> and grants the type bonus below. Special Assets <strong>do not count toward Company unit limits</strong> and therefore do not contribute to unlocking additional Commanders. Type bonuses and special ability bonuses are not subject to the per-stat cap. The Giant ability is included free in all Special Asset type bonuses and may not be purchased separately by Special Assets.</p>
+<p>A Special Asset is an elite unit designated at army building. Paying the <strong>10 pt designation fee</strong> raises the unit's rank cap to <strong>20 ranks</strong> and grants the type bonus below. Special Assets <strong>do not fill Company unit slots</strong> and do not count toward the 3-unit limit required to add another Company to a Regiment. Type bonuses and special ability bonuses are not subject to the per-stat cap. The Giant ability is included free in all Special Asset type bonuses and may not be purchased separately by Special Assets.</p>
 <table class="rule-table">
 <tr><th>Asset Type</th><th>Type Bonus</th></tr>
 <tr><td>Artillery</td><td>Giant ability (free) · +3 Shoot Dice · +1 Shoot Strength · Immobile (cannot move or charge)</td></tr>
@@ -3864,7 +3864,7 @@ points: `
 <p><em>Rank caps:</em> Regular units and Commanders: 16 ranks total, max 5 per stat. Special Assets: 20 ranks total, max 5 per stat (purchased ranks only). Special ability bonuses stack freely and are not subject to these caps.</p>
 
 <h3>10.1a Ability Limits</h3>
-<p>Each unit may have a maximum of <strong>3 special abilities</strong> (not counting the Army Trait, if one is selected).</p>
+<p>Each unit may have a maximum of <strong>3 special abilities</strong>, not counting the Army Trait.</p>
 <p><strong>Army Trait:</strong> Once per army, a player may designate one special ability as the Army Trait. That ability is applied to every unit in the army and does not count toward any unit's 3-ability limit. The cost is paid per unit as normal. Commander-only abilities may not be selected as the Army Trait. The Army Trait is set at the army level in the builder and cannot be purchased individually by units.</p>
 
 <h3>10.2 Special Abilities: Combat</h3>
