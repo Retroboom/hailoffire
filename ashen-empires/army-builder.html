@@ -2079,9 +2079,9 @@ function renderMainCanvas() {
     addUnitBtn.title = full ? 'Company full (max 3 units)' : '';
   }
   if (addCmdBtn) {
-    const full = commanders.length >= 2;
-    addCmdBtn.disabled = full;
-    addCmdBtn.title = full ? 'Max 2 commanders per company' : '';
+    const hasCaptain = commanders.some(u => u.commanderType === 'Captain');
+    addCmdBtn.disabled = hasCaptain;
+    addCmdBtn.title = hasCaptain ? 'Company already has a Captain' : '';
   }
 
   if (company.units.length === 0) {
@@ -2648,6 +2648,7 @@ function setCompanyType(id, type) {
 function addUnit(companyId, isCommander) {
   const c = state.companies.find(c => c.id === companyId);
   if (!c) return;
+  if (isCommander && c.units.some(u => u.isCommander && u.commanderType === 'Captain')) return;
   const unit = newUnit(isCommander);
   if (!isCommander) {
     const allNames = state.companies.flatMap(co => co.units.map(u => u.name));
