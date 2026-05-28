@@ -576,6 +576,85 @@
   }
   .empty-state p { font-size: 13px; }
 
+  /* Sidebar empty / guided state */
+  .sidebar-empty-state {
+    padding: 18px 16px;
+    margin: 8px 12px;
+    background: var(--faint);
+    border: 1px solid var(--navy4);
+    border-radius: 3px;
+  }
+  .sidebar-empty-state .ses-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .sidebar-empty-state .ses-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--mist);
+    line-height: 1.35;
+  }
+  .sidebar-empty-state .ses-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--red);
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 16px;
+  }
+
+  /* Regiment hint (no companies) */
+  .regiment-hint {
+    padding: 5px 10px 8px 18px;
+    font-size: 10px;
+    color: var(--mist);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+  }
+
+  /* Capacity / slot badge */
+  .slot-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--mist);
+    padding: 1px 4px;
+    border-radius: 2px;
+    background: var(--navy3);
+    border: 1px solid var(--faint);
+    white-space: nowrap;
+  }
+  .slot-badge.full { color: var(--amber); border-color: rgba(192,120,48,0.4); }
+
+  /* Inline validation badges on sidebar company cards */
+  .val-badge {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .val-badge.err { background: var(--red); color: white; }
+  .val-badge.warn { background: var(--amber); color: var(--navy); }
+
+  /* No-general badge on regiment header */
+  .no-general-badge {
+    font-size: 10px;
+    color: var(--mist);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+  }
+
   /* ── INSPECTOR PANEL ── */
   .inspector {
     background: var(--navy2);
@@ -1061,6 +1140,64 @@
   .sel-ab-tag button { background: none; border: none; color: var(--mist); cursor: pointer; font-size: 12px; padding: 0; line-height: 1; }
   .sel-ab-tag button:hover { color: var(--red2); }
 
+  /* Budget warning states */
+  .pts-display.over-budget {
+    color: var(--red2) !important;
+    border-color: var(--red) !important;
+    animation: pulse-red 1.5s ease-in-out infinite;
+  }
+  .pts-display.near-budget {
+    color: var(--amber) !important;
+    border-color: rgba(192,120,48,0.5) !important;
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(142,32,40,0); }
+    50%       { box-shadow: 0 0 0 4px rgba(142,32,40,0.35); }
+  }
+
+  /* Special asset slot indicator */
+  .asset-slot-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--mist);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .asset-slot-indicator.used { color: var(--amber); }
+
+  /* Inline error / warning messages inside unit cards */
+  .inline-error {
+    font-size: 11px;
+    color: var(--red2);
+    background: rgba(142,32,40,0.12);
+    border: 1px solid rgba(142,32,40,0.35);
+    border-radius: 2px;
+    padding: 4px 8px;
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .inline-warn {
+    font-size: 11px;
+    color: var(--amber);
+    background: rgba(192,120,48,0.1);
+    border: 1px solid rgba(192,120,48,0.3);
+    border-radius: 2px;
+    padding: 4px 8px;
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  /* Ability limit note on unit card */
+  .ability-limit-note {
+    font-size: 10px;
+    color: var(--mist);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+    padding: 4px 0 2px;
+  }
+
 </style>
 </head>
 <body>
@@ -1389,15 +1526,24 @@ function updatePtsDisplay() {
   const total = totalArmyPts();
   const budget = state.budget;
   const el = document.getElementById('total-pts-display');
+  // Remove all state classes first
+  el.classList.remove('over-budget', 'near-budget');
+  el.style.color = '';
   if (!budget) {
     el.innerHTML = `${total} <span>pts</span>`;
     el.style.color = 'var(--gold)';
   } else {
-    const over = total > budget;
+    const over  = total > budget;
     const exact = total === budget;
-    const color = over ? 'var(--red2)' : exact ? 'var(--white)' : 'var(--green)';
+    const near  = !over && (budget - total) <= 5;
     el.innerHTML = `${total}<span style="color:var(--mist);font-size:13px;font-weight:400;"> / ${budget} pts</span>`;
-    el.style.color = color;
+    if (over) {
+      el.classList.add('over-budget');
+    } else if (near) {
+      el.classList.add('near-budget');
+    } else {
+      el.style.color = exact ? 'var(--white)' : 'var(--green)';
+    }
   }
 }
 
@@ -1467,27 +1613,46 @@ function renderSidebar() {
   // Update add-company button state
   const addCompBtn = document.getElementById('add-company-btn');
   if (addCompBtn) {
-    const canAdd = state.activeRegimentId &&
+    const hasRegiments = state.regiments.length > 0;
+    const canAdd = hasRegiments && state.activeRegimentId &&
       state.companies.filter(c => c.regimentId === state.activeRegimentId).length < 3;
     addCompBtn.disabled = !canAdd;
-    addCompBtn.title = !state.activeRegimentId ? 'Add a regiment first'
+    addCompBtn.title = !hasRegiments ? 'Add a regiment first'
+      : !state.activeRegimentId ? 'Select a regiment first'
       : !canAdd ? 'Regiment full (max 3 companies)' : '';
   }
 
+  // Feature 1a: guided empty state when no regiments
   if (state.regiments.length === 0) {
     const empty = document.createElement('div');
-    empty.style.cssText = 'padding:12px 16px;font-size:11px;color:var(--mist);';
-    empty.textContent = 'No regiments yet. Click + Add Regiment to begin.';
+    empty.className = 'sidebar-empty-state';
+    empty.innerHTML = `
+      <div class="ses-title">Start Here</div>
+      <div class="ses-step"><span class="ses-num">1</span><span>Click <strong style="color:var(--ink);">+ Add Regiment</strong> above to create your first regiment.</span></div>
+      <div class="ses-step"><span class="ses-num">2</span><span>Then click <strong style="color:var(--ink);">+ Add Company</strong> to add a company to it.</span></div>
+      <div class="ses-step"><span class="ses-num">3</span><span>Select a company and start adding units in the main panel.</span></div>
+    `;
     regList.appendChild(empty);
+    return;
   }
+
+  // Pre-compute per-company validation issues for Feature 3a
+  const allIssues = validate();
 
   state.regiments.forEach(regiment => {
     const isActiveReg = regiment.id === state.activeRegimentId;
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
     const generals = regCompanies.flatMap(c => c.units.filter(u => u.isCommander && u.commanderType === 'General'));
+
+    // Feature 2b: company slot usage on regiment header
+    const compCount = regCompanies.length;
+    const compSlotClass = compCount >= 3 ? 'full' : '';
+    const compSlotBadge = `<span class="slot-badge ${compSlotClass}">${compCount}/3</span>`;
+
+    // Feature 3b / 5b: General indicator on regiment header
     const generalLine = generals.length > 0
-      ? `<div style="padding:0 10px 4px;font-size:10px;color:var(--gold);letter-spacing:0.03em;">⚔ ${generals.map(g => esc(g.name)).join(', ')}</div>`
-      : `<div style="padding:0 10px 4px;font-size:10px;color:var(--mist);font-style:italic;">No General</div>`;
+      ? `<div style="padding:0 10px 5px;font-size:10px;color:var(--gold);letter-spacing:0.03em;">⚔ ${generals.map(g => esc(g.name)).join(', ')}</div>`
+      : `<div style="padding:0 10px 5px;"><span class="no-general-badge">No General assigned</span></div>`;
 
     const regDiv = document.createElement('div');
     regDiv.className = 'regiment-group' + (isActiveReg ? ' active-regiment' : '');
@@ -1495,32 +1660,58 @@ function renderSidebar() {
       <div class="regiment-group-header" onclick="selectRegiment('${regiment.id}')">
         <input value="${esc(regiment.name)}" onclick="event.stopPropagation()"
           onchange="renameRegiment('${regiment.id}', this.value)"
-          style="background:transparent;border:none;color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;outline:none;width:120px;padding:0;">
+          style="background:transparent;border:none;color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;outline:none;width:110px;padding:0;">
         <div style="display:flex;align-items:center;gap:4px;">
-          <span style="font-size:10px;color:var(--mist);">${regCompanies.length}/3</span>
+          ${compSlotBadge}
           <button class="delete-btn" onclick="event.stopPropagation();duplicateRegiment('${regiment.id}')" title="Duplicate regiment" style="font-size:12px;">⧉</button>
           <button class="delete-btn" onclick="event.stopPropagation();deleteRegiment('${regiment.id}')" title="Delete regiment">×</button>
         </div>
       </div>
       ${generalLine}`;
 
+    // Feature 1c: hint when regiment has zero companies
+    if (regCompanies.length === 0) {
+      const hint = document.createElement('div');
+      hint.className = 'regiment-hint';
+      hint.textContent = 'Add a company to this regiment to get started.';
+      regDiv.appendChild(hint);
+    }
+
     regCompanies.forEach(company => {
       const isActive = company.id === state.activeCompanyId;
       const pts = company.units.reduce((s, u) => s + unitCost(u), 0);
       const typeLabel = COMPANY_TYPES[company.type].label;
+
+      // Feature 2a: unit slot usage
+      const regularCount = company.units.filter(u => !u.isCommander && !u.isSpecialAsset).length;
+      const unitSlotClass = regularCount >= 3 ? 'full' : '';
+      const unitSlotBadge = `<span class="slot-badge ${unitSlotClass}" style="margin-left:2px;">${regularCount}/3</span>`;
+
+      // Feature 3a: per-company validation badge
+      const companyIssueNames = [company.name, `"${company.name}"`];
+      const compErrors = allIssues.filter(i => i.type === 'error' && companyIssueNames.some(n => i.msg.includes(company.name)));
+      const compWarns  = allIssues.filter(i => i.type === 'warn'  && companyIssueNames.some(n => i.msg.includes(company.name)));
+      let valBadge = '';
+      if (compErrors.length > 0) {
+        valBadge = `<span class="val-badge err" title="${esc(compErrors[0].msg)}">!</span>`;
+      } else if (compWarns.length > 0) {
+        valBadge = `<span class="val-badge warn" title="${esc(compWarns[0].msg)}">!</span>`;
+      }
 
       const div = document.createElement('div');
       div.className = `company-item${isActive ? ' active' : ''}`;
       div.style.marginLeft = '8px';
       div.innerHTML = `
         <div class="company-header" onclick="selectCompany('${company.id}')">
-          <div class="company-name">
+          <div class="company-name" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
             <input value="${esc(company.name)}" onclick="event.stopPropagation()"
               onchange="renameCompany('${company.id}', this.value)"
-              style="background:transparent;border:none;border-bottom:1px solid var(--faint);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;width:110px;outline:none;padding:1px 0;">
+              style="background:transparent;border:none;border-bottom:1px solid var(--faint);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;width:100px;outline:none;padding:1px 0;">
             ${typeLabel !== 'Standard' ? `<span class="company-type-badge">${typeLabel}</span>` : ''}
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            ${valBadge}
+            ${unitSlotBadge}
             <span class="company-pts">${pts}pts</span>
             <button class="delete-btn" onclick="event.stopPropagation();duplicateCompany('${company.id}')" title="Duplicate company" style="font-size:13px;">⧉</button>
             <button class="delete-btn" onclick="event.stopPropagation();deleteCompany('${company.id}')" title="Delete company">×</button>
