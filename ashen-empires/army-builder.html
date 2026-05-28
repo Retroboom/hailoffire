@@ -3148,6 +3148,7 @@ function printRoster() {
     <th class="col-stats">Stats</th>
     <th class="col-pts">Pts</th>
   </tr></thead>`;
+  const ROSTER_COLGROUP = `<colgroup><col class="col-unit"><col class="col-stats"><col class="col-pts"></colgroup>`;
 
   const companyBlocksHtml = state.regiments.flatMap(regiment => {
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
@@ -3159,10 +3160,8 @@ function printRoster() {
     let generalBlock = '';
     if (regiment.general) {
       generalBlock = `<div class="general-block">
-        <table class="roster-table">
-          ${ROSTER_THEAD}
-          <tbody class="unit-group">${unitRowHtml(regiment.general)}</tbody>
-        </table>
+        <table class="roster-table">${ROSTER_COLGROUP}${ROSTER_THEAD}</table>
+        <div class="unit-block"><table class="roster-table">${ROSTER_COLGROUP}<tbody>${unitRowHtml(regiment.general)}</tbody></table></div>
       </div>`;
     }
 
@@ -3177,11 +3176,10 @@ function printRoster() {
         ...company.units.filter(u => u.isSpecialAsset),
       ];
 
-      const unitRows = sortedUnits.map((u, i) => {
+      const unitBlocks = sortedUnits.map((u, i) => {
         const next = sortedUnits[i + 1];
-        const gap = (u.isCommander && next && !next.isCommander)
-          ? '<tr class="commander-gap"><td colspan="3"></td></tr>' : '';
-        return `<tbody class="unit-group">${unitRowHtml(u)}${gap}</tbody>`;
+        const gapClass = (u.isCommander && next && !next.isCommander) ? ' commander-gap-after' : '';
+        return `<div class="unit-block${gapClass}"><table class="roster-table">${ROSTER_COLGROUP}<tbody>${unitRowHtml(u)}</tbody></table></div>`;
       }).join('');
 
       return `<div class="company-block">
@@ -3189,10 +3187,8 @@ function printRoster() {
           <span class="company-name">${esc(company.name)}</span>
           <span class="company-meta">${typeName !== 'Standard' ? typeName + ' \xb7 ' : ''}${compPts}pts</span>
         </div>
-        <table class="roster-table">
-          ${ROSTER_THEAD}
-          ${unitRows}
-        </table>
+        <table class="roster-table">${ROSTER_COLGROUP}${ROSTER_THEAD}</table>
+        ${unitBlocks}
       </div>`;
     }).filter(Boolean).join('');
 
@@ -3215,13 +3211,15 @@ function printRoster() {
   .army-trait-label{font-size:6pt;text-transform:uppercase;letter-spacing:0.12em;color:#8a6820;font-weight:bold;margin-right:4pt;}
   .regiment-header{margin:10pt 0 0;padding:3pt 8pt;background:#1c1c1c;color:#f0e8d0;font-size:11pt;font-weight:bold;letter-spacing:0.05em;border-left:4px solid #c8a030;}
   .regiment-spacer{height:3pt;}
-  .general-block{margin-bottom:5pt;break-inside:avoid;}
+  .general-block{margin-bottom:5pt;break-inside:avoid;page-break-inside:avoid;}
   .general-header .company-name{font-style:italic;color:#444;font-size:8pt;}
-  .company-block{margin-bottom:8pt;break-inside:avoid;}
+  .company-block{margin-bottom:8pt;break-inside:avoid;page-break-inside:avoid;display:inline-block;width:100%;}
+  .unit-block{break-inside:avoid;page-break-inside:avoid;}
+  .unit-block.commander-gap-after{margin-bottom:4pt;}
   .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:1pt;margin-bottom:0;}
   .company-name{font-size:10pt;font-weight:bold;}
   .company-meta{font-size:7pt;color:#555;}
-  table.roster-table{width:100%;border-collapse:collapse;}
+  table.roster-table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0;}
   .roster-table thead th:first-child{border-left:2px solid #1a1a1a;}
   .roster-table tbody td:first-child{border-left:2px solid #bbb;}
   .roster-table thead th{background:#2a2a2a;color:#fff;font-size:6pt;text-transform:uppercase;letter-spacing:0.1em;padding:2pt 5pt;text-align:left;}
@@ -3256,9 +3254,9 @@ function printRoster() {
   .dt-army-trait{color:#8a6820;}
   .trait-badge{font-weight:normal;font-style:normal;font-size:5.5pt;border:1px solid #c8a030;color:#8a6820;padding:0 2pt;margin-left:3pt;white-space:nowrap;vertical-align:middle;}
   .total{text-align:right;font-size:9pt;font-weight:bold;margin-top:7pt;border-top:2px solid #1a1a1a;padding-top:3pt;}
-  .companies-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:14pt;align-items:start;}
+  .companies-grid{column-count:2;column-gap:14pt;}
   @page{size:landscape;}
-  @media print{body{margin:0.7cm 0.9cm;}.company-block{break-inside:avoid;}tbody.unit-group{break-inside:avoid;}}
+  @media print{body{margin:0.7cm 0.9cm;}.company-block{break-inside:avoid;page-break-inside:avoid;}.unit-block{break-inside:avoid;page-break-inside:avoid;}}
 </style>
 </head><body>
 <h1>${esc(armyName)}</h1>
