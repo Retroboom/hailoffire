@@ -2287,7 +2287,7 @@ function printRoster() {
     'Piercing':     { sStrength: '−1 TN' },
   };
 
-  // [1] Stat columns — labels appear once per company table, not per unit
+  // Stat columns — labels appear inside each unit's own mini-table
   const STAT_GRID = [
     { key: 'move',      short: 'MOV',     fmt: v => (v*2)+'"' },
     { key: 'fighting',  short: 'FI.DICE', fmt: v => v },
@@ -2299,7 +2299,7 @@ function printRoster() {
     { key: 'range',     short: 'RNG',     fmt: v => (v*6)+'"' },
   ];
 
-  const TOTAL_COLS = 1 + STAT_GRID.length + 1; // Unit + 8 stats + Pts = 10
+  const TOTAL_COLS = 3; // Unit | Stats | Pts
 
   // Army Trait callout block
   const armyTraitHtml = state.armyAbility ? (() => {
@@ -2314,15 +2314,16 @@ function printRoster() {
         : total === budget ? ' (exact)' : ' (' + (budget - total) + 'pts remaining)')
     : '';
 
-  // [1] Emit one <td> per stat — no inner mini-table, no repeated headers
-  function unitStatCells(u) {
+  // Per-unit stat mini-table with its own header row of labels
+  function statMiniTable(u) {
     const allAbilNames = [
       ...(state.armyAbility ? [state.armyAbility] : []),
       ...u.abilities,
     ];
     const eff = effectiveStats(u);
     const base = u.stats;
-    return STAT_GRID.map(s => {
+    const ths = STAT_GRID.map(s => `<th>${s.short}</th>`).join('');
+    const tds = STAT_GRID.map(s => {
       const v = eff[s.key] || 0;
       const display = v === 0 ? '—' : s.fmt(v);
       const boosted = v > (base[s.key] || 0);
@@ -2330,8 +2331,9 @@ function printRoster() {
         .map(n => { const m = ABILITY_STAT_NOTES[n]; return m ? m[s.key] : null; })
         .filter(Boolean);
       const notesHtml = notes.map(n => `<span class="stat-note">${esc(n)}</span>`).join('');
-      return `<td class="stat-val${v === 0 ? ' sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}${notesHtml ? '<br>' + notesHtml : ''}</td>`;
+      return `<td class="${v === 0 ? 'sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}${notesHtml ? '<br>' + notesHtml : ''}</td>`;
     }).join('');
+    return `<table class="stat-mini"><thead><tr>${ths}</tr></thead><tbody><tr>${tds}</tr></tbody></table>`;
   }
 
   const companyBlocksHtml = state.regiments.flatMap(regiment => {
@@ -2348,9 +2350,6 @@ function printRoster() {
         ...company.units.filter(u => !u.isCommander && !u.isSpecialAsset),
         ...company.units.filter(u => u.isSpecialAsset),
       ];
-
-      // [1] Stat label headers — once per company table
-      const statHeaders = STAT_GRID.map(s => `<th class="col-stat">${s.short}</th>`).join('');
 
       const unitRows = sortedUnits.map((u, i) => {
         const ft = FORCE_TYPES[u.forceType];
@@ -2383,7 +2382,7 @@ function printRoster() {
             <div class="unit-name-row"><span class="unit-name">${esc(u.name)}</span> ${tagsHtml}</div>
             ${forceInfo}
           </td>
-          ${unitStatCells(u)}
+          <td class="stats-cell">${statMiniTable(u)}</td>
           <td class="pts-cell">${unitCost(u)}</td>
         </tr>${descSubRow}`;
       }).join('');
@@ -2396,7 +2395,7 @@ function printRoster() {
         <table class="roster-table">
           <thead><tr>
             <th class="col-unit">Unit</th>
-            ${statHeaders}
+            <th class="col-stats">Stats</th>
             <th class="col-pts">Pts</th>
           </tr></thead>
           <tbody>${unitRows}</tbody>
@@ -2423,31 +2422,33 @@ function printRoster() {
   .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:2pt;margin-bottom:0;}
   .company-name{font-size:10pt;font-weight:bold;}
   .company-meta{font-size:8pt;color:#555;}
-  table.roster-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-  .roster-table thead th{background:#2a2a2a;color:#fff;font-size:6pt;text-transform:uppercase;letter-spacing:0.08em;padding:3pt 2pt;text-align:center;}
-  .roster-table thead th.col-unit{text-align:left;padding-left:5pt;}
-  .roster-table thead th.col-pts{text-align:right;padding-right:4pt;}
-  .roster-table td{padding:4pt 2pt;vertical-align:middle;}
+  table.roster-table{width:100%;border-collapse:collapse;}
+  .roster-table thead th{background:#2a2a2a;color:#fff;font-size:7pt;text-transform:uppercase;letter-spacing:0.1em;padding:3pt 6pt;text-align:left;}
+  .roster-table thead th.col-pts{text-align:right;}
+  .roster-table td{padding:5pt 6pt;vertical-align:top;}
   /* [3] Unit separators: bold top rule between units, none before the first */
   tr.unit-sep td{border-top:2px solid #bbb;}
   tr.desc-row td{border-top:none;}
   .commander-row td{background:#f7f5f0;}
   .col-unit{width:22%;}
-  .col-stat{width:8.5%;}
-  .col-pts{width:6%;text-align:right;}
-  .unit-name-cell{padding:5pt 4pt 3pt;vertical-align:top;}
+  .col-stats{width:70%;}
+  .col-pts{width:8%;text-align:right;}
+  .unit-name-cell{vertical-align:top;}
   .unit-name-row{display:flex;align-items:baseline;gap:5pt;flex-wrap:wrap;margin-bottom:1pt;}
   .unit-name{font-size:10pt;font-weight:bold;}
-  .tag{font-size:6.5pt;border:1px solid #999;padding:0 2pt;white-space:nowrap;}
+  .tag{font-size:7pt;border:1px solid #999;padding:0 3pt;white-space:nowrap;}
   .unit-meta{font-size:7.5pt;color:#888;}
-  .pts-cell{text-align:right;font-weight:bold;font-size:9pt;padding-right:4pt;white-space:nowrap;}
-  /* [1] Flat stat cells — value + optional conditional note */
-  .stat-val{text-align:center;font-size:9pt;vertical-align:middle;padding:5pt 2pt;}
+  .pts-cell{text-align:right;font-weight:bold;font-size:9pt;white-space:nowrap;vertical-align:middle;}
+  .stats-cell{padding:4pt 6pt;}
+  /* Per-unit stat mini-table */
+  table.stat-mini{border-collapse:collapse;width:100%;font-size:8pt;}
+  .stat-mini thead th{background:#444;color:#fff;text-align:center;padding:2pt 3pt;font-size:6pt;font-weight:bold;letter-spacing:0.05em;border:1px solid #333;}
+  .stat-mini tbody td{border:1px solid #ccc;text-align:center;padding:3pt 4pt;line-height:1.3;vertical-align:top;min-width:22pt;}
   .sb-zero{color:#ccc;}
   .sb-boosted{font-weight:bold;background:#fdf5dc;}
   .stat-note{display:block;font-size:5.5pt;color:#888;font-style:italic;line-height:1.2;margin-top:1pt;white-space:nowrap;}
   /* [4] Hanging-indent ability description list */
-  .desc-cell{padding:3pt 6pt 5pt;background:#f8f8f6;border-bottom:1px solid #e8e8e8;}
+  .desc-cell{padding:3pt 8pt 5pt;background:#f8f8f6;border-bottom:1px solid #e8e8e8;}
   .ability-list{display:grid;grid-template-columns:max-content 1fr;column-gap:10pt;row-gap:1.5pt;font-size:7.5pt;line-height:1.4;margin:0;padding:0;list-style:none;}
   .ability-list dt{font-weight:bold;white-space:nowrap;padding:0;}
   .ability-list dd{margin:0;color:#444;}
