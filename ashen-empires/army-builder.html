@@ -2358,14 +2358,6 @@ function printRoster() {
         const forceInfo = u.isCommander ? ''
           : `<div class="unit-meta">${ft.label} \xd7${u.models} \xb7 Force ${ft.force * u.models}</div>`;
 
-        // Abilities column: army trait first (badged), then unit abilities
-        const abilityItems = [];
-        if (state.armyAbility) abilityItems.push(`<span class="army-badge">Army Trait</span> ${esc(state.armyAbility)}`);
-        u.abilities.forEach(n => abilityItems.push(esc(n)));
-        const abilitiesHtml = abilityItems.length > 0
-          ? abilityItems.join('<br>')
-          : '<span class="none-dash">—</span>';
-
         // Ability descriptions sub-row (army trait first, then unit abilities)
         const allUnitAbils = [
           ...(state.armyAbility ? [state.armyAbility] : []),
@@ -2379,7 +2371,7 @@ function printRoster() {
             const badge = isArmy ? ' <span class="army-badge">Army Trait</span>' : '';
             return `<span class="desc-name">${esc(name)}${badge}:</span> ${ab ? esc(ab.desc) : ''}`;
           }).join('<br>');
-          descSubRow = `<tr class="desc-row${u.isCommander ? ' commander-row' : ''}"><td colspan="4" class="desc-cell">${descItems}</td></tr>`;
+          descSubRow = `<tr class="desc-row${u.isCommander ? ' commander-row' : ''}"><td colspan="3" class="desc-cell">${descItems}</td></tr>`;
         }
 
         return `<tr class="${rowClass}">
@@ -2388,7 +2380,6 @@ function printRoster() {
             ${forceInfo}
           </td>
           <td class="stats-cell">${statMiniTable(u)}</td>
-          <td class="abilities-cell">${abilitiesHtml}</td>
           <td class="pts-cell">${unitCost(u)}</td>
         </tr>${descSubRow}`;
       }).join('');
@@ -2402,7 +2393,6 @@ function printRoster() {
           <thead><tr>
             <th class="col-unit">Unit</th>
             <th class="col-stats">Stats</th>
-            <th class="col-abilities">Abilities</th>
             <th class="col-pts">Pts</th>
           </tr></thead>
           <tbody>${unitRows}</tbody>
@@ -2434,16 +2424,14 @@ function printRoster() {
   .roster-table th.col-pts{text-align:right;}
   .roster-table td{padding:5pt 6pt;border:1px solid #ddd;vertical-align:top;}
   .commander-row td{background:#f7f5f0;}
-  .col-unit{width:20%;}
-  .col-stats{width:52%;}
-  .col-abilities{width:19%;}
-  .col-pts{width:9%;text-align:right;}
+  .col-unit{width:26%;}
+  .col-stats{width:64%;}
+  .col-pts{width:10%;text-align:right;}
   .unit-name-row{display:flex;align-items:baseline;gap:5pt;flex-wrap:wrap;margin-bottom:2pt;}
   .unit-name{font-size:10pt;font-weight:bold;}
   .tag{font-size:7pt;border:1px solid #999;padding:0 3pt;white-space:nowrap;}
   .unit-meta{font-size:8pt;color:#555;}
   .pts-cell{text-align:right;font-weight:bold;font-size:9pt;white-space:nowrap;vertical-align:middle;}
-  .abilities-cell{font-size:8.5pt;line-height:1.8;}
   .army-badge{font-size:6pt;text-transform:uppercase;letter-spacing:0.08em;border:1px solid #c8a030;color:#8a6820;font-weight:bold;padding:0 2pt;vertical-align:middle;}
   .none-dash{color:#bbb;}
   table.stat-mini{border-collapse:collapse;width:100%;font-size:8pt;}
