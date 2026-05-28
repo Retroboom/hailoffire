@@ -2392,7 +2392,7 @@ function printRoster() {
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
     if (regCompanies.length === 0) return [];
 
-    const regHeader = `<div class="regiment-header">${esc(regiment.name)}</div>`;
+    const regHeader = `<div class="regiment-header">${esc(regiment.name)}</div><div class="regiment-spacer"></div>`;
 
     // Generals command the regiment, not a single company; render them between the
     // regiment header and the first company block
@@ -2457,6 +2457,7 @@ function printRoster() {
   .army-trait-block{background:#fdf8e8;border:1px solid #c8a030;border-left:4px solid #c8a030;padding:5pt 8pt;margin-bottom:12pt;font-size:9pt;}
   .army-trait-label{font-size:7pt;text-transform:uppercase;letter-spacing:0.12em;color:#8a6820;font-weight:bold;margin-right:4pt;}
   .regiment-header{margin:18pt 0 0;padding:5pt 10pt;background:#1c1c1c;color:#f0e8d0;font-size:14pt;font-weight:bold;letter-spacing:0.05em;border-left:4px solid #c8a030;}
+  .regiment-spacer{height:6pt;}
   .general-block{margin-bottom:8pt;break-inside:avoid;}
   .general-header .company-name{font-style:italic;color:#444;font-size:9pt;}
   .company-block{margin-bottom:14pt;break-inside:avoid;}
