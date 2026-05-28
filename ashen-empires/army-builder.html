@@ -2365,7 +2365,7 @@ function printRoster() {
     let descSubRow = '';
     if (abilEntries.length > 0) {
       const descItems = abilEntries.map(({ name, desc, isArmyTrait }) => {
-        const badge = isArmyTrait ? '<span class="trait-badge">Army Trait</span>' : '';
+        const badge = isArmyTrait ? '<span class="trait-badge">Army</span>' : '';
         const dtClass = isArmyTrait ? ' class="dt-army-trait"' : '';
         return `<dt${dtClass}>• ${esc(name)}${badge}</dt><dd>${esc(desc)}</dd>`;
       }).join('');
@@ -2493,7 +2493,7 @@ function printRoster() {
   .ability-list dt{font-weight:bold;white-space:nowrap;padding:0;}
   .ability-list dd{margin:0;color:#444;}
   .dt-army-trait{color:#8a6820;}
-  .trait-badge{font-weight:normal;font-style:italic;font-size:5.5pt;color:#a07828;margin-left:3pt;}
+  .trait-badge{font-weight:normal;font-style:normal;font-size:6pt;border:1px solid #c8a030;color:#8a6820;padding:0 2pt;margin-left:3pt;white-space:nowrap;vertical-align:middle;}
   .total{text-align:right;font-size:10.5pt;font-weight:bold;margin-top:10pt;border-top:2px solid #1a1a1a;padding-top:4pt;}
   @media print{body{margin:0.8cm 1cm;}.company-block{break-inside:avoid;}}
 </style>
