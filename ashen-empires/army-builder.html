@@ -383,13 +383,13 @@
     gap: 4px;
   }
   .rank-btn {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
     background: var(--faint);
     border: 1px solid var(--navy4);
     color: var(--ink);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1;
     display: flex;
     align-items: center;
@@ -986,6 +986,19 @@
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
+    /* Stat labels: hide full name, show abbreviation */
+    .stat-label-long { display: none !important; }
+    .stat-label-short { display: inline !important; }
+
+    /* Show mobile company context breadcrumb when active */
+    .mobile-company-context.active { display: block; }
+
+    /* Commander button: scale with mobile add-btn sizing */
+    .add-btn-cmd { padding: 12px 14px !important; font-size: 15px !important; }
+
+    /* Hide inline company breadcrumb on mobile (replaced by top context bar) */
+    .company-canvas-breadcrumb { display: none !important; }
+
     /* Larger touch targets for rank +/- buttons */
     .rank-btn { width: 32px !important; height: 32px !important; font-size: 16px !important; }
     .rank-value { font-size: 18px !important; width: 30px !important; }
@@ -1239,6 +1252,57 @@
   .stat-row.stat-zero { opacity: 0.50; }
   .stat-row.stat-zero .rank-value { color: var(--mist); }
 
+  /* Stat label: full name on desktop, abbreviation on mobile */
+  .stat-label-short { display: none; }
+
+  /* Effective stat bonus from ability/asset bonuses */
+  .stat-eff-bonus {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    opacity: 0.9;
+    margin-left: 1px;
+  }
+
+  /* Duplicate button: gold on hover, distinct from delete */
+  .delete-btn.dup:hover { color: var(--amber) !important; }
+
+  /* "Add Commander" button: gold outlined, distinct from primary Add Unit */
+  .add-btn-cmd {
+    background: transparent;
+    border: 1px solid rgba(200,160,48,0.55);
+    color: var(--gold);
+    padding: 9px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .add-btn-cmd:hover { background: rgba(200,160,48,0.08); border-color: var(--gold); color: var(--white); }
+  .add-btn-cmd:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Mobile company context breadcrumb (hidden on desktop) */
+  .mobile-company-context {
+    display: none;
+    font-size: 12px;
+    color: var(--mist);
+    padding: 0 0 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--faint);
+    letter-spacing: 0.02em;
+  }
+  .mobile-company-context .ctx-regiment {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+  }
+  .mobile-company-context .ctx-sep { color: var(--navy4); margin: 0 6px; }
+  .mobile-company-context .ctx-company { color: var(--ink); }
+
   .abilities-open-btn {
     width: 100%; background: var(--faint); border: 1px solid var(--gold); color: var(--gold);
     font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600;
@@ -1414,6 +1478,7 @@
 
   <!-- MAIN: Unit editor -->
   <div class="main" id="main-canvas">
+    <div class="mobile-company-context" id="mobile-company-context"></div>
     <div class="empty-state" id="empty-state">
       <h3>No Company Selected</h3>
       <p>Add a company and select it to start building units.</p>
@@ -1443,6 +1508,7 @@
           <button class="export-btn" onclick="exportJSON()" style="flex:1;font-size:12px;padding:7px 4px;">↓ Export JSON</button>
           <button class="export-btn" onclick="loadJSONPrompt()" style="flex:1;font-size:12px;padding:7px 4px;">↑ Import JSON</button>
         </div>
+        <button class="export-btn" onclick="newArmy()" style="margin-top:2px;color:var(--mist);font-size:13px;">↺ New Army</button>
         <input type="file" id="load-file" accept=".json" style="display:none" onchange="loadJSON(this)">
       </div>
     </div>
@@ -1538,9 +1604,9 @@ const STATS = [
 ];
 
 const FORCE_TYPES = [
-  { label: 'Infantry (1 Force)', force: 1, maxModels: 10 },
-  { label: 'Cavalry / Large (2 Force)', force: 2, maxModels: 5 },
-  { label: 'Hero / Creature (3 Force)', force: 3, maxModels: 1 },
+  { label: 'Infantry (1 Force)', short: 'Infantry · 1F', force: 1, maxModels: 10 },
+  { label: 'Cavalry / Large (2 Force)', short: 'Cavalry · 2F', force: 2, maxModels: 5 },
+  { label: 'Hero / Creature (3 Force)', short: 'Hero · 3F', force: 3, maxModels: 1 },
 ];
 
 const ASSET_TYPES = [
@@ -1836,7 +1902,7 @@ function renderSidebar() {
           style="background:transparent;border:none;color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;outline:none;width:110px;padding:0;">
         <div style="display:flex;align-items:center;gap:4px;">
           ${compSlotBadge}
-          <button class="delete-btn" onclick="event.stopPropagation();duplicateRegiment('${regiment.id}')" title="Duplicate regiment" style="font-size:12px;">⧉</button>
+          <button class="delete-btn dup" onclick="event.stopPropagation();duplicateRegiment('${regiment.id}')" title="Duplicate regiment" style="font-size:12px;">⧉</button>
           <button class="delete-btn" onclick="event.stopPropagation();deleteRegiment('${regiment.id}')" title="Delete regiment">×</button>
         </div>
       </div>
@@ -1886,7 +1952,7 @@ function renderSidebar() {
             ${valBadge}
             ${unitSlotBadge}
             <span class="company-pts">${pts}pts</span>
-            <button class="delete-btn" onclick="event.stopPropagation();duplicateCompany('${company.id}')" title="Duplicate company" style="font-size:13px;">⧉</button>
+            <button class="delete-btn dup" onclick="event.stopPropagation();duplicateCompany('${company.id}')" title="Duplicate company" style="font-size:13px;">⧉</button>
             <button class="delete-btn" onclick="event.stopPropagation();deleteCompany('${company.id}')" title="Delete company">×</button>
           </div>
         </div>
@@ -1926,6 +1992,20 @@ function renderMainCanvas() {
   const unitList = document.getElementById('unit-list');
 
   const company = state.companies.find(c => c.id === state.activeCompanyId);
+
+  // Update mobile context breadcrumb
+  const ctxEl = document.getElementById('mobile-company-context');
+  if (ctxEl) {
+    if (company) {
+      const ctxReg = state.regiments.find(r => r.id === company.regimentId);
+      ctxEl.innerHTML = `<span class="ctx-regiment">${esc(ctxReg ? ctxReg.name : 'Regiment')}</span><span class="ctx-sep">›</span><span class="ctx-company">${esc(company.name)}</span>`;
+      ctxEl.classList.add('active');
+    } else {
+      ctxEl.textContent = '';
+      ctxEl.classList.remove('active');
+    }
+  }
+
   if (!company) {
     emptyState.style.display = '';
     unitList.style.display = 'none';
@@ -1942,7 +2022,7 @@ function renderMainCanvas() {
   const ch = document.createElement('div');
   ch.style.cssText = 'margin-bottom:16px;';
   ch.innerHTML = `
-    <div style="font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--mist);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--faint);display:flex;align-items:center;gap:6px;">
+    <div class="company-canvas-breadcrumb" style="font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--mist);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--faint);display:flex;align-items:center;gap:6px;">
       <span style="color:var(--gold);font-family:'Cinzel',serif;">${regiment ? esc(regiment.name) : 'Regiment'}</span>
       <span style="color:var(--faint);">›</span>
       <span style="color:var(--ink);">${esc(company.name)}</span>
@@ -1969,7 +2049,7 @@ function renderMainCanvas() {
   addRow.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;';
   addRow.innerHTML = `
     <button class="add-btn" id="add-unit-btn" style="flex:1;" onclick="addUnit('${company.id}', false)">+ Add Unit</button>
-    <button class="add-btn secondary" id="add-commander-btn" style="flex:1;" onclick="addUnit('${company.id}', true)">+ Add Commander</button>
+    <button class="add-btn-cmd" id="add-commander-btn" style="flex:1;" onclick="addUnit('${company.id}', true)">+ Add Commander</button>
   `;
   unitList.appendChild(addRow);
 
@@ -2077,11 +2157,11 @@ function buildUnitCard(unit, company) {
         </select>
       ` : `
         <select class="unit-type-select" onchange="updateUnitForceType('${unit.id}', this.value)">
-          ${FORCE_TYPES.map((ft, i) => `<option value="${i}" ${unit.forceType === i ? 'selected' : ''}>${ft.label}</option>`).join('')}
+          ${FORCE_TYPES.map((ft, i) => `<option value="${i}" ${unit.forceType === i ? 'selected' : ''}>${ft.short}</option>`).join('')}
         </select>
       `}
       <div class="unit-pts-badge">${pts} <span class="pts-label">pts</span></div>
-      <button class="delete-btn" onclick="duplicateUnit('${company.id}', '${unit.id}')" title="Duplicate unit" style="font-size:13px;">⧉</button>
+      <button class="delete-btn dup" onclick="duplicateUnit('${company.id}', '${unit.id}')" title="Duplicate unit" style="font-size:13px;">⧉</button>
       <button class="delete-btn" onclick="deleteUnit('${company.id}', '${unit.id}')" title="Delete unit">×</button>
     </div>
     ${generalConflictMsg ? `<div class="inline-error" style="margin:0 14px 0;">${generalConflictMsg}</div>` : ''}
@@ -2099,21 +2179,27 @@ function buildUnitCard(unit, company) {
             </div>
           </div>
         `}
-        ${STATS.map(s => {
-          const rank = unit.stats[s.key];
-          const isZero = rank === 0;
-          return `
-          <div class="stat-row${isZero ? ' stat-zero' : ''}">
-            <span class="stat-name" title="${s.label}">${s.short}</span>
-            <div class="stat-controls">
-              <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', -1)" ${rank <= 0 ? 'disabled' : ''}>−</button>
-              <span class="rank-value">${s.fmt(rank)}</span>
-              <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', 1)"
-                ${rank >= s.max || ranks >= cap ? 'disabled' : ''}>+</button>
-              <span class="rank-pts">${isZero ? '' : rank+'p'}</span>
-            </div>
-          </div>`;
-        }).join('')}
+        ${(() => {
+          const effStats = effectiveStats(unit);
+          return STATS.map(s => {
+            const rank = unit.stats[s.key];
+            const effRank = effStats[s.key] || 0;
+            const bonus = effRank - rank;
+            const isZero = rank === 0 && effRank === 0;
+            const bonusHtml = bonus > 0 ? `<span class="stat-eff-bonus" title="Effective: ${s.fmt(effRank)}">+${s.fmt(bonus)}</span>` : '';
+            return `
+            <div class="stat-row${isZero ? ' stat-zero' : ''}">
+              <span class="stat-name" title="${s.label}"><span class="stat-label-long">${s.label}</span><span class="stat-label-short">${s.short}</span></span>
+              <div class="stat-controls">
+                <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', -1)" ${rank <= 0 ? 'disabled' : ''}>−</button>
+                <span class="rank-value">${s.fmt(rank)}</span>${bonusHtml}
+                <button class="rank-btn" onclick="changeStat('${unit.id}', '${s.key}', 1)"
+                  ${rank >= s.max || ranks >= cap ? 'disabled' : ''}>+</button>
+                <span class="rank-pts">${isZero ? '' : rank+'p'}</span>
+              </div>
+            </div>`;
+          }).join('');
+        })()}
         <div class="rank-cap-bar">
           <div class="rank-cap-row">
             <span class="rank-cap-label">Rank Total</span>
@@ -2143,7 +2229,7 @@ function buildUnitCard(unit, company) {
           <div class="section-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">Special Abilities</div>
           ${abSlotLabel}
         </div>
-        ${abilityLimitReached ? `<div class="ability-limit-note">Ability limit reached (3/3). Remove one to add another.</div>` : ''}
+        ${abilityLimitReached ? `<div class="ability-limit-note">Ability limit reached (3/3). Remove one to add another.</div>` : abilityCnt === 2 ? `<div class="ability-limit-note">1 ability slot remaining.</div>` : ''}
         <button class="abilities-open-btn" onclick="openAbilitiesModal('${unit.id}')">
           <span>Choose Abilities</span>
           <span class="ab-count">${(() => {
@@ -2342,7 +2428,11 @@ function renderValidation() {
     return;
   }
 
-  vv.innerHTML = issues.map(v => `
+  // Sort: errors first, then warnings, then info/hints
+  const typeOrder = { error: 0, warn: 1 };
+  const sorted = [...issues].sort((a, b) => (typeOrder[a.type] ?? 2) - (typeOrder[b.type] ?? 2));
+
+  vv.innerHTML = sorted.map(v => `
     <div class="val-item">
       <span class="val-icon ${v.type === 'error' ? 'val-err' : v.type === 'warn' ? 'val-warn' : 'val-ok'}">${v.type === 'error' ? '✕' : v.type === 'warn' ? '!' : '✓'}</span>
       <span class="val-text">${v.msg}</span>
@@ -2495,8 +2585,27 @@ function deleteRegiment(id) {
   render();
 }
 
+function newArmy() {
+  if (!confirm('Start a new army? All current units, companies, and regiments will be cleared.')) return;
+  state.armyName = 'My Army';
+  state.regiments = [];
+  state.companies = [];
+  state.activeCompanyId = null;
+  state.activeRegimentId = null;
+  state.budget = null;
+  state.armyAbility = null;
+  nextId = 1;
+  const nameInput = document.getElementById('army-name-input');
+  if (nameInput) nameInput.value = 'My Army';
+  const bi = document.getElementById('budget-input');
+  if (bi) bi.value = '';
+  render();
+}
+
 function selectCompany(id) {
   state.activeCompanyId = id;
+  const canvas = document.getElementById('main-canvas');
+  if (canvas) canvas.scrollTop = 0;
   if (isMobile()) setMobileTab(1); // jump to Builder on mobile
   render();
 }
@@ -2542,6 +2651,7 @@ function addUnit(companyId, isCommander) {
 }
 
 function deleteUnit(companyId, unitId) {
+  if (!confirm('Remove this unit?')) return;
   const c = state.companies.find(c => c.id === companyId);
   if (!c) return;
   c.units = c.units.filter(u => u.id !== unitId);
