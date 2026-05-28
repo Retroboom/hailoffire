@@ -1789,9 +1789,27 @@ function renderRosterView() {
     return;
   }
 
-  state.companies.forEach(company => {
+  // Army Trait callout
+  if (state.armyAbility) {
+    const aa = ABILITIES.find(x => x.name === state.armyAbility);
+    const aaDiv = document.createElement('div');
+    aaDiv.style.cssText = 'border-left:2px solid var(--gold);padding:5px 10px;margin-bottom:10px;background:rgba(200,160,48,0.06);';
+    aaDiv.innerHTML = `<div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.14em;color:var(--gold);margin-bottom:2px;">ARMY TRAIT</div><span style="font-size:12px;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;">${esc(state.armyAbility)}</span>${aa ? `<div style="font-size:11px;color:var(--mist);font-family:'Libre Baskerville',serif;font-style:italic;margin-top:2px;">${esc(aa.desc)}</div>` : ''}`;
+    rv.appendChild(aaDiv);
+  }
+
+  // Group by regiment
+  state.regiments.forEach(regiment => {
+    const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
+    if (regCompanies.length === 0) return;
+
+    const regDiv = document.createElement('div');
+    regDiv.style.cssText = 'margin-bottom:14px;';
+    regDiv.innerHTML = `<div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mist);font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--faint);">${esc(regiment.name)}</div>`;
+
+    regCompanies.forEach(company => {
     const cdiv = document.createElement('div');
-    cdiv.style.cssText = 'margin-bottom:12px;';
+    cdiv.style.cssText = 'margin-bottom:10px;';
     const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
     cdiv.innerHTML = `<div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:4px;display:flex;justify-content:space-between;"><span>${esc(company.name)}</span><span style="color:var(--mist);font-family:'Share Tech Mono',monospace;">${compPts}pts</span></div>`;
 
@@ -1818,7 +1836,12 @@ function renderRosterView() {
           return `<span class="stat-chip${boosted ? ' stat-boosted' : ''}">${s.short} ${s.fmt(eff[s.key])}</span>`;
         }).join('');
 
-      const abilityLines = u.abilities.map(name => {
+      // Army trait line + unit ability lines
+      const armyLine = state.armyAbility ? (() => {
+        const ab = ABILITIES.find(a => a.name === state.armyAbility);
+        return `<div class="roster-ability-line"><span class="roster-ability-name" style="color:var(--gold);">${esc(state.armyAbility)}</span>&thinsp;<span style="font-size:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:0.08em;color:var(--gold);border:1px solid rgba(200,160,48,0.4);padding:0 2px;vertical-align:middle;">ARMY</span>&nbsp;${ab ? esc(ab.desc) : ''}</div>`;
+      })() : '';
+      const abilityLines = armyLine + u.abilities.map(name => {
         const ab = ABILITIES.find(a => a.name === name);
         if (!ab) return '';
         return `<div class="roster-ability-line"><span class="roster-ability-name">${esc(name)}</span>${esc(ab.desc)}</div>`;
@@ -1842,7 +1865,9 @@ function renderRosterView() {
       cdiv.appendChild(card);
     });
 
-    rv.appendChild(cdiv);
+    regDiv.appendChild(cdiv);
+    });
+    rv.appendChild(regDiv);
   });
 }
 
@@ -2243,149 +2268,182 @@ function loadJSON(input) {
 function printRoster() {
   const armyName = state.armyName || 'My Army';
   const total = totalArmyPts();
+  const budget = state.budget;
 
-  // Collect all unique abilities across the whole army
+  // Collect all unique abilities (army trait first, then unit abilities)
   const allAbilityNames = new Set();
+  if (state.armyAbility) allAbilityNames.add(state.armyAbility);
   state.companies.forEach(c => c.units.forEach(u => u.abilities.forEach(a => allAbilityNames.add(a))));
 
-  const companyBlocks = state.regiments.flatMap(regiment => {
+  // Army Trait block
+  const armyTraitHtml = state.armyAbility ? (() => {
+    const aa = ABILITIES.find(x => x.name === state.armyAbility);
+    return `<div class="army-trait-block"><span class="army-trait-label">Army Trait</span> <strong>${esc(state.armyAbility)}</strong>${aa ? ` — ${esc(aa.desc)}` : ''}</div>`;
+  })() : '';
+
+  // Budget subtitle line
+  const budgetLine = budget
+    ? ` \xb7 Budget: ${budget}pts` + (total > budget ? ` (over by ${total - budget}pts)` : total === budget ? ' (exact)' : ` (${budget - total}pts remaining)`)
+    : '';
+
+  // Stat grid columns
+  const STAT_GRID = [
+    { key: 'move',      short: 'MOV',    fmt: v => (v*2)+'"' },
+    { key: 'fighting',  short: 'F.DICE', fmt: v => v },
+    { key: 'fStrength', short: 'F.STR',  fmt: v => v },
+    { key: 'shooting',  short: 'S.DICE', fmt: v => v },
+    { key: 'sStrength', short: 'S.STR',  fmt: v => v },
+    { key: 'defense',   short: 'DEF',    fmt: v => v },
+    { key: 'courage',   short: 'CRG',    fmt: v => v },
+    { key: 'range',     short: 'RNG',    fmt: v => (v*6)+'"' },
+  ];
+
+  function statBox(u) {
+    const eff = effectiveStats(u);
+    const base = u.stats;
+    const cells = STAT_GRID.map(s => {
+      const v = eff[s.key] || 0;
+      const display = v === 0 ? '—' : s.fmt(v);
+      const boosted = v > (base[s.key] || 0);
+      return `<td class="sb${v === 0 ? ' sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}<br><span class="sb-lbl">${s.short}</span></td>`;
+    }).join('');
+    return `<table class="stat-grid"><tr>${cells}</tr></table>`;
+  }
+
+  const companyBlocksHtml = state.regiments.flatMap(regiment => {
     const regCompanies = state.companies.filter(c => c.regimentId === regiment.id);
     if (regCompanies.length === 0) return [];
-    const regHeader = `<div style="margin:18pt 0 4pt;font-size:13pt;font-weight:bold;letter-spacing:0.05em;border-bottom:2px solid black;">${esc(regiment.name)}</div>`;
-    const blocks = regCompanies.map(company => {
-    const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
-    const typeName = COMPANY_TYPES[company.type].label;
 
-    const sortedUnits = [
-      ...company.units.filter(u => u.isCommander),
-      ...company.units.filter(u => !u.isCommander && !u.isSpecialAsset),
-      ...company.units.filter(u => u.isSpecialAsset),
-    ];
+    const regHeader = `<div class="regiment-header">${esc(regiment.name)}</div>`;
 
-    // Stat box grid: short label + value, always shown
-    const STAT_GRID = [
-      { key: 'move',      short: 'MOV' },
-      { key: 'fighting',  short: 'Fi.Dice' },
-      { key: 'fStrength', short: 'F.STR' },
-      { key: 'shooting',  short: 'Sh.Dice' },
-      { key: 'sStrength', short: 'S.STR' },
-      { key: 'defense',   short: 'DEF' },
-      { key: 'courage',   short: 'CRG' },
-      { key: 'range',     short: 'RNG' },
-    ];
+    const compBlocks = regCompanies.map(company => {
+      const compPts = company.units.reduce((s, u) => s + unitCost(u), 0);
+      const typeName = COMPANY_TYPES[company.type].label;
 
-    function statBox(u) {
-      const eff = effectiveStats(u);
-      const base = u.stats;
-      const cells = STAT_GRID.map(s => {
-        const v = eff[s.key] || 0;
-        const rng = s.key === 'range' ? (v * 6) + '"' : (s.key === 'move' ? (v * 2) + '"' : v);
-        const display = v === 0 ? '—' : rng;
-        const boosted = v > (base[s.key] || 0);
-        return `<td class="sb${v === 0 ? ' sb-zero' : ''}${boosted ? ' sb-boosted' : ''}">${display}<br><span class="sb-lbl">${s.short}</span></td>`;
-      }).join('');
-      return `<table class="stat-grid"><tr>${cells}</tr></table>`;
-    }
+      const sortedUnits = [
+        ...company.units.filter(u => u.isCommander),
+        ...company.units.filter(u => !u.isCommander && !u.isSpecialAsset),
+        ...company.units.filter(u => u.isSpecialAsset),
+      ];
 
-    const unitRows = sortedUnits.map(u => {
-      const ft = FORCE_TYPES[u.forceType];
-      const abilityEntries = u.abilities.map(name => {
-        const ab = ABILITIES.find(a => a.name === name);
-        return `<span class="ab-entry"><strong>${name}</strong>${ab ? ` — ${ab.desc}` : ''}</span>`;
-      });
-      const tags = [];
-      if (u.isCommander) tags.push(u.commanderType);
-      if (u.isSpecialAsset) tags.push(ASSET_TYPES[u.assetType].label);
-      const rowClass = u.isCommander ? 'commander-row' : '';
+      const unitRows = sortedUnits.map(u => {
+        const ft = FORCE_TYPES[u.forceType];
+        const tags = [];
+        if (u.isCommander) tags.push(u.commanderType);
+        if (u.isSpecialAsset) tags.push(ASSET_TYPES[u.assetType].label);
+        const rowClass = u.isCommander ? 'commander-row' : '';
 
-      return `
-        <tr class="${rowClass}">
+        // Abilities: army trait first (marked), then unit abilities
+        const allUnitAbilities = [
+          ...(state.armyAbility ? [`<span class="army-mark">Army Trait</span> ${esc(state.armyAbility)}`] : []),
+          ...u.abilities.map(n => esc(n)),
+        ];
+        const abilityLine = allUnitAbilities.length > 0
+          ? `<div class="unit-abilities">${allUnitAbilities.join(' \xb7 ')}</div>` : '';
+
+        const forceInfo = u.isCommander ? ''
+          : `<div class="unit-meta">${ft.label} \xd7${u.models} \xb7 Force ${ft.force * u.models}</div>`;
+
+        const shockTrack = `<div class="shock-track">Shock<span class="shock-boxes">${'□'.repeat(15)}</span></div>`;
+
+        return `<tr class="${rowClass}">
           <td class="unit-name-cell">
-            <strong>${esc(u.name)}</strong>
-            ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
-            <div class="unit-models">${u.isCommander ? '' : ft.label + ' \xd7' + u.models + '\u00a0(Force\u00a0' + (ft.force * u.models) + ')'}</div>
+            <div class="unit-name-row">
+              <span class="unit-name">${esc(u.name)}</span>
+              ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
+              <span class="unit-pts">${unitCost(u)}pts</span>
+            </div>
+            ${forceInfo}
+            ${abilityLine}
+            ${shockTrack}
           </td>
           <td class="stat-cell">${statBox(u)}</td>
-          <td class="pts-cell">${unitCost(u)}pts</td>
-        </tr>
-        ${abilityEntries.length > 0 ? `
-        <tr class="${rowClass} abilities-row">
-          <td colspan="3" class="abilities-cell">${abilityEntries.join('')}</td>
-        </tr>` : ''}`;
-    }).join('');
+        </tr>`;
+      }).join('');
 
-    return `
-      <div class="company-block">
+      return `<div class="company-block">
         <div class="company-header">
           <span class="company-name">${esc(company.name)}</span>
-          <span class="company-meta">${typeName !== 'Standard' ? typeName + '\u00a0\xb7\u00a0' : ''}${compPts}pts</span>
+          <span class="company-meta">${typeName !== 'Standard' ? typeName + ' \xb7 ' : ''}${compPts}pts</span>
         </div>
-        <table class="roster-table">
-          <thead><tr><th>Unit</th><th>Stats</th><th>Pts</th></tr></thead>
-          <tbody>${unitRows}</tbody>
-        </table>
+        <table class="roster-table"><tbody>${unitRows}</tbody></table>
       </div>`;
     }).join('');
-    return [regHeader, ...blocks];
-  });
-  const companyBlocksHtml = companyBlocks.join('');
 
-  // Build ability glossary from abilities used in this army
-  const abilityGlossaryRows = [...allAbilityNames].sort().map(name => {
+    return [regHeader, compBlocks];
+  }).join('');
+
+  // Ability glossary
+  const glossaryRows = [...allAbilityNames].sort().map(name => {
     const ab = ABILITIES.find(a => a.name === name);
     if (!ab) return '';
-    return `<tr><td class="ab-name">${name}</td><td>${ab.desc}</td></tr>`;
+    const isArmy = name === state.armyAbility;
+    return `<tr${isArmy ? ' class="army-trait-row"' : ''}>
+      <td class="gl-name">${esc(name)}${isArmy ? ' <span class="army-badge">Army Trait</span>' : ''}</td>
+      <td>${esc(ab.desc)}</td>
+      <td class="gl-cost">${ab.cost}pts</td>
+    </tr>`;
   }).join('');
 
   const abilityGlossary = allAbilityNames.size > 0 ? `
     <div class="glossary-block">
-      <div class="glossary-header">Special Abilities</div>
-      <table>
-        <thead><tr><th>Ability</th><th>Rule</th></tr></thead>
-        <tbody>${abilityGlossaryRows}</tbody>
+      <div class="glossary-header">Special Abilities Reference</div>
+      <table class="gl-table">
+        <thead><tr><th>Ability</th><th>Effect</th><th>Cost</th></tr></thead>
+        <tbody>${glossaryRows}</tbody>
       </table>
     </div>` : '';
 
   const html = `<!DOCTYPE html>
 <html><head>
 <meta charset="UTF-8">
-<title>${armyName} \u2014 Roster</title>
+<title>${esc(armyName)} — Roster</title>
 <style>
-  body{font-family:Georgia,serif;font-size:10pt;color:black;background:white;margin:1.5cm;}
-  h1{font-size:18pt;margin:0 0 2pt;}
-  .subtitle{font-size:10pt;color:#555;margin-bottom:16pt;}
-  .company-block{margin-bottom:16pt;break-inside:avoid;}
-  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid black;padding-bottom:3pt;margin-bottom:4pt;}
-  .company-name{font-size:12pt;font-weight:bold;}
-  .company-meta{font-size:9pt;color:#555;}
-  table{width:100%;border-collapse:collapse;font-size:9pt;}
-  th{background:#eee;text-align:left;padding:3pt 5pt;border:1px solid #ccc;font-size:8pt;text-transform:uppercase;letter-spacing:0.05em;}
-  td{padding:3pt 5pt;border:1px solid #ddd;vertical-align:top;}
-  .commander-row td{background:#f5f5f5;}
-  .unit-name-cell strong{font-size:10pt;}
-  .strength-stats{font-size:8pt;color:#444;}
-  .tag{font-size:7pt;border:1px solid #999;padding:0 3pt;margin-left:4pt;vertical-align:middle;}
-  .pts-cell{text-align:right;white-space:nowrap;font-weight:bold;}
-  .total{text-align:right;font-size:11pt;font-weight:bold;margin-top:8pt;border-top:2px solid black;padding-top:4pt;}
-  .unit-models{font-size:8pt;color:#555;margin-top:2pt;}
-  .stat-cell{padding:2pt 4pt;}
-  .stat-grid{border-collapse:collapse;font-size:9pt;}
-  .stat-grid tr td{border:1px solid #bbb;text-align:center;padding:2pt 4pt;min-width:28pt;line-height:1.2;}
-  .sb-zero{color:#bbb;}
-  .sb-lbl{font-size:6.5pt;text-transform:uppercase;letter-spacing:0.04em;display:block;color:#666;}
-  .sb-boosted{font-weight:bold;background:#f5f0dc;}
-  .abilities-row td{border-top:none;padding-top:0;}
-  .abilities-cell{padding:1pt 5pt 4pt;border-top:none;}
-  .ab-entry{font-size:8pt;line-height:1.45;display:block;margin-bottom:1pt;}
-  .ab-entry+.ab-entry{border-top:1px dotted #ddd;padding-top:1pt;margin-top:1pt;}
-  .glossary-block{margin-top:24pt;break-before:auto;}
-  .glossary-header{font-size:12pt;font-weight:bold;border-bottom:2px solid black;padding-bottom:3pt;margin-bottom:4pt;}
-  .ab-name{font-weight:bold;white-space:nowrap;width:1%;}
-  @media print{body{margin:1cm;}}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Georgia,serif;font-size:9.5pt;color:#1a1a1a;background:white;margin:1.2cm 1.5cm;}
+  h1{font-size:19pt;margin-bottom:2pt;letter-spacing:0.01em;}
+  .subtitle{font-size:8.5pt;color:#555;margin-bottom:10pt;}
+  .army-trait-block{background:#fdf8e8;border:1px solid #c8a030;border-left:4px solid #c8a030;padding:5pt 8pt;margin-bottom:12pt;font-size:9pt;}
+  .army-trait-label{font-size:7pt;text-transform:uppercase;letter-spacing:0.12em;color:#8a6820;font-weight:bold;margin-right:4pt;}
+  .regiment-header{margin:14pt 0 5pt;font-size:12pt;font-weight:bold;letter-spacing:0.03em;border-bottom:2px solid #1a1a1a;padding-bottom:2pt;}
+  .company-block{margin-bottom:14pt;break-inside:avoid;}
+  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:2pt;margin-bottom:3pt;}
+  .company-name{font-size:10pt;font-weight:bold;}
+  .company-meta{font-size:8pt;color:#555;}
+  table.roster-table{width:100%;border-collapse:collapse;}
+  .roster-table td{padding:4pt 6pt;border:1px solid #ddd;vertical-align:top;}
+  .commander-row td{background:#f7f5f0;}
+  .unit-name-row{display:flex;align-items:baseline;gap:5pt;flex-wrap:wrap;margin-bottom:2pt;}
+  .unit-name{font-size:10pt;font-weight:bold;}
+  .unit-pts{margin-left:auto;font-weight:bold;font-size:8.5pt;white-space:nowrap;color:#333;}
+  .tag{font-size:7pt;border:1px solid #999;padding:0 3pt;white-space:nowrap;}
+  .unit-meta{font-size:8pt;color:#555;margin-bottom:2pt;}
+  .unit-abilities{font-size:8.5pt;color:#222;margin-bottom:3pt;line-height:1.5;}
+  .army-mark{font-size:6.5pt;text-transform:uppercase;letter-spacing:0.1em;border:1px solid #c8a030;color:#8a6820;font-weight:bold;padding:0 2pt;vertical-align:middle;}
+  .shock-track{font-size:7.5pt;color:#555;margin-top:3pt;display:flex;align-items:center;gap:5pt;}
+  .shock-boxes{font-size:10pt;letter-spacing:2pt;color:#aaa;}
+  .stat-cell{padding:3pt 4pt;width:1%;white-space:nowrap;vertical-align:top;}
+  .stat-grid{border-collapse:collapse;font-size:8pt;}
+  .stat-grid td{border:1px solid #ccc;text-align:center;padding:2pt 5pt;min-width:26pt;line-height:1.3;}
+  .sb-zero{color:#ccc;}
+  .sb-lbl{font-size:5.5pt;text-transform:uppercase;letter-spacing:0.04em;display:block;color:#888;}
+  .sb-boosted{font-weight:bold;background:#fdf5dc;}
+  .total{text-align:right;font-size:10.5pt;font-weight:bold;margin-top:10pt;border-top:2px solid #1a1a1a;padding-top:4pt;}
+  .glossary-block{margin-top:22pt;}
+  .glossary-header{font-size:11pt;font-weight:bold;border-bottom:2px solid #1a1a1a;padding-bottom:2pt;margin-bottom:5pt;}
+  table.gl-table{width:100%;border-collapse:collapse;font-size:8.5pt;}
+  .gl-table th{background:#eee;text-align:left;padding:3pt 6pt;border:1px solid #ccc;font-size:7pt;text-transform:uppercase;letter-spacing:0.06em;}
+  .gl-table td{padding:3pt 6pt;border:1px solid #ddd;vertical-align:top;line-height:1.4;}
+  .army-trait-row td{background:#fdf8e8;}
+  .army-badge{font-size:6.5pt;text-transform:uppercase;letter-spacing:0.1em;border:1px solid #c8a030;color:#8a6820;font-weight:bold;padding:0 2pt;vertical-align:middle;margin-left:3pt;}
+  .gl-name{font-weight:bold;white-space:nowrap;width:18%;}
+  .gl-cost{text-align:right;white-space:nowrap;width:5%;color:#555;}
+  @media print{body{margin:0.8cm 1cm;}.company-block{break-inside:avoid;}.glossary-block{break-before:auto;}}
 </style>
 </head><body>
-<h1>${armyName}</h1>
-<div class="subtitle">Total: ${total}pts \xb7 ${state.companies.length} compan${state.companies.length === 1 ? 'y' : 'ies'}</div>
+<h1>${esc(armyName)}</h1>
+<div class="subtitle">${total}pts \xb7 ${state.companies.length} compan${state.companies.length === 1 ? 'y' : 'ies'}${budgetLine}</div>
+${armyTraitHtml}
 ${companyBlocksHtml}
 <div class="total">Army Total: ${total}pts</div>
 ${abilityGlossary}
