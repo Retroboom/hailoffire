@@ -1667,9 +1667,9 @@ const ASSET_TYPES = [
 
 const COMPANY_TYPES = [
   { label: 'Standard', bonus: '', restriction: '' },
-  { label: 'Assault',  bonus: '+1 Fight Die when charging', restriction: 'Must charge enemies within 12" if no friendly closer' },
+  { label: 'Assault',  bonus: '+1 Fight Die when charging', restriction: 'Must charge enemies within 12" if no friendly unit is closer to that enemy' },
   { label: 'Guard',    bonus: 'All units gain Loyal free', restriction: 'Units must stay within 12" of any Commander' },
-  { label: 'Rifle',    bonus: 'No long-range shooting penalty', restriction: 'All units need 12"+ Range; max 2 Defense ranks' },
+  { label: 'Rifle',    bonus: 'No long-range shooting penalty', restriction: 'All units including Commanders need 12"+ Range (2+ ranks) and max 2 Defense ranks' },
   { label: 'Scout',    bonus: 'All units gain Ambush free', restriction: 'No unit may have more than 3 total Force' },
   { label: 'Engineering', bonus: 'Up to 3 Colossal Machine Special Assets', restriction: 'All Special Assets must be Colossal Machines with Steam Power; requires Commander with Engineer ability; no regular units' },
 ];
@@ -1735,12 +1735,28 @@ function forceCost(unit) {
   return ft.force * unit.models;
 }
 
+// Returns abilities that cost 0 for a given unit due to company or asset type bonuses.
+// Guard companies: Loyal free. Scout companies: Ambush free.
+// Colossal Machine Special Assets: Steam Power free (included in type bonus).
+function freeAbilitiesForUnit(unit) {
+  const free = [];
+  if (unit.isSpecialAsset && unit.assetType === 2) free.push('Steam Power');
+  const company = state.companies.find(c => c.units.some(u => u.id === unit.id));
+  if (company) {
+    if (company.type === 2) free.push('Loyal');
+    if (company.type === 4) free.push('Ambush');
+  }
+  return free;
+}
+
 function abilityCost(unit) {
+  const free = freeAbilitiesForUnit(unit);
   let cost = unit.abilities.reduce((s, name) => {
+    if (free.includes(name)) return s;
     const a = ABILITIES.find(x => x.name === name);
     return s + (a ? a.cost : 0);
   }, 0);
-  if (state.armyAbility) {
+  if (state.armyAbility && !free.includes(state.armyAbility)) {
     const aa = ABILITIES.find(x => x.name === state.armyAbility);
     if (aa) cost += aa.cost;
   }
@@ -1749,7 +1765,9 @@ function abilityCost(unit) {
 
 // Ability cost for a single unit's own abilities only (excludes Army Trait)
 function unitAbilityCostOnly(unit) {
+  const free = freeAbilitiesForUnit(unit);
   return unit.abilities.reduce((s, name) => {
+    if (free.includes(name)) return s;
     const a = ABILITIES.find(x => x.name === name);
     return s + (a ? a.cost : 0);
   }, 0);
@@ -1835,7 +1853,7 @@ const AB_STAT_BONUSES = {
 };
 
 const ASSET_STAT_BONUSES = [
-  { shooting: 2, sStrength: 1 },
+  { shooting: 3, sStrength: 1 },
   { fighting:  2, fStrength: 1 },
   { defense:   2 },
 ];
@@ -2324,11 +2342,13 @@ function buildUnitCard(unit, company, regiment = null) {
         <div class="selected-abilities-list">
           ${state.armyAbility ? (() => {
             const aa = ABILITIES.find(x => x.name === state.armyAbility);
-            return `<div class="sel-ab-tag" style="border-color:rgba(200,160,48,0.5);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.1em;color:var(--gold);margin-right:3px;">ARMY</span>${esc(state.armyAbility)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${aa ? aa.cost+'p' : ''}</span></div>`;
+            const isFree = freeAbilitiesForUnit(unit).includes(state.armyAbility);
+            return `<div class="sel-ab-tag" style="border-color:rgba(200,160,48,0.5);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.1em;color:var(--gold);margin-right:3px;">ARMY</span>${esc(state.armyAbility)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${aa ? (isFree ? 'free' : aa.cost+'p') : ''}</span></div>`;
           })() : ''}
           ${unit.abilities.map(name => {
             const a = ABILITIES.find(x => x.name === name);
-            return `<div class="sel-ab-tag">${esc(name)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${a ? a.cost+'p' : ''}</span><button onclick="event.stopPropagation();toggleAbility('${unit.id}','${name.replace(/'/g,"\\'")}')" title="Remove">×</button></div>`;
+            const isFree = freeAbilitiesForUnit(unit).includes(name);
+            return `<div class="sel-ab-tag">${esc(name)}<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);margin-left:3px;">${a ? (isFree ? 'free' : a.cost+'p') : ''}</span><button onclick="event.stopPropagation();toggleAbility('${unit.id}','${name.replace(/'/g,"\\'")}')" title="Remove">×</button></div>`;
           }).join('')}
         </div>
       </div>
@@ -2482,8 +2502,13 @@ function renderBreakdown() {
     if (!state.armyAbility) return '';
     const aa = ABILITIES.find(x => x.name === state.armyAbility);
     if (!aa) return '';
-    const traitTotal = aa.cost * allUnits.length;
-    return `<div class="breakdown-row"><span class="breakdown-label" style="color:var(--gold);">Army Trait (${esc(state.armyAbility)})</span><span class="breakdown-val" style="color:var(--gold);">${traitTotal}pts <span style="font-size:10px;color:var(--mist);">(${aa.cost}pts × ${allUnits.length})</span></span></div>`;
+    const paidUnits = allUnits.filter(u => !freeAbilitiesForUnit(u).includes(state.armyAbility));
+    const traitTotal = aa.cost * paidUnits.length;
+    const freeCount = allUnits.length - paidUnits.length;
+    const detail = freeCount > 0
+      ? `${aa.cost}pts × ${paidUnits.length}; ${freeCount} free`
+      : `${aa.cost}pts × ${allUnits.length}`;
+    return `<div class="breakdown-row"><span class="breakdown-label" style="color:var(--gold);">Army Trait (${esc(state.armyAbility)})</span><span class="breakdown-val" style="color:var(--gold);">${traitTotal}pts <span style="font-size:10px;color:var(--mist);">(${detail})</span></span></div>`;
   })();
 
   bv.innerHTML = `
@@ -2553,17 +2578,17 @@ function validate() {
     if (regCompanies.length > 3) issues.push({ type: 'error', msg: `${regiment.name}: max 3 companies per regiment.` });
   });
 
-  // Rifle company
+  // Rifle company (restriction applies to all units including Commanders)
   state.companies.filter(c => c.type === 3).forEach(c => {
-    c.units.filter(u => !u.isCommander).forEach(u => {
+    c.units.forEach(u => {
       if (u.stats.range < 2) issues.push({ type: 'warn', msg: `"${u.name}" in Rifle Company needs 12"+ Range (2+ ranks).` });
       if (u.stats.defense > 2) issues.push({ type: 'warn', msg: `"${u.name}" in Rifle Company: max 2 Defense ranks.` });
     });
   });
 
-  // Scout company
+  // Scout company (restriction applies to all units including Commanders)
   state.companies.filter(c => c.type === 4).forEach(c => {
-    c.units.filter(u => !u.isCommander).forEach(u => {
+    c.units.forEach(u => {
       const force = FORCE_TYPES[u.forceType].force * u.models;
       if (force > 3) issues.push({ type: 'warn', msg: `"${u.name}" in Scout Company: max 3 total Force.` });
     });
@@ -2601,6 +2626,12 @@ function validate() {
         issues.push({ type: 'warn', msg: `"${c.name}" (Engineering): requires a Commander with the Engineer ability to Rally Steam Power units.` });
       }
     }
+    // All Colossal Machine Special Assets must have Steam Power (included free in type bonus)
+    c.units.filter(u => u.isSpecialAsset && u.assetType === 2).forEach(u => {
+      if (!u.abilities.includes('Steam Power')) {
+        issues.push({ type: 'warn', msg: `"${u.name}": Colossal Machine type bonus includes Steam Power (free); add it to the unit's abilities.` });
+      }
+    });
   });
 
   // No units = info
