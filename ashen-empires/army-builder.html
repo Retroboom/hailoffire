@@ -2360,12 +2360,10 @@ function printRoster() {
         const forceInfo = u.isCommander ? ''
           : `<div class="unit-meta">${ft.label} \xd7${u.models} \xb7 Force ${ft.force * u.models}</div>`;
 
-        // [3] Stronger separator: first unit gets no top border; others get a bold rule
-        const isFirst = i === 0;
-        const rowClass = (u.isCommander ? 'commander-row ' : '') + (isFirst ? 'unit-first' : 'unit-sep');
+        const rowClass = (u.isCommander ? 'commander-row ' : '') + 'unit-main';
 
-        // [2] Army Trait stripped from per-unit descriptions (it's in the callout at top)
-        // [4] Hanging-indent definition list for ability descriptions
+        // Army Trait stripped from per-unit descriptions (it's in the callout at top)
+        // Separator sits as border-bottom on the last row of each unit — never cuts through stats
         const unitAbils = u.abilities;
         let descSubRow = '';
         if (unitAbils.length > 0) {
@@ -2373,10 +2371,11 @@ function printRoster() {
             const ab = ABILITIES.find(a => a.name === name);
             return `<dt>${esc(name)}</dt><dd>${ab ? esc(ab.desc) : ''}</dd>`;
           }).join('');
-          descSubRow = `<tr class="${u.isCommander ? 'commander-row ' : ''}desc-row"><td colspan="${TOTAL_COLS}" class="desc-cell"><dl class="ability-list">${descItems}</dl></td></tr>`;
+          descSubRow = `<tr class="${u.isCommander ? 'commander-row ' : ''}desc-row unit-end"><td colspan="${TOTAL_COLS}" class="desc-cell"><dl class="ability-list">${descItems}</dl></td></tr>`;
         }
 
-        return `<tr class="${rowClass}">
+        const mainClass = rowClass + (descSubRow ? '' : ' unit-end');
+        return `<tr class="${mainClass}">
           <td class="unit-name-cell">
             <div class="unit-name-row"><span class="unit-name">${esc(u.name)}</span> ${tagsHtml}</div>
             ${forceInfo}
@@ -2425,8 +2424,8 @@ function printRoster() {
   .roster-table thead th{background:#2a2a2a;color:#fff;font-size:7pt;text-transform:uppercase;letter-spacing:0.1em;padding:3pt 6pt;text-align:left;}
   .roster-table thead th.col-pts{text-align:right;}
   .roster-table td{padding:5pt 6pt;vertical-align:top;}
-  /* [3] Unit separators: bold top rule between units, none before the first */
-  tr.unit-sep td{border-top:2px solid #bbb;}
+  /* Unit separator sits at the bottom of each unit's last row — never crosses the stat area */
+  tr.unit-end td{border-bottom:2px solid #bbb;}
   tr.desc-row td{border-top:none;}
   .commander-row td{background:#f7f5f0;}
   .col-unit{width:22%;}
