@@ -3205,28 +3205,27 @@ function printRoster() {
 <title>${esc(armyName)} - Roster</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:Georgia,serif;font-size:9.5pt;color:#1a1a1a;background:white;margin:1.2cm 1.5cm;}
-  h1{font-size:19pt;margin-bottom:2pt;letter-spacing:0.01em;}
-  .subtitle{font-size:8.5pt;color:#555;margin-bottom:10pt;}
-  .army-trait-block{background:#fdf8e8;border:1px solid #c8a030;border-left:4px solid #c8a030;padding:5pt 8pt;margin-bottom:12pt;font-size:9pt;}
-  .army-trait-label{font-size:7pt;text-transform:uppercase;letter-spacing:0.12em;color:#8a6820;font-weight:bold;margin-right:4pt;}
-  .regiment-header{margin:18pt 0 0;padding:5pt 10pt;background:#1c1c1c;color:#f0e8d0;font-size:14pt;font-weight:bold;letter-spacing:0.05em;border-left:4px solid #c8a030;}
-  .regiment-spacer{height:6pt;}
-  .general-block{margin-bottom:8pt;break-inside:avoid;}
-  .general-header .company-name{font-style:italic;color:#444;font-size:9pt;}
-  .company-block{margin-bottom:14pt;break-inside:avoid;}
-  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:2pt;margin-bottom:0;}
-  .company-name{font-size:12pt;font-weight:bold;}
-  .company-meta{font-size:8pt;color:#555;}
+  body{font-family:Georgia,serif;font-size:8pt;color:#1a1a1a;background:white;margin:0.9cm 1.1cm;}
+  h1{font-size:15pt;margin-bottom:2pt;letter-spacing:0.01em;}
+  .subtitle{font-size:7.5pt;color:#555;margin-bottom:7pt;}
+  .army-trait-block{background:#fdf8e8;border:1px solid #c8a030;border-left:4px solid #c8a030;padding:3pt 7pt;margin-bottom:8pt;font-size:8pt;}
+  .army-trait-label{font-size:6pt;text-transform:uppercase;letter-spacing:0.12em;color:#8a6820;font-weight:bold;margin-right:4pt;}
+  .regiment-header{margin:10pt 0 0;padding:3pt 8pt;background:#1c1c1c;color:#f0e8d0;font-size:11pt;font-weight:bold;letter-spacing:0.05em;border-left:4px solid #c8a030;}
+  .regiment-spacer{height:3pt;}
+  .general-block{margin-bottom:5pt;break-inside:avoid;}
+  .general-header .company-name{font-style:italic;color:#444;font-size:8pt;}
+  .company-block{margin-bottom:8pt;break-inside:avoid;}
+  .company-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #888;padding-bottom:1pt;margin-bottom:0;}
+  .company-name{font-size:10pt;font-weight:bold;}
+  .company-meta{font-size:7pt;color:#555;}
   table.roster-table{width:100%;border-collapse:collapse;}
   .roster-table thead th:first-child{border-left:2px solid #1a1a1a;}
   .roster-table tbody td:first-child{border-left:2px solid #bbb;}
-  .roster-table thead th{background:#2a2a2a;color:#fff;font-size:7pt;text-transform:uppercase;letter-spacing:0.1em;padding:3pt 6pt;text-align:left;}
+  .roster-table thead th{background:#2a2a2a;color:#fff;font-size:6pt;text-transform:uppercase;letter-spacing:0.1em;padding:2pt 5pt;text-align:left;}
   .roster-table thead th.col-pts{text-align:right;}
-  .roster-table td{padding:5pt 6pt;vertical-align:top;}
-  /* Unit separator sits at the bottom of each unit's last row — never crosses the stat area */
+  .roster-table td{padding:3pt 5pt;vertical-align:top;}
   tr.unit-end td{border-bottom:2px solid #bbb;}
-  tr.commander-gap td{height:4pt;padding:0;border:none;border-bottom:2px solid #bbb;}
+  tr.commander-gap td{height:2pt;padding:0;border:none;border-bottom:2px solid #bbb;}
   .roster-table tr.commander-gap td:first-child{border-left:hidden;}
   tr.desc-row td{border-top:none;}
   .commander-row td{background:#f7f5f0;}
@@ -3234,29 +3233,27 @@ function printRoster() {
   .col-stats{width:70%;}
   .col-pts{width:8%;text-align:right;}
   .unit-name-cell{vertical-align:top;}
-  .unit-name-row{display:flex;align-items:baseline;gap:5pt;flex-wrap:wrap;margin-bottom:1pt;}
-  .unit-name{font-size:10pt;font-weight:bold;}
-  .tag{font-size:7pt;border:1px solid #999;padding:0 3pt;white-space:nowrap;}
-  .unit-meta{font-size:7.5pt;color:#888;}
-  .pts-cell{text-align:right;font-weight:bold;font-size:9pt;white-space:nowrap;vertical-align:middle;}
-  .stats-cell{padding:4pt 6pt;}
-  /* Per-unit stat mini-table — vertical dividers only, no top/bottom borders */
-  table.stat-mini{border-collapse:collapse;width:100%;font-size:10.5pt;}
-  .stat-mini tbody td{border-left:1px solid #ccc;text-align:center;padding:3pt 4pt 2pt;line-height:1.3;vertical-align:top;min-width:22pt;}
+  .unit-name-row{display:flex;align-items:baseline;gap:4pt;flex-wrap:wrap;margin-bottom:1pt;}
+  .unit-name{font-size:8.5pt;font-weight:bold;}
+  .tag{font-size:6pt;border:1px solid #999;padding:0 2pt;white-space:nowrap;}
+  .unit-meta{font-size:6.5pt;color:#888;}
+  .pts-cell{text-align:right;font-weight:bold;font-size:8pt;white-space:nowrap;vertical-align:middle;}
+  .stats-cell{padding:3pt 5pt;}
+  table.stat-mini{border-collapse:collapse;width:100%;font-size:8.5pt;}
+  .stat-mini tbody td{border-left:1px solid #ccc;text-align:center;padding:2pt 3pt 1pt;line-height:1.2;vertical-align:top;min-width:18pt;}
   .stat-mini tbody td:first-child{border-left:none;}
-  .sb-lbl{display:block;font-size:5.5pt;text-transform:uppercase;letter-spacing:0.05em;color:#999;margin-bottom:1pt;}
+  .sb-lbl{display:block;font-size:5pt;text-transform:uppercase;letter-spacing:0.05em;color:#999;margin-bottom:1pt;}
   .sb-zero{color:#ccc;}
   .sb-boosted{font-weight:bold;background:#fdf5dc;}
-  .stat-note{display:block;font-size:5.5pt;color:#888;font-style:italic;line-height:1.2;margin-top:1pt;white-space:nowrap;}
-  /* [4] Hanging-indent ability description list */
-  .desc-cell{padding:3pt 8pt 5pt;background:#f8f8f6;border-bottom:1px solid #e8e8e8;}
-  .ability-list{display:grid;grid-template-columns:max-content 1fr;column-gap:10pt;row-gap:1.5pt;font-size:7.5pt;line-height:1.4;margin:0;padding:0;list-style:none;}
+  .stat-note{display:block;font-size:5pt;color:#888;font-style:italic;line-height:1.2;margin-top:1pt;white-space:nowrap;}
+  .desc-cell{padding:2pt 7pt 4pt;background:#f8f8f6;border-bottom:1px solid #e8e8e8;}
+  .ability-list{display:grid;grid-template-columns:max-content 1fr;column-gap:8pt;row-gap:1pt;font-size:6.5pt;line-height:1.35;margin:0;padding:0;list-style:none;}
   .ability-list dt{font-weight:bold;white-space:nowrap;padding:0;}
   .ability-list dd{margin:0;color:#444;}
   .dt-army-trait{color:#8a6820;}
-  .trait-badge{font-weight:normal;font-style:normal;font-size:6pt;border:1px solid #c8a030;color:#8a6820;padding:0 2pt;margin-left:3pt;white-space:nowrap;vertical-align:middle;}
-  .total{text-align:right;font-size:10.5pt;font-weight:bold;margin-top:10pt;border-top:2px solid #1a1a1a;padding-top:4pt;}
-  @media print{body{margin:0.8cm 1cm;}.company-block{break-inside:avoid;}}
+  .trait-badge{font-weight:normal;font-style:normal;font-size:5.5pt;border:1px solid #c8a030;color:#8a6820;padding:0 2pt;margin-left:3pt;white-space:nowrap;vertical-align:middle;}
+  .total{text-align:right;font-size:9pt;font-weight:bold;margin-top:7pt;border-top:2px solid #1a1a1a;padding-top:3pt;}
+  @media print{body{margin:0.7cm 0.9cm;}.company-block{break-inside:avoid;}}
 </style>
 </head><body>
 <h1>${esc(armyName)}</h1>
