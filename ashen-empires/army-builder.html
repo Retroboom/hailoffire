@@ -1881,9 +1881,10 @@ function buildUnitCard(unit, company) {
     assetSlotHtml = `<div class="asset-slot-indicator ${slotClass}">Special Asset: ${slotUsed}/${maxAssets}${slotUsed >= maxAssets ? ' (full)' : ''}</div>`;
 
     // Feature 7b: blocked message
-    if (unit._specialAssetBlocked) {
+    if (_specialAssetBlockedIds.has(unit.id)) {
       specialAssetBlockedMsg = 'This company already has a Special Asset. Only Engineering companies may have more than one.';
-      unit._specialAssetBlocked = false; // clear after showing
+      // Clear it after one render so it doesn't persist
+      _specialAssetBlockedIds.delete(unit.id);
     }
   }
 
@@ -2469,24 +2470,25 @@ function findCompanyForUnit(unitId) {
   return state.companies.find(c => c.units.some(u => u.id === unitId)) || null;
 }
 
+// Tracks which unit IDs had their special asset toggle blocked on last click
+const _specialAssetBlockedIds = new Set();
+
 function toggleSpecialAsset(unitId) {
   const unit = findUnit(unitId);
   if (!unit) return;
+  _specialAssetBlockedIds.delete(unitId);
   // Feature 7b: prevent enabling if company already has a Special Asset (non-Engineering)
   if (!unit.isSpecialAsset) {
     const company = findCompanyForUnit(unitId);
     if (company && company.type !== 5) {
       const existingAssets = company.units.filter(u => u.isSpecialAsset && u.id !== unitId);
       if (existingAssets.length >= 1) {
-        // Don't toggle — the card will show an inline error via render
-        unit._specialAssetBlocked = true;
+        // Don't toggle — flag it so the card can show an inline error
+        _specialAssetBlockedIds.add(unitId);
         render();
         return;
       }
     }
-    unit._specialAssetBlocked = false;
-  } else {
-    unit._specialAssetBlocked = false;
   }
   unit.isSpecialAsset = !unit.isSpecialAsset;
   render();
