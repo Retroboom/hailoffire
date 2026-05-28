@@ -1137,6 +1137,10 @@
         <div class="sidebar-label" style="margin:0;">Companies</div>
         <button class="collapse-btn" onclick="toggleLeft()" title="Collapse">◀</button>
       </div>
+      <div class="sidebar-section" style="padding:6px 12px 10px;border-bottom:1px solid var(--faint);">
+        <button class="add-btn" id="add-company-btn" onclick="addCompany()" style="margin-bottom:4px;">+ Add Company</button>
+        <button class="add-btn" onclick="addRegiment()">+ Add Regiment</button>
+      </div>
       <div class="sidebar-section" style="padding-bottom:0; flex:1; overflow-y:auto;">
         <div id="regiment-list"></div>
       </div>
@@ -1146,10 +1150,6 @@
           <span id="army-ability-btn-label" style="color:var(--mist);">None set</span>
           <span id="army-ability-btn-cost" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);"></span>
         </button>
-      </div>
-      <div class="sidebar-section" style="padding:6px 12px 10px;">
-        <button class="add-btn" id="add-company-btn" onclick="addCompany()" style="margin-bottom:4px;">+ Add Company</button>
-        <button class="add-btn" onclick="addRegiment()">+ Add Regiment</button>
       </div>
     </div>
     <div class="sidebar-strip" onclick="toggleLeft()">
