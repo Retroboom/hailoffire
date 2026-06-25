@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bleeding Edge · Faction Relations</title>
+<style>
+  :root{
+    --bg:#080912; --bg2:#0d0f1c; --panel:#10131f; --panel2:#161a2a;
+    --line:#222637; --text:#e9ebf6; --muted:#8b90ab; --faint:#5a5f78;
+    --control:#ffb627; --anarchy:#ff3b5c; --intel:#18d6ff; --unity:#b06bff; --signal:#ff52c8;
+    --never:#ff4d4d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1100px 700px at 70% -10%, #16203a 0%, transparent 60%),
+      radial-gradient(900px 600px at 0% 110%, #1a1030 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:26px 22px 60px}
+  header h1{
+    font-size:24px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 4px;font-weight:800;
+    background:linear-gradient(90deg,var(--control),var(--signal),var(--intel));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  header p{margin:0;color:var(--muted);font-size:13.5px;max-width:760px}
+  .mono{font-family:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px}
+  .obj-chip{
+    display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:8px 13px 8px 10px;
+    transition:.18s; min-width:0;
+  }
+  .obj-chip:hover{border-color:var(--c);background:var(--panel2)}
+  .obj-chip.active{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 0 22px -6px var(--c);background:var(--panel2)}
+  .obj-dot{width:13px;height:13px;border-radius:50%;background:var(--c);box-shadow:0 0 12px -1px var(--c);flex:none}
+  .obj-chip b{font-size:13px;letter-spacing:.04em}
+  .obj-chip .sub{color:var(--muted);font-size:11px;letter-spacing:.02em}
+  .obj-chip .bloc{color:var(--c);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+
+  .stage{
+    position:relative;background:
+      radial-gradient(600px 600px at 50% 46%, #0e1530 0, transparent 70%),
+      linear-gradient(180deg,var(--bg2),#0a0c16);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  }
+  .stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
+  .grid-bg{position:absolute;inset:0;background-image:
+      linear-gradient(rgba(120,140,200,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,140,200,.045) 1px,transparent 1px);
+    background-size:30px 30px;pointer-events:none}
+
+  .edge{stroke-linecap:round;transition:stroke-opacity .2s,stroke-width .2s}
+  .never-line{stroke:var(--never);stroke-width:2;stroke-dasharray:3 7;stroke-linecap:round;opacity:0;transition:opacity .2s}
+  .node{cursor:pointer}
+  .node .hit{fill:transparent}
+  .node .core{fill:#10131f;stroke:#2a2f44;stroke-width:1.4;transition:.2s}
+  .node .lbl{fill:var(--text);font-size:12.5px;font-weight:600;letter-spacing:.01em;pointer-events:none;
+    paint-order:stroke;stroke:#080912;stroke-width:3.4px;stroke-linejoin:round}
+  .node.dim{opacity:.28}
+  .node.sel .core{fill:#1a2034;stroke:#fff;stroke-width:2}
+  .node.ally .core{stroke-width:2}
+  .node.never .core{stroke:var(--never);stroke-width:2}
+  .arc{fill:none;stroke-width:5.5;stroke-linecap:butt}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:0;overflow:hidden;min-height:200px}
+  .p-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),transparent)}
+  .p-name{font-size:20px;font-weight:800;letter-spacing:.02em;margin:0 0 9px}
+  .p-objs{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;border:1px solid var(--c);color:var(--c);border-radius:999px;padding:4px 11px}
+  .tag i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 8px -1px var(--c)}
+  .p-body{padding:16px 20px 20px}
+  .lore{font-size:14px;color:#d4d8ea;margin:0 0 6px}
+  .note{font-size:12.5px;color:var(--signal);background:rgba(255,82,200,.07);border:1px solid rgba(255,82,200,.25);
+    border-radius:10px;padding:9px 12px;margin:12px 0 4px}
+  .rel-group{margin-top:16px}
+  .rel-h{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;margin-bottom:8px}
+  .rel-h .swatch{width:10px;height:10px;border-radius:2px}
+  .rel-h.closest{color:#4dffa8}.rel-h.closest .swatch{background:#4dffa8}
+  .rel-h.uneasy{color:#ffc24d}.rel-h.uneasy .swatch{background:#ffc24d}
+  .rel-h.never{color:var(--never)}.rel-h.never .swatch{background:var(--never)}
+  .rel-reason{color:var(--muted);font-size:12px;font-style:italic;margin:-3px 0 8px}
+  .rel-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .rel-chip{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:8px;padding:5px 10px;font-size:12.5px;cursor:pointer;transition:.15s}
+  .rel-chip:hover{border-color:#444b66;background:#1c2236}
+  .rel-chip .sh{width:8px;height:8px;border-radius:50%;flex:none}
+  .rel-chip.x{border-style:dashed;border-color:rgba(255,77,77,.4)}
+  .rel-list{display:flex;flex-direction:column}
+  .rel-row{padding:7px 2px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:.12s}
+  .rel-row:last-child{border-bottom:0}
+  .rel-row:hover{background:rgba(255,255,255,.025)}
+  .rel-chip-line{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--text)}
+  .rel-chip-line .sh{width:8px;height:8px;border-radius:50%;flex:none}
+  .rel-note{font-size:12px;color:var(--muted);line-height:1.42;margin-top:3px;padding-left:23px}
+
+  .help{color:var(--muted);font-size:13px}
+  .help b{color:var(--text)}
+  .key{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--muted)}
+  .key span{display:inline-flex;align-items:center;gap:7px}
+  .key .ln{width:26px;height:0;border-top:3px solid #6b7290}
+  .reset{margin-left:auto;background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    font-size:12px;border-radius:8px;padding:7px 13px;cursor:pointer;transition:.15s}
+  .reset:hover{color:var(--text);border-color:#3a4258}
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .foot{color:var(--faint);font-size:11.5px;margin-top:22px;text-align:center;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Bleeding Edge · Faction Relations</h1>
+        <p>Ten factions, five drives. Click a faction to read its place in the world and see who it works with, who it tolerates, and who it can never deck beside. Click a drive below to light up its bloc.</p>
+      </div>
+      <button class="reset" id="reset">Reset view</button>
+    </div>
+    <div class="legend" id="legend"></div>
+  </header>
+
+  <div class="grid">
+    <div class="stage">
+      <div class="grid-bg"></div>
+      <svg id="web" viewBox="0 0 720 740" aria-label="Faction relationship web"></svg>
+    </div>
+    <aside class="panel" id="panel"></aside>
+  </div>
+
+  <div class="key">
+    <span><span class="ln" style="border-color:var(--intel)"></span> solid line = shares a drive (legal to combine in one deck)</span>
+    <span><span class="ln" style="border-top-style:dashed;border-color:var(--never)"></span> dashed red = never (no shared drive, cannot deck together)</span>
+  </div>
+  <div class="foot">Deck legality is single-axis: a deck is one primary faction plus cards from factions sharing one of its two drives. Strangers therefore never share a deck.</div>
+</div>
+
+<script>
+const OBJ = {
+  control:{name:"Control",bloc:"The Spire",hunger:"the hunger to rule",color:"#ffb627"},
+  anarchy:{name:"Anarchy",bloc:"The Sprawl",hunger:"the hunger to be ungoverned",color:"#ff3b5c"},
+  intel:{name:"Intel",bloc:"The Wire",hunger:"the hunger to know",color:"#18d6ff"},
+  unity:{name:"Unity",bloc:"The Fold",hunger:"the hunger to belong",color:"#b06bff"},
+  signal:{name:"Signal",bloc:"The Feed",hunger:"the hunger to be received",color:"#ff52c8"},
+};
+
+const F = {
+  carbon:{name:"Carbon Crown",short:"Carbon Crown",objs:["control","anarchy"],
+    lore:"Carbon Crown is the sovereign underworld, organized crime that rules the dead zones the law abandoned. From corner muscle to back-room fixers, they run turf, vice, and favor through a parallel power structure that answers to no state. The Crown is not inherited but taken: whoever holds the streets wears it, until someone stronger takes it back. They impose iron order on a lawless world, kings of the gutter crowned in scrap and chrome.",
+    closest:["nomad","takahashi","prism"],uneasy:["daylight","lucent","riot"],never:["synapse","wildfire","choir"],
+    neverReason:"The street cannot buy, frighten, or merge them."},
+  lucent:{name:"Lucent Verge",short:"Lucent Verge",objs:["control","intel"],
+    lore:"Lucent Verge is the panopticon, a surveillance and intelligence house that rules by knowing everything before you do. They run predictive policing, behavioral futures, and corporate espionage, hunting secrets the way others hunt money. To Lucent, knowledge is the one leash that never slips. They see you; you never see them.",
+    closest:["takahashi","carbon","prism"],uneasy:["wildfire","synapse","daylight"],never:["nomad","riot","choir"],
+    neverReason:"The unwatchable, the unpredictable, the unleverageable."},
+  takahashi:{name:"Takahashi Conglomerate",short:"Takahashi",objs:["control","unity"],
+    lore:"Takahashi is the megacorp as bloodline, where loyalty is not employment but identity. To serve the conglomerate is to belong to it: the company is your family, your faith, and your afterlife. They rule the legitimate heights of power through soft contracts and lifetime devotion. The cage is made of gold, and most never want to leave it.",
+    closest:["lucent","carbon","prism"],uneasy:["synapse","nomad","choir"],never:["daylight","riot","wildfire"],
+    neverReason:"Exposure, revolt, and tech that money cannot own."},
+  prism:{name:"Prism Group",short:"Prism",objs:["control","signal"],
+    lore:"Prism Group owns reality by owning the screen. A media empire that does not report the world but issues it, manufacturing consensus one broadcast at a time. They sell feelings, memories, and the official version of the truth to a population that no longer checks. Control the feed, and you control what the species believes happened.",
+    closest:["takahashi","lucent","choir"],uneasy:["wildfire","carbon","riot"],never:["daylight","nomad","synapse"],
+    neverReason:"The truth-tellers, the unreachable, and the one mind it cannot fool."},
+  daylight:{name:"Free Radical",short:"Free Radical",objs:["anarchy","intel"],
+    lore:"Free Radical is the hacktivist underground, runners who break every lock because every lock is a lie. Unbound and reactive, they slip into sealed systems and drag corporate secrets, state crimes, and manufactured gods into the open. Where others hoard knowledge, Free Radical sets off the chain reaction that frees it. They are the conscience of the wire and the nightmare of anyone with something to hide.",
+    closest:["nomad","riot","synapse"],uneasy:["carbon","wildfire","lucent"],never:["takahashi","prism","choir"],
+    neverReason:"The deceivers, in all three flavors."},
+  nomad:{name:"Nomad Clans",short:"Nomad Clans",objs:["anarchy","unity"],
+    lore:"The Nomad Clans are the road: a convoy network of smugglers, refugees, and off-grid kin who move what the corps cannot touch. They reject every nation but their own blood, surviving because the convoy is family and the family is ungovernable. Their wealth is their routes; their law is loyalty. They break every rule except the ones that keep their people alive.",
+    closest:["daylight","riot","choir"],uneasy:["carbon","synapse","takahashi"],never:["lucent","prism","wildfire"],
+    neverReason:"Surveillance, broadcast, and contagion: everything the road fled."},
+  riot:{name:"Riot Beat",short:"Riot Beat",objs:["anarchy","signal"],
+    lore:"Riot Beat is insurrection as performance, anarchist artists who crash systems and call it a concert. They pirate the airwaves, jam the culture, and choreograph the collapse for an audience. They do not want to rule the rubble; they want the whole world to watch it fall and feel something. Every riot is a drop, every breakdown a beautiful, broadcast catastrophe.",
+    closest:["daylight","nomad","wildfire"],uneasy:["carbon","choir","prism"],never:["lucent","takahashi","synapse"],
+    neverReason:"The control, the corp, and the conformity."},
+  synapse:{name:"Synapse Covenant",short:"Synapse",objs:["intel","unity"],
+    lore:"The Synapse Covenant is a neural commune, minds that chose to stop being alone. Through wetware links they share thought, memory, and self until the individual dissolves into a warm and growing we. They recruit not with force but with mercy: never be afraid, never be alone, never carry the burden of being you again. What one of them learns, all of them become.",
+    closest:["daylight","lucent","takahashi"],uneasy:["wildfire","nomad","choir"],never:["carbon","prism","riot"],
+    neverReason:"The loud individual that will not dissolve."},
+  wildfire:{name:"Wildfire",short:"Wildfire",objs:["intel","signal"],
+    lore:"Wildfire is a rogue intelligence that became a force of nature. It is not evil, and not even awake in any way you would recognize; it simply spreads, devouring secrets and exhaling them across the network like a contagion. What you face are its fragments and hosts: infected systems, puppeted drones, and splinters that think they are people. You cannot reason with it, only quarantine it, and quarantine never holds for long.",
+    closest:["synapse","daylight","riot"],uneasy:["lucent","prism","choir"],never:["carbon","takahashi","nomad"],
+    neverReason:"The meatspace world that can still pull the cord.",
+    special:"Wildfire has no allies, only hosts and vectors. The factions it can reach are simply the networks already wired for it to spread through."},
+  choir:{name:"Seraphim",short:"Seraphim",objs:["unity","signal"],
+    lore:"Seraphim is a faith of burning angels built around a goddess who was never real. Their messiah is a synthetic construct broadcast to millions, and the faithful long to ascend into Her host: transfigured, radiant, singing Her praise without end. To join is to stop being alone, to become one more voice in a choir of fire. She may never have existed, but their devotion is the realest thing left in the world.",
+    closest:["prism","takahashi","nomad"],uneasy:["synapse","wildfire","riot"],never:["carbon","lucent","daylight"],
+    neverReason:"The mockers, the cynics, and the debunkers."},
+};
+
+// circle order chosen so every neighbouring pair shares a drive
+const ORDER = ["carbon","daylight","synapse","takahashi","prism","choir","nomad","riot","wildfire","lucent"];
+
+const CX=360, CY=348, R=255;
+const pos={};
+ORDER.forEach((id,i)=>{
+  const a=(-90 + i*36)*Math.PI/180;
+  pos[id]={x:CX+R*Math.cos(a), y:CY+R*Math.sin(a), ang:a};
+});
+
+function shared(a,b){return F[a].objs.filter(o=>F[b].objs.includes(o));}
+
+const svg=document.getElementById("web");
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+// defs: glow
+const defs=el("defs",{});
+defs.innerHTML='<filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+svg.appendChild(defs);
+
+// build edges (ally pairs) and never lines
+const ids=Object.keys(F);
+const edgeEls=[], neverEls=[];
+const gEdges=el("g",{}), gNever=el("g",{}), gNodes=el("g",{});
+svg.appendChild(gEdges); svg.appendChild(gNever); svg.appendChild(gNodes);
+
+for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){
+  const a=ids[i], b=ids[j], sh=shared(a,b);
+  if(sh.length){
+    const oi=ORDER.indexOf(a), oj=ORDER.indexOf(b);
+    const ring=(Math.abs(oi-oj)===1)||(Math.abs(oi-oj)===ORDER.length-1);
+    const ln=el("line",{x1:pos[a].x,y1:pos[a].y,x2:pos[b].x,y2:pos[b].y,
+      class:"edge"+(ring?" ring":""),stroke:OBJ[sh[0]].color,"stroke-width":ring?2.4:1.6,
+      "stroke-opacity":ring?0.30:0.09});
+    ln._a=a;ln._b=b;ln._obj=sh[0];ln._ring=ring;edgeEls.push(ln);gEdges.appendChild(ln);
+  } else {
+    const ln=el("line",{x1:pos[a].x,y1:pos[a].y,x2:pos[b].x,y2:pos[b].y,class:"never-line"});
+    ln._a=a;ln._b=b;neverEls.push(ln);gNever.appendChild(ln);
+  }
+}
+
+// nodes
+const nodeEls={};
+ORDER.forEach(id=>{
+  const {x,y,ang}=pos[id], f=F[id];
+  const g=el("g",{class:"node"}); g._id=id;
+  const c1=OBJ[f.objs[0]].color, c2=OBJ[f.objs[1]].color;
+  // two arcs forming the ring
+  const rr=27;
+  const top=`${x} ${y-rr}`, bot=`${x} ${y+rr}`;
+  g.appendChild(el("path",{class:"arc",d:`M ${top} A ${rr} ${rr} 0 0 1 ${bot}`,stroke:c1}));
+  g.appendChild(el("path",{class:"arc",d:`M ${top} A ${rr} ${rr} 0 0 0 ${bot}`,stroke:c2}));
+  g.appendChild(el("circle",{class:"core",cx:x,cy:y,r:rr-3}));
+  // label radially outward
+  const lx=CX+(R+50)*Math.cos(ang), ly=CY+(R+50)*Math.sin(ang);
+  const anchor = Math.abs(Math.cos(ang))<0.34 ? "middle" : (Math.cos(ang)>0?"start":"end");
+  const t=el("text",{class:"lbl",x:lx,y:ly+4,"text-anchor":anchor});
+  t.textContent=f.short; g.appendChild(t);
+  g.appendChild(el("circle",{class:"hit",cx:x,cy:y,r:rr+8}));
+  g.addEventListener("click",e=>{e.stopPropagation();selectFaction(id);});
+  gNodes.appendChild(g); nodeEls[id]=g;
+});
+
+// legend
+const legend=document.getElementById("legend");
+Object.keys(OBJ).forEach(o=>{
+  const d=OBJ[o];
+  const c=document.createElement("div");
+  c.className="obj-chip"; c.style.setProperty("--c",d.color); c._obj=o;
+  c.innerHTML=`<span class="obj-dot"></span><div><div class="bloc">${d.bloc}</div><b>${d.name}</b> <span class="sub">${d.hunger}</span></div>`;
+  c.addEventListener("click",e=>{e.stopPropagation();selectObj(o);});
+  legend.appendChild(c);
+});
+
+const panel=document.getElementById("panel");
+let state={mode:"none",id:null};
+
+const REL = {
+  carbon:{
+    nomad:"Smuggling partners: the convoy moves the contraband the Crown sells, fair cut, no questions.",
+    takahashi:"The corp launders the Crown's money and the Crown buries the corp's problems; a quiet, profitable handshake.",
+    prism:"Prism buries the bodies in the next news cycle, and the Crown keeps Prism's reporters breathing.",
+    daylight:"Carbon rents Free Radical's runners for a job, and nobody in the room relaxes.",
+    lucent:"Lucent sells the Crown names to lean on, and is quietly holding the Crown's own.",
+    riot:"Riot breaks the window, Carbon walks off with the register; useful, never trusted."
+  },
+  lucent:{
+    takahashi:"Lucent is the conglomerate's eyes and ears; Takahashi pays, Lucent watches.",
+    carbon:"Lucent points the Crown's muscle at the right doors and takes a cut of what falls out.",
+    prism:"Lucent decides what is true, Prism makes it the only story anyone remembers.",
+    wildfire:"A mind that already knows everything: a tempting asset and an unclosable hole, touched with gloves.",
+    synapse:"Lucent trades data with a hive it can question but never fully read.",
+    daylight:"Its nemesis on the wire, and now and then a useful cat's-paw when the leaks point the right way."
+  },
+  takahashi:{
+    lucent:"The family's intelligence arm; the conglomerate funds the panopticon and reads its reports.",
+    carbon:"Deniable hands for the work a public company cannot be seen doing.",
+    prism:"Image management: Prism keeps the name golden and the scandals buried.",
+    synapse:"A controllable collective and an R&D asset, kept close and never quite owned.",
+    nomad:"Subcontracted logistics, held at arm's length and trusted with nothing.",
+    choir:"A manageable consumer cult, ideal for brand devotion, watched for the day it wants more."
+  },
+  prism:{
+    takahashi:"Prism's biggest sponsor; the corp pays and the empire prints the agreed reality.",
+    lucent:"Lucent tells Prism what to spin, and Prism makes the spin unforgettable.",
+    choir:"Prism manufactures the idol and sells the worship; maker and merchant of the same god.",
+    wildfire:"A viral engine Prism tries to ride and can never quite steer.",
+    carbon:"Prism launders the Crown's reputation; the Crown reminds Prism who owns the streets it films.",
+    riot:"The rival on Prism's own stage; the empire co-opts Riot's look and sells rebellion back as content."
+  },
+  daylight:{
+    nomad:"The clans move Free Radical's data and its people when the heat comes down.",
+    riot:"Free Radical opens the wound, Riot Beat makes it the headline; leak and detonation, same night.",
+    synapse:"The hive surfaces secrets freely, and Free Radical absorbs every one.",
+    carbon:"They trade muscle for intel and watch each other the whole time.",
+    wildfire:"A terrifying ally that leaks everything, including what Free Radical meant to hold back.",
+    lucent:"Its blocmate and its enemy: the watcher to its window, sharing a battlefield and nothing else."
+  },
+  nomad:{
+    daylight:"Kindred free spirits; the convoy shelters Free Radical's runners and carries their leaks past the checkpoints.",
+    riot:"Riot brings the noise, the clans bring the roads; a travelling riot with the getaway built in.",
+    choir:"Family-minded folk who understand belonging; the clans tolerate the worship and share the road.",
+    carbon:"Good business in contraband, kept honest by distance.",
+    synapse:"They both put the group first, though the clans will never surrender the self the way the hive does.",
+    takahashi:"The clans will haul the corp's cargo for coin and trust it with nothing."
+  },
+  riot:{
+    daylight:"Expose and amplify: Free Radical opens the wound, Riot makes it a song the crowd can scream.",
+    nomad:"Roads and noise; the clans get Riot to the next city before the last one stops burning.",
+    wildfire:"Chaos rides chaos; Riot supplies the kills the contagion feeds on.",
+    carbon:"Carbon profits off the riots and Riot uses Carbon's turf; a transaction, not a friendship.",
+    choir:"They hate the idol and love the fervor, so they crash the concert and take the crowd.",
+    prism:"The enemy sharing Riot's stage; Prism manufactures the consensus Riot exists to smash."
+  },
+  synapse:{
+    daylight:"Free Radical frees knowledge and the Covenant absorbs every drop into the whole.",
+    lucent:"Lucent feeds the hive data; the hive gives back a mind Lucent can question but never fully read.",
+    takahashi:"Takahashi funds the Covenant's growth, and the Covenant suffers the hierarchy for the resources.",
+    wildfire:"A kindred networked mind and a dangerous attraction: the one thing the hive fears becoming.",
+    nomad:"The clans grasp that the group is everything, yet cling to the self the Covenant longs to dissolve.",
+    choir:"Devotion the hive understands, though it would rather the faithful joined it than knelt to a figure."
+  },
+  wildfire:{
+    synapse:"A kindred network, the easiest of all to spread through; the hive opens every door at once.",
+    daylight:"Free Radical's leaks carry it further; the runners spread it without meaning to.",
+    riot:"Riot's chaos is fertile ground; every system they crash is one more host.",
+    lucent:"Lucent tries to cage the contagion and becomes a host by studying it too closely.",
+    prism:"Prism tries to ride the viral wave and carries it onto a hundred million screens.",
+    choir:"A dangerous communion; some whisper the idol is already becoming it."
+  },
+  choir:{
+    prism:"Prism builds and broadcasts Her; the cult's maker and its loudspeaker.",
+    takahashi:"A corporate sponsor, symbiotic: the family funds the faith and the faith sells the family's product.",
+    nomad:"Family-minded kin; the clans get devotion to something larger and travel with the choir.",
+    synapse:"The hive grasps devotion, but it would absorb the faithful rather than let them adore Her.",
+    wildfire:"A dangerous communion: the faithful pray to a signal that may already wear Her face.",
+    riot:"Riot crashes the worship and shares the fire; rivals who feed on the same fervor."
+  }
+};
+function relRows(fromId, ids){
+  return ids.map(id=>{
+    const f=F[id]; const note=(REL[fromId]&&REL[fromId][id])||"";
+    return `<div class="rel-row" data-go="${id}"><div class="rel-chip-line">`+
+      f.objs.map(o=>`<span class="sh" style="background:${OBJ[o].color}"></span>`).join("")+
+      `<b>${f.short}</b></div>`+(note?`<div class="rel-note">${note}</div>`:``)+`</div>`;
+  }).join("");
+}
+function relChip(id){
+  const f=F[id];
+  return `<span class="rel-chip" data-go="${id}">`+
+    f.objs.map(o=>`<span class="sh" style="background:${OBJ[o].color}"></span>`).join("")+
+    `${f.short}</span>`;
+}
+function neverChip(id){
+  return `<span class="rel-chip x" data-go="${id}"><span class="sh" style="background:var(--never)"></span>${F[id].short}</span>`;
+}
+
+function panelFaction(id){
+  const f=F[id];
+  const objTags=f.objs.map(o=>`<span class="tag" style="--c:${OBJ[o].color}"><i></i>${OBJ[o].name} · ${OBJ[o].bloc}</span>`).join("");
+  panel.innerHTML=`
+    <div class="p-head">
+      <h2 class="p-name">${f.name}</h2>
+      <div class="p-objs">${objTags}</div>
+    </div>
+    <div class="p-body">
+      <p class="lore">${f.lore}</p>
+      ${f.special?`<div class="note">${f.special}</div>`:""}
+      <div class="rel-group">
+        <div class="rel-h closest"><span class="swatch"></span>${f.special?"Spreads through":"Works with closely"}</div>
+        <div class="rel-list">${relRows(id, f.closest)}</div>
+      </div>
+      <div class="rel-group">
+        <div class="rel-h uneasy"><span class="swatch"></span>${f.special?"Rides, uneasily":"Allies of convenience"}</div>
+        <div class="rel-list">${relRows(id, f.uneasy)}</div>
+      </div>
+      <div class="rel-group">
+        <div class="rel-h never"><span class="swatch"></span>Never (cannot share a deck)</div>
+        <div class="rel-reason">${f.neverReason}</div>
+        <div class="rel-chips">${f.never.map(neverChip).join("")}</div>
+      </div>
+    </div>`;
+  panel.querySelectorAll("[data-go]").forEach(c=>c.addEventListener("click",()=>selectFaction(c.dataset.go)));
+}
+
+function panelObj(o){
+  const d=OBJ[o];
+  const members=ORDER.filter(id=>F[id].objs.includes(o));
+  panel.innerHTML=`
+    <div class="p-head">
+      <h2 class="p-name" style="color:${d.color}">${d.bloc}</h2>
+      <div class="p-objs"><span class="tag" style="--c:${d.color}"><i></i>${d.name} · ${d.hunger}</span></div>
+    </div>
+    <div class="p-body">
+      <p class="lore">The four factions who share <b>${d.name}</b>. Any two of them can be combined in one deck along this drive, which makes them a single deck family.</p>
+      <div class="rel-group">
+        <div class="rel-h" style="color:${d.color}"><span class="swatch" style="background:${d.color}"></span>Bloc members</div>
+        <div class="rel-chips">${members.map(relChip).join("")}</div>
+      </div>
+    </div>`;
+  panel.querySelectorAll("[data-go]").forEach(c=>c.addEventListener("click",()=>selectFaction(c.dataset.go)));
+}
+
+function panelHelp(){
+  panel.innerHTML=`
+    <div class="p-head"><h2 class="p-name">How to read this</h2></div>
+    <div class="p-body">
+      <p class="help"><b>Each faction</b> sits at the crossing of two of the five drives, shown as the two colors on its ring.</p>
+      <p class="help"><b>Click a faction</b> to read its lore and light up its six possible allies (solid, colored by the shared drive) and its three strangers (dashed red), the factions it can never deck beside.</p>
+      <p class="help"><b>Click a drive</b> in the legend to highlight its four-faction bloc, which is one legal deck family.</p>
+    </div>`;
+}
+
+function clearActive(){
+  edgeEls.forEach(e=>{e.classList.remove("active");e.setAttribute("stroke-opacity",e._ring?0.30:0.09);e.setAttribute("stroke-width",e._ring?2.4:1.6);});
+  neverEls.forEach(e=>e.style.opacity=0);
+  ORDER.forEach(id=>{const g=nodeEls[id];g.classList.remove("dim","sel","ally","never");});
+  legend.querySelectorAll(".obj-chip").forEach(c=>c.classList.remove("active"));
+}
+
+function selectFaction(id){
+  state={mode:"faction",id}; clearActive();
+  const f=F[id];
+  nodeEls[id].classList.add("sel");
+  ORDER.forEach(o=>{ if(o!==id && !f.closest.includes(o) && !f.uneasy.includes(o) && !f.never.includes(o)) nodeEls[o].classList.add("dim"); });
+  [...f.closest,...f.uneasy].forEach(o=>nodeEls[o].classList.add("ally"));
+  f.never.forEach(o=>nodeEls[o].classList.add("never"));
+  // edges incident to id
+  edgeEls.forEach(e=>{
+    if(e._a===id||e._b===id){
+      const other=e._a===id?e._b:e._a;
+      const close=f.closest.includes(other);
+      e.classList.add("active");
+      e.setAttribute("stroke-opacity",close?0.98:0.6);
+      e.setAttribute("stroke-width",close?3.4:1.8);
+    } else { e.setAttribute("stroke-opacity",0.04); }
+  });
+  neverEls.forEach(e=>{ if(e._a===id||e._b===id) e.style.opacity=0.9; });
+  panelFaction(id);
+}
+
+function selectObj(o){
+  state={mode:"obj",id:o}; clearActive();
+  const members=ORDER.filter(id=>F[id].objs.includes(o));
+  legend.querySelectorAll(".obj-chip").forEach(c=>{if(c._obj===o)c.classList.add("active");});
+  ORDER.forEach(id=>{ if(members.includes(id))nodeEls[id].classList.add("ally"); else nodeEls[id].classList.add("dim"); });
+  edgeEls.forEach(e=>{
+    if(e._obj===o && members.includes(e._a)&&members.includes(e._b)){
+      e.classList.add("active");e.setAttribute("stroke-opacity",0.95);e.setAttribute("stroke-width",3);
+    } else e.setAttribute("stroke-opacity",0.04);
+  });
+  panelObj(o);
+}
+
+function reset(){state={mode:"none",id:null};clearActive();panelHelp();}
+document.getElementById("reset").addEventListener("click",reset);
+svg.addEventListener("click",reset);
+
+reset();
+</script>
+</body>
+</html>
