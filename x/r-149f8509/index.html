@@ -61,7 +61,7 @@
     background-size:30px 30px;pointer-events:none}
 
   .edge{stroke-linecap:round;transition:stroke-opacity .2s,stroke-width .2s}
-  .edge:not(.ring){stroke-dasharray:1.5 4}
+  .edge:not(.ring){stroke-dasharray:2 4}
   .edge.active{stroke-dasharray:none}
   .never-line{stroke:var(--never);stroke-width:2;stroke-dasharray:3 7;stroke-linecap:round;opacity:0;transition:opacity .2s}
   .node{cursor:pointer}
@@ -234,7 +234,7 @@ for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){
     const ring=(Math.abs(oi-oj)===1)||(Math.abs(oi-oj)===ORDER.length-1);
     const ln=el("line",{x1:pos[a].x,y1:pos[a].y,x2:pos[b].x,y2:pos[b].y,
       class:"edge"+(ring?" ring":""),stroke:OBJ[sh[0]].color,"stroke-width":ring?2.4:1.6,
-      "stroke-opacity":ring?0.30:0.2});
+      "stroke-opacity":ring?0.30:0.42});
     ln._a=a;ln._b=b;ln._obj=sh[0];ln._ring=ring;edgeEls.push(ln);gEdges.appendChild(ln);
   }
 }
@@ -432,7 +432,7 @@ function panelHelp(){
 }
 
 function clearActive(){
-  edgeEls.forEach(e=>{e.classList.remove("active");e.setAttribute("stroke-opacity",e._ring?0.30:0.2);e.setAttribute("stroke-width",e._ring?2.4:1.6);});
+  edgeEls.forEach(e=>{e.classList.remove("active");e.setAttribute("stroke-opacity",e._ring?0.30:0.42);e.setAttribute("stroke-width",e._ring?2.4:1.6);});
   neverEls.forEach(e=>e.style.opacity=0);
   ORDER.forEach(id=>{const g=nodeEls[id];g.classList.remove("dim","sel","ally","never");});
   legend.querySelectorAll(".obj-chip").forEach(c=>c.classList.remove("active"));
