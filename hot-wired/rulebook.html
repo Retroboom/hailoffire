@@ -76,44 +76,39 @@ p{margin:0 0 1.1em;}
 a{color:inherit;}
 ::selection{background:var(--signal);color:var(--paper);}
 
-.book{display:flex;min-height:100vh;background:var(--dark);}
+.book{display:block;min-height:100vh;background:var(--dark);}
 
-/* ---------- spine nav (desktop) ---------- */
-.spine{
-  display:none;position:sticky;top:0;align-self:flex-start;height:100vh;width:52px;flex:none;
-  background:var(--dark);border-right:1px solid var(--dark-line);
-  flex-direction:column;align-items:stretch;overflow-y:auto;
-  scrollbar-width:none;
+/* ---------- sticky scroll-spy header ---------- */
+.navbar{
+  position:sticky;top:0;z-index:20;background:var(--dark);border-bottom:1px solid var(--dark-line);
 }
-.spine::-webkit-scrollbar{display:none;}
-.spine a{
-  writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);
-  display:flex;align-items:center;justify-content:center;gap:.5em;
-  padding:14px 0;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
-  color:var(--dark-text-dim);text-decoration:none;border-bottom:1px solid var(--dark-line);
-  transition:color .15s,background .15s;
+.navbar-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:1em;
+  padding:13px 5vw;cursor:pointer;user-select:none;
 }
-.spine a:hover{color:var(--circuit);background:var(--dark-2);}
-.spine a:focus-visible{outline:2px solid var(--circuit);outline-offset:-2px;}
-.spine a b{color:var(--signal);font-weight:600;}
+.navbar-bar .current{
+  font-family:var(--disp);font-weight:600;font-size:.95rem;color:var(--dark-text);letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.navbar-bar .current b{color:var(--signal);font-family:var(--mono);font-weight:600;margin-right:.6em;}
+.navbar-bar .toggle{
+  flex:none;display:flex;align-items:center;gap:.5em;font-family:var(--mono);font-size:11px;
+  letter-spacing:.12em;color:var(--dark-text-dim);text-transform:uppercase;
+}
+.navbar-bar .toggle svg{transition:transform .18s;}
+.navbar.open .navbar-bar .toggle svg{transform:rotate(180deg);}
+.navmenu{
+  max-height:0;overflow:hidden;background:var(--dark-2);transition:max-height .2s ease;
+}
+.navbar.open .navmenu{max-height:70vh;overflow-y:auto;}
+.navmenu a{
+  display:flex;align-items:baseline;gap:.8em;padding:12px 5vw;font-family:var(--disp);font-weight:500;
+  font-size:1rem;color:var(--dark-text);text-decoration:none;border-bottom:1px solid var(--dark-line);
+}
+.navmenu a:hover{background:var(--dark);color:var(--circuit);}
+.navmenu a b{font-family:var(--mono);font-size:11px;color:var(--signal);flex:none;width:2.4em;}
 
-/* ---------- mobile tab strip ---------- */
-.tabstrip{
-  position:sticky;top:0;z-index:5;display:flex;overflow-x:auto;background:var(--dark);
-  border-bottom:1px solid var(--dark-line);white-space:nowrap;
-}
-.tabstrip a{
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dark-text-dim);
-  text-decoration:none;padding:12px 14px;border-right:1px solid var(--dark-line);
-}
-.tabstrip a b{color:var(--signal);}
-
-@media (min-width:880px){
-  .spine{display:flex;}
-  .tabstrip{display:none;}
-}
-
-.page{flex:1;min-width:0;background:var(--paper);}
+.page{background:var(--paper);}
 .prose{max-width:640px;margin:0 auto;padding:4vw 6vw;}
 .prose.wide{max-width:760px;}
 
@@ -278,30 +273,23 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 <div class="book">
 
-<nav class="tabstrip" aria-label="Chapter navigation">
-  <a href="#cover">00</a>
-  <a href="#core">01<b>·</b>Core</a>
-  <a href="#character">02<b>·</b>Char</a>
-  <a href="#body">03<b>·</b>Body</a>
-  <a href="#kit">04<b>·</b>Kit</a>
-  <a href="#combat">05<b>·</b>Combat</a>
-  <a href="#net">06<b>·</b>Net</a>
-  <a href="#chem">07<b>·</b>Chem</a>
-  <a href="#grind">08<b>·</b>Grind</a>
-  <a href="#appendix">09<b>·</b>Ref</a>
-</nav>
-
-<nav class="spine" aria-label="Chapter navigation">
-  <a href="#cover">HOT WIRED</a>
-  <a href="#core"><b>01</b> CORE MECHANISMS</a>
-  <a href="#character"><b>02</b> CHARACTER CREATION</a>
-  <a href="#body"><b>03</b> BODY &amp; HARDWARE</a>
-  <a href="#kit"><b>04</b> LOADOUT</a>
-  <a href="#combat"><b>05</b> COMBAT &amp; STREET</a>
-  <a href="#net"><b>06</b> THE NET</a>
-  <a href="#chem"><b>07</b> CHEMISTRY &amp; MEMORY</a>
-  <a href="#grind"><b>08</b> THE GRIND</a>
-  <a href="#appendix"><b>09</b> QUICK REFERENCE</a>
+<nav class="navbar" id="navbar" aria-label="Chapter navigation">
+  <div class="navbar-bar" id="navbar-bar" role="button" tabindex="0" aria-expanded="false" aria-controls="navmenu">
+    <span class="current" id="navbar-current"><b>&lt;//&gt;</b>Hot Wired</span>
+    <span class="toggle">Contents <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+  </div>
+  <div class="navmenu" id="navmenu">
+    <a href="#cover" data-label="Hot Wired"><b>00</b> Front matter</a>
+    <a href="#core" data-label="01 · Core Mechanisms"><b>01</b> Core mechanisms</a>
+    <a href="#character" data-label="02 · Character Creation"><b>02</b> Character creation</a>
+    <a href="#body" data-label="03 · Body &amp; Hardware"><b>03</b> Body &amp; hardware</a>
+    <a href="#kit" data-label="04 · Loadout"><b>04</b> Loadout</a>
+    <a href="#combat" data-label="05 · Combat &amp; Street"><b>05</b> Combat &amp; street</a>
+    <a href="#net" data-label="06 · The Net"><b>06</b> The net</a>
+    <a href="#chem" data-label="07 · Chemistry &amp; Memory"><b>07</b> Chemistry &amp; memory</a>
+    <a href="#grind" data-label="08 · The Grind"><b>08</b> The grind</a>
+    <a href="#appendix" data-label="09 · Quick Reference"><b>09</b> Quick reference &amp; crew</a>
+  </div>
 </nav>
 
 <div class="page">
@@ -436,11 +424,11 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>For a Task to be successfully achieved, a certain number of Hits (often written as <strong>2✱</strong>) must be generated. Some Tasks resolve quickly, like leaping out of the way of a vehicle, and require only 1✱, while others might take more time, like breaking into a safe or repairing a damaged drone, and require 2✱ or more.</p>
   <p>The required number of ✱ does not need to be generated in a single roll, and ✱ can accumulate over several Task Rolls. However, the more rolls Players make to achieve a stated outcome, the more they risk one or several of those rolls generating Consequences, making their situation more difficult. GMs declare the number of ✱ a Task requires before a player commits to it. If a PC rolls more ✱ than the Task requires in a single roll, the PC may request some additional effect of their choosing, appropriate to the Task.</p>
 
-  <h3 class="sub">Clocks</h3>
+  <h3 class="sub" id="clocks">Clocks</h3>
   <p>For any Task that requires more than 1✱ and is likely to take more than one roll to resolve, track progress with a <strong>Clock</strong>: a circle divided into segments equal to the Hits required. Fill in one segment per Hit scored. A Clock keeps accumulating progress visible to the whole table, and works equally well for breaking into a safe, hacking a hardened network, talking down a hostile boss, or grinding through a tough enemy in a fight.</p>
 
-  <h3>PC aid</h3>
-  <p>PCs can (and should!) aid each other when attempting Tasks, especially when a Task is either particularly dangerous or complicated. If the aiding PC can explain how they're actually providing assistance, and the GM agrees the action is possible (a PC can't provide covering fire if they aren't armed), they can help in one of two ways: a PC with a relevant Background, Cyberware, or Primo Kit may offer 1 Boost die outright. A PC without one of those three may still try to help, but must make a Task Roll of their own against 1 Challenge die and risk a Consequence; if they score a Hit, they may offer that Boost die instead.</p>
+  <h3 id="pc-aid">PC aid</h3>
+  <p>PCs can (and should!) aid each other when attempting Tasks, especially when a Task is either particularly dangerous or complicated. If the aiding PC can explain how they're actually providing assistance, and the GM agrees the action is possible (a PC can't provide covering fire if they aren't armed), they can help in one of two ways: a PC with a relevant Background, <a href="#cyberware">Cyberware</a>, or <a href="#kit">Primo Kit</a> may offer 1 Boost die outright. A PC without one of those three may still try to help, but must make a Task Roll of their own against 1 Challenge die and risk a Consequence; if they score a Hit, they may offer that Boost die instead.</p>
   <p>When a Player declares their PC is aiding another's Task, their character genuinely attempts whatever action they described, successful or not, and it should be reflected in the fictional positioning of that PC. Regardless of how many eligible Boosts an aiding PC might have, they only ever add 1 total Boost. Whenever possible, the PC best suited to a Task should perform it directly, to maximize the dice being rolled.</p>
 
   <h3 id="consequences">Consequences</h3>
@@ -455,8 +443,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     </ul>
   </div>
 
-  <h3>Grit</h3>
-  <p>PCs start with a pool of <strong>3 Grit</strong>. Grit may be spent to increase the result of a Boost die by 1. Multiple Grit may be spent on one roll to increase the result of more than one die, and/or to increase a single die by more than 1. Spent Grit is restored by invoking a character's Bugs.</p>
+  <h3 id="grit">Grit</h3>
+  <p>PCs start with a pool of <strong>3 Grit</strong>. Grit may be spent to increase the result of a Boost die by 1. Multiple Grit may be spent on one roll to increase the result of more than one die, and/or to increase a single die by more than 1. Spent Grit is restored by invoking a character's <a href="#bugs">Bugs</a>.</p>
   <p class="tnote">Because Grit is spent at the player's discretion, it only ever helps: it adds to a die's result, it never subtracts, so it can turn a non-Success into a 6 but never turn a 1 into something worse. In practice, players spend Grit on dice sitting at 5 (cheapest, 1 Grit) or stack it on a 2, 3, or 4 when the cost is worth it. There's never a reason to spend Grit on a die already showing a 1.</p>
 </section>
 
@@ -520,7 +508,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
   <div class="callout circuit">
     <span class="tag-label">Playable narrowing</span>
-    <p>The best later parts don't just describe a circumstance, they describe a <em>state you or your crew can go make true</em>. A part that only pays off once a target is <span class="tag">#Pinned</span>, once a mark has turned <span class="tag">Friendly</span>, or once a network's <span class="tag">Noise</span> is still low, gives you something to play toward instead of something you passively wait for. Build your parts as a chain: a broad first move, a common escalation of it, and a payoff tied to a condition the table itself produces. Skills should build on skills, not just on luck.</p>
+    <p>The best later parts key off a state <em>a previous roll actually produced</em>, not a mood. Hold every part to one test: is there a real rule elsewhere in this book that makes this true or false right now, on demand? A target that's <a href="#pinned"><span class="tag">#Pinned</span></a>, a Mag that's already empty, an Injury count closing in on <a href="#down"><span class="tag">Down</span></a>, a network's <a href="#net"><span class="tag">Noise</span></a> still under the next threshold, a fight that's still at <a href="#ranges"><span class="tag">Close</span></a> range, all check out. Borrowing a term from this book without the rule behind it doesn't count, it's just circumstance wearing a costume. If a part isn't gating on something checkable, keep it honest as plain technique instead (<em>"using my imposing stature,"</em> not <em>"once they respect me"</em>). Build parts as a chain: a broad first move, a common escalation of it, and a payoff earned by a state the table produced.</p>
   </div>
 
   <p>When creating a character, you have <strong>8 total points</strong> to spend on Skill Description parts, one point per part. Split them among many Skill Descriptions or commit them all to a couple. Skill Descriptions may also branch, giving your character extra versatility within certain situations.</p>
@@ -535,7 +523,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     1 · I flirt exceptionally well</p>
   </div>
 
-  <h3>Bugs</h3>
+  <h3 id="bugs">Bugs</h3>
   <p>These are the compulsions PCs most struggle with. Players may invoke a character's Bugs in the narrative to restore lost Grit. Bugs take one of two forms: the character is <strong>compelled</strong> to a certain action, or the character <strong>refuses</strong> to perform a certain action. Characters should have at least two Bugs.</p>
 
   <p class="tnote">Roll 1d6 to choose a column below, then 1d10 for the row within it, if you want to randomly determine a Bug.</p>
@@ -573,22 +561,22 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p><strong class="term">Conditions</strong> are emotional statuses that impose +1 Challenge Die to <strong>all</strong> Task Rolls the PC makes. The GM removes the status once the PC takes some action that plays out the condition, usually to negative effect (running away for "Frightened," for instance). Example Conditions: Shaken, Frightened, Exhausted, Confused, Stressed, Frustrated.</p>
   <p><strong class="term">Injuries</strong> refer to serious physical harm, and stay with the character until treated during Downtime. Until stabilized, each Injury adds +1 Challenge Die to <strong>all</strong> Task Rolls the PC makes.</p>
   <p>A single Consequence can inflict multiple Injuries if the GM believes it makes sense: a fall from a one-story roof might cause <span class="tag">#SprainedAnkle</span>, while a fall from three stories might cause <span class="tag">#BrokenLeg</span>, <span class="tag">#ImpailedShoulder</span>, and <span class="tag">#Concussion</span> all at once.</p>
-  <p>PCs can attempt to <strong>Stabilize an Injury</strong> as a Task. An appropriate consumable item (bandages, injections, inhalers — it's sci-fi) adds +1 Boost. A PC stabilizing themselves still takes the +1 Challenge from the injury itself; a PC stabilizing someone else does not. Though not healed, a stabilized Injury only affects Task Rolls relevant to that Injury.</p>
+  <p id="stabilize">PCs can attempt to <strong>Stabilize an Injury</strong> as a Task. An appropriate consumable item (bandages, injections, inhalers — it's sci-fi) adds +1 Boost. A PC stabilizing themselves still takes the +1 Challenge from the injury itself; a PC stabilizing someone else does not. Though not healed, a stabilized Injury only affects Task Rolls relevant to that Injury.</p>
 
-  <div class="callout signal">
+  <div class="callout signal" id="down">
     <span class="tag-label">Down</span>
-    <p>A PC carrying <strong>3 unstabilized Injuries is Down</strong>: unconscious, pinned, or otherwise removed from active participation in the scene until stabilized. A Down PC can be stabilized by another PC's aid or by Medical Treatment during Downtime.</p>
+    <p>A PC carrying <strong>3 unstabilized Injuries is Down</strong>: unconscious, pinned, or otherwise removed from active participation in the scene until stabilized. A Down PC can be stabilized by another PC's aid or by Medical Treatment during Downtime (see <a href="#grind">The Grind</a>).</p>
     <p>If a Down PC suffers a <strong>4th</strong> unstabilized Injury before being stabilized, that's the kind of extreme circumstance PC Death is built for.</p>
-    <p>A GM looking to apply pressure against a Down PC, without calling for PC Death, can advance the Riskometer instead: the danger of the moment stays real without requiring more rolls against a character who's already out of the fight.</p>
+    <p>A GM looking to apply pressure against a Down PC, without calling for PC Death, can advance the <a href="#riskometer">Riskometer</a> instead: the danger of the moment stays real without requiring more rolls against a character who's already out of the fight.</p>
   </div>
 
   <h3>PC death</h3>
   <p>It's assumed that PCs are unlikely to avoid getting banged up, shot, burned, and broken, but it's also assumed that PC death is reserved for extreme circumstances: either there's simply no way to narratively justify survival, a Player decides their character will make the ultimate sacrifice, or some other similarly epic scenario. Adjust to the desires of your table.</p>
 
-  <h3>Cyberware</h3>
+  <h3 id="cyberware">Cyberware</h3>
   <p>Installing cybernetics is as common as upgrading your cell phone (albeit a bit more intrusive) and is often just as superficial.</p>
   <p>PCs start with <strong>three Cyberware Boosts</strong> on any number of installations: cybernetic eyes that see in the dark, robotic legs that kick through concrete or leap fences, or just about anything else you can think of.</p>
-  <p>As always, Boosts require GM approval. Especially powerful or strange Cyberware might be granted, but with additional negative tags attached. During Downtime, PCs may attempt to install, upgrade, replace, or repair Cyberware for a price (see Part 08). Boosts on Cyberware should be described as actions, starting with a verb.</p>
+  <p>As always, Boosts require GM approval. Especially powerful or strange Cyberware might be granted, but with additional negative tags attached. During <a href="#downtime">Downtime</a>, PCs may attempt to install, upgrade, replace, or repair Cyberware for a price. Boosts on Cyberware should be described as actions, starting with a verb.</p>
 
   <div class="cols two">
     <div>
@@ -700,7 +688,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <p>Consequences should scale to how much a PC chooses to expose themselves to danger. If they're receiving fire, a Consequence for diving for cover should be less severe than a Consequence for choosing to shoot back instead.</p>
   </div>
 
-  <h3>Weapons &amp; ranges</h3>
+  <h3 id="ranges">Weapons &amp; ranges</h3>
   <p>Weapons are categorized as Guns, Melee, or Explosives. Every weapon has a designated Range at which it's most effective; using it outside that range is at GM discretion, resulting in additional Challenge dice if possible at all.</p>
   <div class="twrap">
   <table>
@@ -725,9 +713,9 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
   <p><strong>Rapid fire</strong> — when shooting, a Player can declare their character is rapid firing, adding <strong>+2 Boost dice</strong> if semi-auto or <strong>+4 Boost dice</strong> if full auto. After rapid firing, the weapon's mag is empty and needs reloading.</p>
 
-  <p><strong>Pinned</strong> — unless the target is actively not trying to evade, the first ✱ of a shooting Task Roll doesn't harm the target, it causes them to become <span class="tag">#Pinned</span> instead. Pinned characters rush behind the nearest cover and suffer a 1-die penalty (+1 Challenge to Pinned PCs, +1 Boost if Pinned NPCs are acted against) on everything they do until they succeed at an action or the situation changes. If 2 or more ✱ are rolled on a single roll, each ✱ after the first harms the target (or achieves whatever effect the shooter was going for).</p>
+  <p id="pinned"><strong>Pinned</strong> — unless the target is actively not trying to evade, the first ✱ of a shooting Task Roll doesn't harm the target, it causes them to become <span class="tag">#Pinned</span> instead. Pinned characters rush behind the nearest cover and suffer a 1-die penalty (+1 Challenge to Pinned PCs, +1 Boost if Pinned NPCs are acted against) on everything they do until they succeed at an action or the situation changes. If 2 or more ✱ are rolled on a single roll, each ✱ after the first harms the target (or achieves whatever effect the shooter was going for).</p>
 
-  <p><strong>Mags</strong> — guns need a Mag to fire. An empty Mag (from Rapid Fire or a Consequence) prevents shooting until reloaded, which must be declared and might require a roll under pressure. One or three extra Mags can usually be concealed on the body; more than that is visibly strapped. More than 10 Mags means a Backpack or Duffle Bag.</p>
+  <p id="mags"><strong>Mags</strong> — guns need a Mag to fire. An empty Mag (from Rapid Fire or a <a href="#consequences">Consequence</a>) prevents shooting until reloaded, which must be declared and might require a roll under pressure. One or three extra Mags can usually be concealed on the body; more than that is visibly strapped. More than 10 Mags means a Backpack or Duffle Bag.</p>
 
   <p><strong>Ammunition types</strong> — all guns can fire explosive, armor-piercing, poison, stun, EMP, and similar rounds. Mags loaded with special ammunition are Primo Kit. Successfully buying or making Primo Ammunition nets 3 Mags worth.</p>
 
@@ -824,7 +812,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 <section class="prose">
   <h3>Drugs</h3>
-  <p>Each dose lasts about 30–90 minutes and offers 1 specific Boost <em>and</em> 1 specific quirk. Multiple doses during that window multiply the effect, but risk an OD. Every use risks addiction, where related Tasks always carry an extra Challenge Die unless the drug is used. Dialysis can cure the addiction, and Cyberware can be installed that reduces or removes the risk of OD and addiction.</p>
+  <p>Each dose lasts about 30–90 minutes and offers 1 specific Boost <em>and</em> 1 specific quirk. Multiple doses during that window multiply the effect, but risk an OD. Every use risks addiction, where related Tasks always carry an extra Challenge Die unless the drug is used. Dialysis can cure the addiction, and <a href="#cyberware">Cyberware</a> can be installed that reduces or removes the risk of OD and addiction.</p>
 
   <div class="twrap">
   <table>
@@ -846,7 +834,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p><strong>Addiction</strong> — once a drug's effect wears off, roll 1d6. On a 6, the user is addicted. Addiction counts as an Injury that's only stabilized while on the drug (the user still gains its benefit in this state). The only cure is a DyaliSys™ machine, or going cold turkey for 3 play sessions.</p>
 
   <h3>Flashbacks</h3>
-  <p>As with <em>Blades in the Dark</em>, you can perform an action "in the past" representing prep work done for the current gig. This often involves a Task Roll that could result in Consequences created during that prep, most commonly increased Heat.</p>
+  <p>As with <em>Blades in the Dark</em>, you can perform an action "in the past" representing prep work done for the current gig. This often involves a Task Roll that could result in Consequences created during that prep, most commonly increased <a href="#riskometer">Heat</a>.</p>
   <p>The GM sets a Challenge rating when a Flashback is invoked:</p>
   <ul>
     <li><strong>+1 Challenge Die</strong> — an ordinary action for which you had easy opportunity.</li>
@@ -868,13 +856,13 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 </div>
 
 <section class="prose">
-  <h3>Gigs</h3>
+  <h3 id="gigs">Gigs</h3>
   <p>A <strong>Gig</strong> is the basic unit of play in Hot Wired: a job, score, or mission the crew takes on, usually offered by a Fixer, a corporate handler working an angle, a gang contact calling in a favor, or some desperate Have-Not who scraped together enough Crypto to ask for help. Most sessions run one Gig from offer to payout.</p>
   <ol>
     <li><strong>The Offer</strong> — the crew hears about the job and decides whether to take it.</li>
-    <li><strong>The Job</strong> — the crew executes, generating Hits, Consequences, and Heat along the way.</li>
+    <li><strong>The Job</strong> — the crew executes, generating Hits, Consequences, and <a href="#riskometer">Heat</a> along the way.</li>
     <li><strong>The Payout</strong> — on success (or partial success), the crew gets paid.</li>
-    <li><strong>Downtime</strong> — the crew spends what they earned and prepares for what's next.</li>
+    <li><a href="#downtime">Downtime</a> — the crew spends what they earned and prepares for what's next.</li>
   </ol>
   <div class="callout circuit">
     <span class="tag-label">Payout</span>
@@ -884,22 +872,22 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
       <li>+¢100 to ¢500 per PC, for cleanly completed bonus objectives (GM's call, scaled to difficulty)</li>
       <li>−25% to the base payout if the central objective failed but the crew survived</li>
     </ul>
-    <p>A Suicide Mission (see below) pays, by definition, enough to clear the crew's debts and cover everyone's medical care.</p>
+    <p>A <a href="#suicide">Suicide Mission</a> pays, by definition, enough to clear the crew's debts and cover everyone's medical care.</p>
   </div>
 
-  <h3>Downtime</h3>
+  <h3 id="downtime">Downtime</h3>
   <p>Between Gigs, the crew gets time to spend what they earned, patch themselves up, and get ready for whatever's next.</p>
   <p>Each PC gets <strong>2 Downtime Actions</strong> (GMs should adjust this for pacing). Each action is spent on one of the following:</p>
   <ul>
-    <li><strong>Acquire or Build Kit</strong> — buy or build Primo Kit, Cyberware, Programs, Drugs, Mags, or Grenades.</li>
-    <li><strong>Get Medical Treatment</strong> — heal Injuries or install Cyberware.</li>
-    <li><strong>Reduce Heat</strong> — spend Crypto to buy down the crew's accumulated Heat.</li>
-    <li><strong>Train</strong> — swap a Background or Skill Description for one that better fits who the character has become.</li>
+    <li><strong><a href="#buy">Acquire</a> or <a href="#build">Build</a> Kit</strong> — buy or build Primo Kit, Cyberware, Programs, Drugs, Mags, or Grenades.</li>
+    <li><strong><a href="#medical">Get Medical Treatment</a></strong> — heal Injuries or install Cyberware.</li>
+    <li><strong>Reduce Heat</strong> — spend Crypto to buy down the crew's accumulated <a href="#riskometer">Heat</a>.</li>
+    <li><strong><a href="#advancement">Train</a></strong> — swap a Background or Skill Description for one that better fits who the character has become.</li>
     <li><strong>Lay Low</strong> — clear 1 Condition. No roll required, just describe how your character works through it in the gap between jobs.</li>
   </ul>
   <p>PCs don't have to spend both actions the same way, and not every PC has to spend both. When the crew is done with Downtime, the next Gig begins.</p>
 
-  <h3 class="sub">Buy something</h3>
+  <h3 class="sub" id="buy">Buy something</h3>
   <p>PCs may buy or upgrade something from a dealer (Primo Kit, Cyberware, Safehouse Equipment, Programs, Drugs, Mags, Grenades).</p>
   <div class="statgrid">
     <div class="cell"><span class="k">Cost</span><span class="v">¢200 for the 1st Boost</span></div>
@@ -915,7 +903,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   </table>
   </div>
 
-  <h3 class="sub">Build something</h3>
+  <h3 class="sub" id="build">Build something</h3>
   <p>PCs may make a standard Task Roll to attempt to build something.</p>
   <div class="statgrid">
     <div class="cell"><span class="k">Cost</span><span class="v">¢200 for 1 Boost</span></div>
@@ -932,7 +920,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   </table>
   </div>
 
-  <h3 class="sub">Medical treatment — see a professional</h3>
+  <h3 class="sub" id="medical">Medical treatment — see a professional</h3>
   <div class="statgrid">
     <div class="cell"><span class="k">Cost</span><span class="v">¢100 base + ¢100/Boost</span></div>
     <div class="cell"><span class="k">Challenge dice</span><span class="v">1, no add'l</span></div>
@@ -961,7 +949,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   </table>
   </div>
 
-  <h3>Riskometer &amp; Heat</h3>
+  <h3 id="riskometer">Riskometer &amp; Heat</h3>
   <p><strong>Heat</strong> is the unit of danger and attention a crew accumulates during a Gig: noise made, witnesses left, alarms tripped, faces seen. The <strong>Riskometer</strong> is the 0–15 gauge that tracks it.</p>
   <div class="callout signal">
     <p>Add 1 Challenge Die to the Challenge Pool for every 5 Heat accumulated, rounded down. At 15 Heat, the current Gig collapses — narrate what happened (the crew gets made, the building locks down, the law shows up in force) and cut to the consequences.</p>
@@ -975,13 +963,13 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <li>+1 or more Heat — Failed Flashbacks.</li>
     <li>GM's call — Failures during a Gig often give the choice of Heat or a different Consequence instead.</li>
   </ul>
-  <p><strong>Heat between Gigs</strong> — Heat does not reset on its own. It carries into the next Gig until bought down during Downtime (Reduce Heat, <strong>¢50 per PC per point</strong>).</p>
+  <p><strong>Heat between Gigs</strong> — Heat does not reset on its own. It carries into the next Gig until bought down during <a href="#downtime">Downtime</a> (Reduce Heat, <strong>¢50 per PC per point</strong>).</p>
 
-  <h3>The suicide mission</h3>
+  <h3 id="suicide">The suicide mission</h3>
   <p>In the rare event the whole crew is injured and broke, the heat is on, and there's no way out, there's always the one gig no one else in town was willing to take. The payout is enough to cover debts and get everyone medical attention. These missions don't resolve like normal Gigs: they play out through a series of narrated Task Rolls. Collectively, the group must roll a number of Hits equal to <strong>twice the number of players</strong>. Along the way, the first failure costs a piece of Primo Kit. The second results in an Injury. The third results in that character's death. The decision to accept a Suicide Mission must be unanimous.</p>
 
-  <h3>Advancement</h3>
-  <p>During Downtime, players may invest money from Gigs into Cyberware (or other Primo Kit) that grants new abilities and bonus dice, and may change Backgrounds and/or Skill Descriptions to ones they feel better fit the character they originally envisioned, or that better reflect what the character has become.</p>
+  <h3 id="advancement">Advancement</h3>
+  <p>During <a href="#downtime">Downtime</a>, players may invest money from Gigs into <a href="#cyberware">Cyberware</a> (or other Primo Kit) that grants new abilities and bonus dice, and may change <a href="#character">Backgrounds and/or Skill Descriptions</a> to ones they feel better fit the character they originally envisioned, or that better reflect what the character has become.</p>
 </section>
 
 <!-- PART 09 DIVIDER -->
@@ -1028,9 +1016,9 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
       </ul>
       <h3 class="sub">In a fight</h3>
       <ul>
-        <li><strong>Rapid Fire</strong> — +2 Boost (semi) or +4 (full auto); empties the Mag</li>
-        <li><strong>Pinned</strong> — first ✱ vs. an evading target pins, doesn't harm</li>
-        <li><strong>Down</strong> — at 3 unstabilized Injuries</li>
+        <li><strong>Rapid Fire</strong> — +2 Boost (semi) or +4 (full auto); empties the <a href="#mags">Mag</a></li>
+        <li><strong><a href="#pinned">Pinned</a></strong> — first ✱ vs. an evading target pins, doesn't harm</li>
+        <li><strong><a href="#down">Down</a></strong> — at 3 unstabilized Injuries</li>
       </ul>
     </div>
   </div>
@@ -1041,7 +1029,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <div class="cell"><span class="k">Downtime</span><span class="v">2 actions / PC</span></div>
     <div class="cell"><span class="k">Bug invoke</span><span class="v">Refill Grit, guarantee a Consequence</span></div>
   </div>
-  <p class="tnote">Downtime actions: Acquire/Build Kit · Get Medical Treatment · Reduce Heat · Train · Lay Low.</p>
+  <p class="tnote">Downtime actions: <a href="#buy">Acquire</a>/<a href="#build">Build</a> Kit · <a href="#medical">Get Medical Treatment</a> · Reduce Heat · <a href="#advancement">Train</a> · Lay Low. Full list at <a href="#downtime">Downtime</a>.</p>
 
   <h3>Character sheet</h3>
   <p class="tnote">Blank and ready to fill in, on-screen or printed.</p>
@@ -1114,8 +1102,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
       <div class="cc-body">
         <p class="look">Ex-ganger, ex-corp muscle, permanently between jobs and permanently looking for the next fight. Doesn't do "quiet."</p>
         <h4>Backgrounds &amp; skills — 8 pts</h4>
-        <div class="bg-block"><span class="bg-name">Street Gang Muscle</span><br/><span class="skill">I close the distance · before they can bring a weapon up · and finish it while they're still reeling <span class="pts">(3)</span> ↳ once they're already <span class="tag">#Pinned</span> <span class="pts">(+1)</span></span></div>
-        <div class="bg-block"><span class="bg-name">Ex-Corp Security</span><br/><span class="skill">I clock the exits and angles first · so I'm already moving when the room goes loud <span class="pts">(2)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Street Gang Muscle</span><br/><span class="skill">I put a target down at range · and close the gap while they're still <a href="#pinned"><span class="tag">#Pinned</span></a> · to finish it before I have to reload <span class="pts">(3)</span> ↳ or, once my <a href="#mags">mag's</a> already empty, with whatever's in my hand <span class="pts">(+1)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Ex-Corp Security</span><br/><span class="skill">I read a room's exits and blind spots · before the shooting starts <span class="pts">(2)</span></span></div>
         <div class="bg-block"><span class="bg-name">Adrenaline Junkie</span><br/><span class="skill">I push through the pain · once the fight's already gone wrong for me <span class="pts">(2)</span></span></div>
         <h4>Bugs</h4>
         <p>Compelled to commit violence. Refuses to follow orders.</p>
@@ -1131,9 +1119,9 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
       <div class="cc-body">
         <p class="look">Got the deck in her skull the same year the corp that installed it decided she owed them for it. Hates being watched, for good reason.</p>
         <h4>Backgrounds &amp; skills — 8 pts</h4>
-        <div class="bg-block"><span class="bg-name">Corp-Trained Netrunner</span><br/><span class="skill">I breach networks · through whatever device I've already cracked open · while my <span class="tag">Noise</span> stays low enough nobody's looking <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Corp-Trained Netrunner</span><br/><span class="skill">I breach networks · through whatever device I've already cracked open · before my <a href="#net">Noise</a> crosses into Signal Identified <span class="pts">(3)</span></span></div>
         <div class="bg-block"><span class="bg-name">Street Data Broker</span><br/><span class="skill">I read the data trade · for the buyer who'll pay before anyone else does <span class="pts">(2)</span></span></div>
-        <div class="bg-block"><span class="bg-name">Paranoid Survivalist</span><br/><span class="skill">I notice · when a room's about to turn <span class="tag">Hostile</span> · in time to already be moving <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Paranoid Survivalist</span><br/><span class="skill">I notice · the thing everyone else missed · half a second before it matters <span class="pts">(3)</span></span></div>
         <h4>Bugs</h4>
         <p>Compelled to learn inner workings. Refuses to work when being watched.</p>
         <h4>Cyberware — 3 boosts</h4>
@@ -1150,7 +1138,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
         <h4>Backgrounds &amp; skills — 8 pts</h4>
         <div class="bg-block"><span class="bg-name">Corporate Socialite, fallen</span><br/><span class="skill">I read what a room wants to hear · and become exactly that · until they've told me what I actually came for <span class="pts">(3)</span></span></div>
         <div class="bg-block"><span class="bg-name">Con Artist</span><br/><span class="skill">I build a lie · that holds up the moment someone checks it <span class="pts">(2)</span></span></div>
-        <div class="bg-block"><span class="bg-name">Ex-Cult Recruiter</span><br/><span class="skill">I make someone feel chosen · once they've got nowhere else to turn · and it holds even after I've left the room <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Ex-Cult Recruiter</span><br/><span class="skill">I make someone feel chosen · once I've got them alone · and it holds even after I've left the room <span class="pts">(3)</span></span></div>
         <h4>Bugs</h4>
         <p>Compelled to lie. Refuses to put others before yourself.</p>
         <h4>Cyberware — 3 boosts</h4>
@@ -1165,9 +1153,9 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
       <div class="cc-body">
         <p class="look">The reason the crew hasn't lost anyone yet. Takes in every stray like they're already crew, even when it costs the job.</p>
         <h4>Backgrounds &amp; skills — 8 pts</h4>
-        <div class="bg-block"><span class="bg-name">Street Doc</span><br/><span class="skill">I patch people up · with whatever's already in reach · so we never have to explain it to a real hospital <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Street Doc</span><br/><span class="skill">I patch people up · with whatever's already in reach · before another Injury puts them <a href="#down">Down</a> <span class="pts">(3)</span></span></div>
         <div class="bg-block"><span class="bg-name">Salvage Mechanic</span><br/><span class="skill">I build working kit · out of whatever the last job left behind <span class="pts">(2)</span></span></div>
-        <div class="bg-block"><span class="bg-name">Former Combat Medic</span><br/><span class="skill">I keep working · on someone dying in my hands · until they're stable <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Former Combat Medic</span><br/><span class="skill">I keep working · on someone dying in my hands · until they're <a href="#stabilize">stable</a> <span class="pts">(3)</span></span></div>
         <h4>Bugs</h4>
         <p>Compelled to sympathize. Refuses to let someone suffer.</p>
         <h4>Cyberware — 3 boosts</h4>
@@ -1187,3 +1175,48 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 </div>
 </div>
+
+<script>
+(function(){
+  var navbar = document.getElementById('navbar');
+  var bar = document.getElementById('navbar-bar');
+  var menu = document.getElementById('navmenu');
+  var current = document.getElementById('navbar-current');
+
+  function toggle(open){
+    var willOpen = open !== undefined ? open : !navbar.classList.contains('open');
+    navbar.classList.toggle('open', willOpen);
+    bar.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
+  bar.addEventListener('click', function(){ toggle(); });
+  bar.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+  });
+  menu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ toggle(false); });
+  });
+
+  var sections = [{ id: 'cover', label: 'Hot Wired' }];
+  document.querySelectorAll('.divider[id]').forEach(function(d){
+    var link = menu.querySelector('a[href="#' + d.id + '"]');
+    sections.push({ id: d.id, label: link ? link.getAttribute('data-label') : d.id });
+  });
+
+  if('IntersectionObserver' in window){
+    var byId = {};
+    sections.forEach(function(s){ byId[s.id] = s.label; });
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          var label = byId[entry.target.id];
+          if(label){ current.innerHTML = '<b>&lt;//&gt;</b>' + label; }
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(function(s){
+      var el = document.getElementById(s.id);
+      if(el) observer.observe(el);
+    });
+  }
+})();
+</script>
