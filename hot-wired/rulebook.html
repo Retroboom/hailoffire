@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hot Wired — Playtest Edition</title>
 <style>
 @font-face {
@@ -70,7 +75,7 @@
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{margin:0;background:var(--dark);color:var(--ink);font-family:var(--serif);}
+body{margin:0;background:var(--dark);color:var(--ink);font-family:var(--serif);overflow-x:hidden;}
 h1,h2,h3,h4{font-family:var(--disp);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.01em;}
 p{margin:0 0 1.1em;}
 a{color:inherit;}
@@ -122,9 +127,9 @@ a{color:inherit;}
   background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 1px,transparent 1px,transparent 3px);
 }
 .cover .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--signal);margin-bottom:1.4em;}
-.cover h1{font-size:min(15vw,7.5rem);line-height:.92;color:var(--dark-text);position:relative;}
+.cover h1{font-size:clamp(2.4rem,13vw,7.5rem);line-height:.92;color:var(--dark-text);position:relative;overflow-wrap:break-word;max-width:100%;}
 .cover h1 em{font-style:normal;color:var(--dark);-webkit-text-stroke:1.5px var(--circuit);}
-.cover .tag{font-family:var(--serif);font-style:italic;color:var(--dark-text-dim);font-size:1.05rem;max-width:32ch;margin-top:1.2em;}
+.cover .dek{font-family:var(--serif);font-style:italic;color:var(--dark-text-dim);font-size:1.05rem;max-width:32ch;margin-top:1.2em;}
 .cover .meta{margin-top:3em;display:flex;gap:2em;font-family:var(--mono);font-size:11px;color:var(--dark-text-dim);letter-spacing:.08em;flex-wrap:wrap;}
 .cover .meta span b{color:var(--dark-text);display:block;font-size:13px;letter-spacing:.02em;margin-top:.3em;}
 
@@ -263,6 +268,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
 </style>
+</head>
+<body>
 
 <svg width="0" height="0" style="position:absolute">
 <symbol id="pip" viewBox="0 0 40 16">
@@ -297,8 +304,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 <!-- COVER -->
 <header class="cover" id="cover">
   <div class="eyebrow">THE CITY // PLAYTEST BUILD</div>
-  <h1>&lt;HOT<em>⁄</em>WIRED_&gt;</h1>
-  <p class="tag">A tabletop game of corporate heists, street survival, and the tech that's wired straight into your nervous system.</p>
+  <h1>&lt;HOT<em>⁄</em><wbr>WIRED_&gt;</h1>
+  <p class="dek">A tabletop game of corporate heists, street survival, and the tech that's wired straight into your nervous system.</p>
   <div class="meta">
     <span>PLAYERS<b>2–5 + one GM</b></span>
     <span>DICE<b>Six-sided, two colors</b></span>
@@ -1231,3 +1238,6 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   }
 })();
 </script>
+
+</body>
+</html>
