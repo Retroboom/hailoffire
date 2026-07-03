@@ -228,6 +228,44 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 .branch{font-family:var(--mono);font-size:.85rem;color:var(--ink-soft);margin:.6em 0 1.2em;line-height:2;}
 .branch .arrow{color:var(--wire);}
 
+/* ---------- character sheet ---------- */
+.sheet{border:1px solid var(--ink);background:#F4F4EE;margin:1.6em 0;}
+.sheet .sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:1em;padding:.9em 1.2em;border-bottom:1px solid var(--ink);flex-wrap:wrap;}
+.sheet .sheet-head .t{font-family:var(--disp);font-weight:700;font-size:1.05rem;letter-spacing:.03em;}
+.sheet .sheet-head .m{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--wire);text-transform:uppercase;}
+.sheet .sheet-body{padding:1.2em;}
+.field{margin-bottom:1em;}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--wire);margin-bottom:.35em;}
+.field input,.field textarea{
+  width:100%;border:none;border-bottom:1px solid var(--ink-faint);background:transparent;
+  font-family:var(--serif);font-size:.98rem;color:var(--ink);padding:.25em 0;font-style:normal;
+}
+.field textarea{resize:vertical;min-height:2.6em;line-height:1.6;font-family:var(--mono);font-size:.82rem;}
+.field input:focus,.field textarea:focus{outline:none;border-bottom:1px solid var(--circuit);}
+.fieldgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 1.4em;}
+.fieldgrid.two{grid-template-columns:repeat(2,1fr);}
+@media (max-width:520px){.fieldgrid,.fieldgrid.two{grid-template-columns:1fr;}}
+.boxes{display:flex;gap:6px;margin-top:.2em;}
+.boxes span{width:16px;height:16px;border:1px solid var(--ink-faint);flex:none;}
+.sheet h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--wire);text-transform:uppercase;margin:1.3em 0 .6em;}
+.sheet h4:first-child{margin-top:0;}
+.sheet .bgnum{font-family:var(--mono);font-size:10px;color:var(--signal-ink);letter-spacing:.1em;}
+
+/* ---------- pre-gen crew ---------- */
+.crew{display:grid;grid-template-columns:1fr;gap:1.4em;margin:1.6em 0;}
+.crew-card{border:1px solid var(--paper-edge);background:#F4F4EE;}
+.crew-card .cc-head{padding:1em 1.3em;border-bottom:1px solid var(--ink);display:flex;justify-content:space-between;align-items:flex-start;gap:1em;flex-wrap:wrap;}
+.crew-card .cc-head .name{font-family:var(--disp);font-weight:700;font-size:1.3rem;}
+.crew-card .cc-head .role{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--signal-ink);text-transform:uppercase;}
+.crew-card .cc-body{padding:1em 1.3em;}
+.crew-card .look{font-style:italic;color:var(--ink-soft);margin-bottom:1em;}
+.crew-card h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--wire);text-transform:uppercase;margin:1.1em 0 .4em;}
+.crew-card h4:first-child{margin-top:0;}
+.crew-card .bg-block{margin-bottom:.7em;}
+.crew-card .bg-name{font-weight:600;color:var(--ink);}
+.crew-card .skill{font-family:var(--mono);font-size:.82rem;color:var(--circuit-ink);}
+.crew-card .pts{color:var(--wire);}
+
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
 </style>
 
@@ -250,6 +288,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <a href="#net">06<b>·</b>Net</a>
   <a href="#chem">07<b>·</b>Chem</a>
   <a href="#grind">08<b>·</b>Grind</a>
+  <a href="#appendix">09<b>·</b>Ref</a>
 </nav>
 
 <nav class="spine" aria-label="Chapter navigation">
@@ -262,6 +301,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <a href="#net"><b>06</b> THE NET</a>
   <a href="#chem"><b>07</b> CHEMISTRY &amp; MEMORY</a>
   <a href="#grind"><b>08</b> THE GRIND</a>
+  <a href="#appendix"><b>09</b> QUICK REFERENCE</a>
 </nav>
 
 <div class="page">
@@ -779,18 +819,23 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 <section class="prose">
   <h3>Drugs</h3>
-  <p>Each dose lasts about 30–90 minutes and offers 1 specific Boost. Multiple doses during that window multiply the effect, but risk an OD. Every use risks addiction, where related Tasks always carry an extra Challenge Die unless the drug is used. Dialysis can cure the addiction, and Cyberware can be installed that reduces or removes the risk of OD and addiction.</p>
-  <ul>
-    <li>+1 when shooting</li>
-    <li>+1 when in melee</li>
-    <li>+1 when in VR</li>
-    <li>+1 when running, jumping</li>
-    <li>+1 to raw strength</li>
-    <li>+1 when attempting delicate, dexterous Tasks</li>
-    <li>+1 when attempting Tasks in freezing temperatures</li>
-    <li>+1 when attempting Tasks in sweltering temperatures</li>
-    <li>Slow bodily functions to the point of appearing dead</li>
-  </ul>
+  <p>Each dose lasts about 30–90 minutes and offers 1 specific Boost <em>and</em> 1 specific quirk. Multiple doses during that window multiply the effect, but risk an OD. Every use risks addiction, where related Tasks always carry an extra Challenge Die unless the drug is used. Dialysis can cure the addiction, and Cyberware can be installed that reduces or removes the risk of OD and addiction.</p>
+
+  <div class="twrap">
+  <table>
+    <tr><th>Drug</th><th>Boost</th><th>Quirk</th></tr>
+    <tr><td class="hd cir">Redline</td><td>+1 when shooting</td><td>Hands shake on anything that isn't a real threat — no bonus against a stationary, unthreatening target.</td></tr>
+    <tr><td class="hd cir">Knuckle</td><td>+1 in melee</td><td>Fixates on the nearest threat; has to be talked down from finishing a fight already won.</td></tr>
+    <tr><td class="hd cir">Glasswire</td><td>+1 when in VR</td><td>The meat body goes slack and slow to react while jacked in.</td></tr>
+    <tr><td class="hd cir">Jackrabbit</td><td>+1 running, jumping</td><td>Can't hold still. Terrible at anything needing patience or silence.</td></tr>
+    <tr><td class="hd cir">Bull</td><td>+1 to raw strength</td><td>Overshoots anything requiring a light touch — cracked knuckles, broken doorknobs, crushed cups.</td></tr>
+    <tr><td class="hd cir">Steady</td><td>+1 on delicate, dexterous Tasks</td><td>Flattens the adrenaline response — slower to react to sudden danger.</td></tr>
+    <tr><td class="hd cir">Permafrost</td><td>+1 in freezing temperatures</td><td>Core temperature actually drops. Shivers and stiff fingers for an hour once it wears off.</td></tr>
+    <tr><td class="hd cir">Cinder</td><td>+1 in sweltering temperatures</td><td>Runs hot for hours afterward — easy to track by scent or heat signature.</td></tr>
+    <tr><td class="hd cir">Flatline</td><td>Slows bodily functions to the point of appearing dead</td><td>Not a bluff — genuinely near-unconscious. Can't act or respond to anything until it wears off or another dose of stimulant reverses it.</td></tr>
+  </table>
+  </div>
+
   <p><strong>Duration</strong> — the GM decides when 30 minutes of in-game time has likely passed, then checks whether the effect has worn off after every scene (a change of venue, or a significant pause in the action). Roll 1d6 for the first duration check, and add 1d6 for each additional check. When a 6 is rolled, the effect has worn off.</p>
   <p><strong>OD</strong> — if the user takes an additional dose before the previous one wears off, roll 1d6 for each additional dose. On a 6, the user ODs and loses consciousness, waking in the next scene wherever the GM decides, with the Injury <span class="tag">#OD</span>.</p>
   <p><strong>Addiction</strong> — once a drug's effect wears off, roll 1d6. On a 6, the user is addicted. Addiction counts as an Injury that's only stabilized while on the drug (the user still gains its benefit in this state). The only cure is a DyaliSys™ machine, or going cold turkey for 3 play sessions.</p>
@@ -932,6 +977,202 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
   <h3>Advancement</h3>
   <p>During Downtime, players may invest money from Gigs into Cyberware (or other Primo Kit) that grants new abilities and bonus dice, and may change Backgrounds and/or Skill Descriptions to ones they feel better fit the character they originally envisioned, or that better reflect what the character has become.</p>
+</section>
+
+<!-- PART 09 DIVIDER -->
+<div class="divider" id="appendix">
+  <div class="num">PART 09 // FIELD REFERENCE</div>
+  <h2>Quick Reference &amp; Crew</h2>
+  <p class="dek">The cheat sheet, a blank sheet, and four people to steal from if you'd rather not build one tonight.</p>
+</div>
+
+<section class="prose wide">
+  <h3>Quick reference sheet</h3>
+  <p class="tnote">The condensed version. Everything here is explained in full elsewhere in this book, keep this page open at the table.</p>
+
+  <div class="callout circuit">
+    <span class="tag-label">Task roll</span>
+    <p>Roll Boost dice (player) vs Challenge dice (GM). <strong>1 or 6 = Success.</strong></p>
+    <ul>
+      <li><strong>Hit</strong> — more Successes in Boost: score Hits equal to the difference.</li>
+      <li><strong>Push</strong> — equal Successes, including 0–0: 1 Hit <em>and</em> a Consequence.</li>
+      <li><strong>Miss</strong> — more Successes in Challenge: 0 Hits and a Consequence.</li>
+    </ul>
+  </div>
+
+  <div class="cols two">
+    <div>
+      <h3 class="sub">Boost sources</h3>
+      <ul>
+        <li>1 relevant Background</li>
+        <li>Each valid Skill Description part, in order</li>
+        <li>Each relevant Cyberware / Primo Kit tag</li>
+        <li>Each exploitable situational tag</li>
+        <li>Grit, +1 per point spent, never on a die already showing a 1</li>
+      </ul>
+      <h3 class="sub">Ranges</h3>
+      <p class="branch">Close <span class="arrow">·</span> Near <span class="arrow">·</span> Far <span class="arrow">·</span> Extreme</p>
+    </div>
+    <div>
+      <h3 class="sub">Challenge sources</h3>
+      <ul>
+        <li>Riskometer bonus, Heat ÷ 5 rounded down</li>
+        <li>Each Condition / unstabilized Injury</li>
+        <li>Each stabilized Injury, Task-relevant only</li>
+        <li>Each situational tag against you</li>
+      </ul>
+      <h3 class="sub">In a fight</h3>
+      <ul>
+        <li><strong>Rapid Fire</strong> — +2 Boost (semi) or +4 (full auto); empties the Mag</li>
+        <li><strong>Pinned</strong> — first ✱ vs. an evading target pins, doesn't harm</li>
+        <li><strong>Down</strong> — at 3 unstabilized Injuries</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="statgrid">
+    <div class="cell"><span class="k">Grit</span><span class="v">3 to start</span></div>
+    <div class="cell"><span class="k">Riskometer</span><span class="v">0–15, fail at 15</span></div>
+    <div class="cell"><span class="k">Downtime</span><span class="v">2 actions / PC</span></div>
+    <div class="cell"><span class="k">Bug invoke</span><span class="v">Refill Grit, guarantee a Consequence</span></div>
+  </div>
+  <p class="tnote">Downtime actions: Acquire/Build Kit · Get Medical Treatment · Reduce Heat · Train · Lay Low.</p>
+
+  <h3>Character sheet</h3>
+  <p class="tnote">Blank and ready to fill in, on-screen or printed.</p>
+
+  <div class="sheet">
+    <div class="sheet-head"><span class="t">&lt;HOT⁄WIRED_&gt; — CHARACTER RECORD</span><span class="m">Field dossier</span></div>
+    <div class="sheet-body">
+      <div class="fieldgrid two">
+        <div class="field"><label>Name</label><input type="text" /></div>
+        <div class="field"><label>Look</label><input type="text" /></div>
+      </div>
+      <div class="field"><label>Grit (3 to start)</label><div class="boxes"><span></span><span></span><span></span></div></div>
+
+      <h4>Backgrounds &amp; skill descriptions — 8 points total</h4>
+
+      <div class="field"><label><span class="bgnum">01</span> Background</label><input type="text" /></div>
+      <div class="fieldgrid">
+        <div class="field"><label>Part 1</label><input type="text" /></div>
+        <div class="field"><label>Part 2</label><input type="text" /></div>
+        <div class="field"><label>Part 3</label><input type="text" /></div>
+      </div>
+
+      <div class="field"><label><span class="bgnum">02</span> Background</label><input type="text" /></div>
+      <div class="fieldgrid">
+        <div class="field"><label>Part 1</label><input type="text" /></div>
+        <div class="field"><label>Part 2</label><input type="text" /></div>
+        <div class="field"><label>Part 3</label><input type="text" /></div>
+      </div>
+
+      <div class="field"><label><span class="bgnum">03</span> Background</label><input type="text" /></div>
+      <div class="fieldgrid">
+        <div class="field"><label>Part 1</label><input type="text" /></div>
+        <div class="field"><label>Part 2</label><input type="text" /></div>
+        <div class="field"><label>Part 3</label><input type="text" /></div>
+      </div>
+
+      <h4>Bugs — at least 2</h4>
+      <div class="fieldgrid two">
+        <div class="field"><label>Bug 1</label><input type="text" /></div>
+        <div class="field"><label>Bug 2</label><input type="text" /></div>
+      </div>
+
+      <h4>Cyberware — 3 boosts to start</h4>
+      <div class="field"><label>Installations &amp; boosts</label><textarea rows="3"></textarea></div>
+
+      <h4>Kit &amp; equipment — 3 slots to start</h4>
+      <div class="field"><label>Carried</label><textarea rows="3"></textarea></div>
+
+      <h4>Conditions &amp; injuries</h4>
+      <div class="fieldgrid two">
+        <div class="field"><label>Conditions</label><input type="text" /></div>
+        <div class="field"><label>Injuries — unstabilized / stabilized</label><input type="text" /></div>
+      </div>
+
+      <div class="fieldgrid two">
+        <div class="field"><label>Crypto (¢)</label><input type="text" /></div>
+        <div class="field"><label>Heat / Riskometer</label><input type="text" /></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea rows="3"></textarea></div>
+    </div>
+  </div>
+
+  <h3>Pre-generated crew</h3>
+  <p class="tnote">Four ready-to-play PCs, built to the same 8-point Skill Description budget and 3-Boost Cyberware limit as anyone rolling up a new character. Steal one outright, or use them as a reference for how the math is supposed to add up.</p>
+
+  <div class="crew">
+
+    <div class="crew-card">
+      <div class="cc-head"><span class="name">Dash</span><span class="role">Street muscle</span></div>
+      <div class="cc-body">
+        <p class="look">Ex-ganger, ex-corp muscle, permanently between jobs and permanently looking for the next fight. Doesn't do "quiet."</p>
+        <h4>Backgrounds &amp; skills — 8 pts</h4>
+        <div class="bg-block"><span class="bg-name">Street Gang Muscle</span><br/><span class="skill">I use guns · to shoot people · at close range <span class="pts">(3)</span> ↳ from behind cover <span class="pts">(+1)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Ex-Corp Security</span><br/><span class="skill">I read a room for danger · before anyone else clocks it <span class="pts">(2)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Adrenaline Junkie</span><br/><span class="skill">I stay steady · when everything's on fire <span class="pts">(2)</span></span></div>
+        <h4>Bugs</h4>
+        <p>Compelled to commit violence. Refuses to follow orders.</p>
+        <h4>Cyberware — 3 boosts</h4>
+        <p>Reaction Time Reducer · Implanted Firearm · Subdermal Plating</p>
+        <h4>Grit &amp; kit</h4>
+        <p>3 Grit. A concealed handgun (<span class="tag">#reliable</span>), 3 spare mags, a jacket that hides all of it.</p>
+      </div>
+    </div>
+
+    <div class="crew-card">
+      <div class="cc-head"><span class="name">Ohm</span><span class="role">Netrunner</span></div>
+      <div class="cc-body">
+        <p class="look">Got the deck in her skull the same year the corp that installed it decided she owed them for it. Hates being watched, for good reason.</p>
+        <h4>Backgrounds &amp; skills — 8 pts</h4>
+        <div class="bg-block"><span class="bg-name">Corp-Trained Netrunner</span><br/><span class="skill">I breach networks · through overlooked hardware · faster than the ICE can react <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Street Data Broker</span><br/><span class="skill">I know who's buying · what kind of data <span class="pts">(2)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Paranoid Survivalist</span><br/><span class="skill">I notice · when something's about to go wrong · a half-second before it does <span class="pts">(3)</span></span></div>
+        <h4>Bugs</h4>
+        <p>Compelled to learn inner workings. Refuses to work when being watched.</p>
+        <h4>Cyberware — 3 boosts</h4>
+        <p>Neural Interface · Data Storage · Reaction Time Reducer</p>
+        <h4>Grit &amp; kit</h4>
+        <p>3 Grit. A burner deck, a handgun she's never fired, a data spike (<span class="tag">#decrypt</span>).</p>
+      </div>
+    </div>
+
+    <div class="crew-card">
+      <div class="cc-head"><span class="name">Marisol Vale</span><span class="role">The face</span></div>
+      <div class="cc-body">
+        <p class="look">Talked her way out of a boardroom that wanted her dead for what she knew. Still lies out of habit, even to the crew.</p>
+        <h4>Backgrounds &amp; skills — 8 pts</h4>
+        <div class="bg-block"><span class="bg-name">Corporate Socialite, fallen</span><br/><span class="skill">I read what people want to hear · at a party or a boardroom · and become exactly that <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Con Artist</span><br/><span class="skill">I build a lie · that survives a background check <span class="pts">(2)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Ex-Cult Recruiter</span><br/><span class="skill">I make people feel chosen · especially the desperate ones · even after I've left the room <span class="pts">(3)</span></span></div>
+        <h4>Bugs</h4>
+        <p>Compelled to lie. Refuses to put others before yourself.</p>
+        <h4>Cyberware — 3 boosts</h4>
+        <p>Voice Analysis · Chem Balancer · Perfect Balance</p>
+        <h4>Grit &amp; kit</h4>
+        <p>3 Grit. A wardrobe worth more than the safehouse, a recorder pen (<span class="tag">#concealed</span>), a burner ID for every occasion.</p>
+      </div>
+    </div>
+
+    <div class="crew-card">
+      <div class="cc-head"><span class="name">Bricks</span><span class="role">Techie / medic</span></div>
+      <div class="cc-body">
+        <p class="look">The reason the crew hasn't lost anyone yet. Takes in every stray like they're already crew, even when it costs the job.</p>
+        <h4>Backgrounds &amp; skills — 8 pts</h4>
+        <div class="bg-block"><span class="bg-name">Street Doc</span><br/><span class="skill">I patch people up · with whatever's on hand · faster than a real hospital would <span class="pts">(3)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Salvage Mechanic</span><br/><span class="skill">I build working kit · out of scrap and stolen parts <span class="pts">(2)</span></span></div>
+        <div class="bg-block"><span class="bg-name">Former Combat Medic</span><br/><span class="skill">I stay calm · when someone's dying in my hands · and I don't stop until they're stable <span class="pts">(3)</span></span></div>
+        <h4>Bugs</h4>
+        <p>Compelled to sympathize. Refuses to let someone suffer.</p>
+        <h4>Cyberware — 3 boosts</h4>
+        <p>Magnification · Reaction Time Reducer · Data Storage</p>
+        <h4>Grit &amp; kit</h4>
+        <p>3 Grit. A field med-kit (<span class="tag">#stabilize</span>), a portable fabricator (<span class="tag">#build</span>), a taped-together pistol nobody trusts.</p>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <footer>
