@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forsaken Dark — A Game of Consequence and Shadow</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#E7DEC6; --paper-dim:#DBD0AF; --paper-edge:#C4B58C;
+  --ink:#1C1712; --ink-soft:#493F32; --ink-faint:#8A7C63;
+  --dark:#0A0705; --dark-2:#130F0A; --dark-line:#2E2517; --dark-text:#CBBE9C; --dark-text-dim:#6F614A;
+  --blood:#7E1420; --blood-ink:#5A0F19; --blood-glow:rgba(126,20,32,.18);
+  --arcane:#4A5B3B; --arcane-ink:#39482D; --arcane-glow:rgba(74,91,59,.18);
+  --bone:#9C8F6E;
+  --serif:'EB Garamond',Georgia,serif;
+  --disp:'Cinzel','Times New Roman',serif;
+  --dispd:'Cinzel Decorative','Times New Roman',serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--dark);color:var(--ink);font-family:var(--serif);}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.02em;}
+p{margin:0 0 1.1em;}
+a{color:inherit;}
+::selection{background:var(--blood);color:var(--paper);}
+
+.book{display:block;min-height:100vh;background:var(--dark);}
+
+/* ---------- sticky scroll-spy header ---------- */
+.navbar{position:sticky;top:0;z-index:20;background:var(--dark);border-bottom:1px solid var(--dark-line);}
+.navbar-bar{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:13px 5vw;cursor:pointer;user-select:none;}
+.navbar-bar .current{font-family:var(--disp);font-weight:600;font-size:.92rem;color:var(--dark-text);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.navbar-bar .current b{color:var(--blood);font-family:var(--mono);font-weight:600;margin-right:.6em;}
+.navbar-bar .toggle{flex:none;display:flex;align-items:center;gap:.5em;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--dark-text-dim);text-transform:uppercase;}
+.navbar-bar .toggle svg{transition:transform .18s;}
+.navbar.open .navbar-bar .toggle svg{transform:rotate(180deg);}
+.navmenu{max-height:0;overflow:hidden;background:var(--dark-2);transition:max-height .2s ease;}
+.navbar.open .navmenu{max-height:70vh;overflow-y:auto;}
+.navmenu a{display:flex;align-items:baseline;gap:.8em;padding:12px 5vw;font-family:var(--disp);font-weight:500;font-size:.98rem;color:var(--dark-text);text-decoration:none;border-bottom:1px solid var(--dark-line);}
+.navmenu a:hover{background:var(--dark);color:var(--arcane);filter:brightness(1.6);}
+.navmenu a b{font-family:var(--mono);font-size:11px;color:var(--blood);flex:none;width:2.4em;}
+
+.page{background:var(--paper);}
+.prose{max-width:640px;margin:0 auto;padding:4vw 6vw;}
+.prose.wide{max-width:760px;}
+
+/* ---------- cover ---------- */
+.cover{background:var(--dark);color:var(--dark-text);min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8vw;position:relative;overflow:hidden;border-bottom:1px solid var(--dark-line);}
+.cover::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;background:repeating-linear-gradient(180deg,rgba(0,0,0,.35) 0px,rgba(0,0,0,.35) 1px,transparent 1px,transparent 3px);}
+.cover::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;pointer-events:none;background:radial-gradient(ellipse at 50% 120%,rgba(126,20,32,.25),transparent 70%);}
+.cover .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--blood);margin-bottom:1.4em;position:relative;}
+.cover h1{font-family:var(--dispd);font-size:min(13vw,6.4rem);line-height:1;color:var(--dark-text);position:relative;}
+.cover h1 em{font-style:normal;color:var(--blood);}
+.cover .tag{font-family:var(--serif);font-style:italic;color:var(--dark-text-dim);font-size:1.08rem;max-width:34ch;margin-top:1.3em;position:relative;}
+.cover .meta{margin-top:3em;display:flex;gap:2em;font-family:var(--mono);font-size:11px;color:var(--dark-text-dim);letter-spacing:.08em;flex-wrap:wrap;position:relative;}
+.cover .meta span b{color:var(--dark-text);display:block;font-size:13px;letter-spacing:.02em;margin-top:.3em;}
+
+/* ---------- headings / kickers ---------- */
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--bone);display:flex;align-items:center;gap:.6em;margin-bottom:.9em;text-transform:uppercase;}
+.kicker .glyph{flex:none;}
+h2.chapter{font-size:2.05rem;color:var(--ink);margin-bottom:.2em;}
+h2.chapter+.dek{font-family:var(--serif);font-style:italic;color:var(--ink-soft);font-size:1.05rem;margin-bottom:1.6em;max-width:46ch;}
+h3{font-size:1.26rem;margin-top:2em;margin-bottom:.6em;color:var(--ink);}
+h3.sub{font-size:1rem;color:var(--blood-ink);text-transform:uppercase;letter-spacing:.06em;margin-top:1.6em;margin-bottom:.5em;}
+.lede{font-size:1.12rem;color:var(--ink);}
+strong{font-weight:600;}
+
+/* ---------- ornament ---------- */
+.brk{display:flex;align-items:center;gap:10px;margin:2.4em 0;}
+.brk .ln{flex:1;height:1px;background:var(--paper-edge);}
+.brk svg{flex:none;}
+
+/* ---------- examples & callouts ---------- */
+.example{background:var(--paper-dim);border-left:3px solid var(--arcane);padding:1em 1.3em;margin:1.3em 0;font-style:italic;font-size:.98rem;color:var(--ink-soft);}
+.example .tag-label{font-family:var(--mono);font-style:normal;font-size:10px;letter-spacing:.16em;color:var(--arcane-ink);display:block;margin-bottom:.5em;text-transform:uppercase;}
+.example p:last-child{margin-bottom:0;}
+
+.callout{border:1px solid var(--paper-edge);padding:1.1em 1.3em;margin:1.3em 0;position:relative;background:#EEE4C9;}
+.callout .tag-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:inline-block;padding:.15em .6em;margin-bottom:.7em;}
+.callout.blood{border-color:var(--blood);}
+.callout.blood .tag-label{background:var(--blood);color:var(--paper);}
+.callout.arcane{border-color:var(--arcane);}
+.callout.arcane .tag-label{background:var(--arcane);color:var(--paper);}
+.callout p:last-child{margin-bottom:0;}
+.callout ul{margin:.4em 0 0;padding-left:1.2em;}
+
+blockquote{margin:1.4em 0;padding-left:1.2em;border-left:2px solid var(--ink-faint);font-style:italic;color:var(--ink-soft);}
+
+ul,ol{padding-left:1.3em;}
+li{margin-bottom:.45em;}
+li b, li strong{color:var(--ink);}
+
+.tag{font-family:var(--mono);font-size:.82em;background:var(--dark);color:var(--dark-text);padding:.05em .45em;border-radius:2px;white-space:nowrap;}
+.roll{font-family:var(--mono);font-weight:500;}
+.roll.b{color:var(--arcane-ink);}
+.roll.r{color:var(--blood-ink);}
+
+.twrap{overflow-x:auto;margin:1.4em 0;}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums;min-width:420px;}
+th{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);text-align:left;padding:.5em .7em;border-bottom:1px solid var(--ink);}
+td{padding:.55em .7em;border-bottom:1px solid var(--paper-edge);vertical-align:top;color:var(--ink-soft);}
+tr:last-child td{border-bottom:1px solid var(--ink-faint);}
+td.hd,th.rowhd{color:var(--ink);font-weight:600;}
+td.sig{color:var(--blood-ink);}
+td.cir{color:var(--arcane-ink);}
+.tnote{font-family:var(--serif);font-style:italic;font-size:.92rem;color:var(--ink-soft);margin-top:.6em;}
+
+.cols{display:grid;grid-template-columns:1fr;gap:0 3em;}
+@media (min-width:640px){.cols.two{grid-template-columns:1fr 1fr;}}
+
+.divider{background:var(--dark);color:var(--dark-text);padding:14vw 6vw;position:relative;overflow:hidden;border-top:1px solid var(--dark-line);border-bottom:1px solid var(--dark-line);}
+.divider::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background:repeating-linear-gradient(180deg,rgba(0,0,0,.3) 0px,rgba(0,0,0,.3) 1px,transparent 1px,transparent 3px);}
+.divider::after{content:"";position:absolute;left:0;right:0;top:0;height:55%;pointer-events:none;background:radial-gradient(ellipse at 50% -20%,rgba(126,20,32,.2),transparent 70%);}
+.divider .num{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--blood);margin-bottom:1em;position:relative;}
+.divider h2{font-family:var(--dispd);font-size:min(8vw,3.2rem);color:var(--dark-text);line-height:1.05;max-width:16ch;position:relative;}
+.divider .dek{font-family:var(--serif);font-style:italic;color:var(--dark-text-dim);font-size:1.05rem;max-width:42ch;margin-top:.9em;position:relative;}
+
+footer{background:var(--dark);color:var(--dark-text-dim);padding:5vw 6vw;font-family:var(--mono);font-size:11px;letter-spacing:.08em;}
+footer .ticks{display:flex;gap:6px;margin-bottom:1em;}
+footer .ticks span{width:9px;height:9px;border:1px solid var(--dark-line);position:relative;}
+footer .ticks span::before,footer .ticks span::after{content:"";position:absolute;inset:0;background:var(--dark-line);}
+footer .ticks span::before{width:1px;left:50%;transform:translateX(-50%) rotate(45deg);}
+footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(45deg);}
+
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--paper-edge);margin:1.3em 0;}
+.statgrid .cell{background:var(--paper);padding:.9em 1em;}
+.statgrid .cell .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--bone);text-transform:uppercase;display:block;margin-bottom:.3em;}
+.statgrid .cell .v{font-family:var(--mono);font-weight:600;font-size:1rem;color:var(--ink);}
+
+/* ---------- resolution band strip ---------- */
+.bandstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ink);margin:1.4em 0;font-family:var(--mono);}
+.bandstrip .b{background:var(--paper);padding:.7em .5em;text-align:center;}
+.bandstrip .b .sym{font-size:1.1rem;display:block;margin-bottom:.3em;}
+.bandstrip .b .rng{font-size:.7rem;color:var(--ink-faint);display:block;}
+.bandstrip .b .lbl{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-top:.2em;}
+.bandstrip .crit-fail{background:#3A1013;color:var(--paper);}
+.bandstrip .crit-fail .rng,.bandstrip .crit-fail .lbl{color:#D9BEC0;}
+.bandstrip .fail{background:#5A0F19;color:var(--paper);}
+.bandstrip .fail .rng,.bandstrip .fail .lbl{color:#E1BCC1;}
+.bandstrip .partial{background:var(--paper-dim);}
+.bandstrip .success{background:var(--arcane);color:var(--paper);}
+.bandstrip .success .rng,.bandstrip .success .lbl{color:#D6DBCE;}
+.bandstrip .crit-success{background:var(--ink);color:var(--paper);}
+.bandstrip .crit-success .rng,.bandstrip .crit-success .lbl{color:#CFC6B0;}
+
+/* ---------- stat block (monster/NPC) ---------- */
+.statblock{border:1px solid var(--ink);background:#EEE4C9;margin:1.6em 0;}
+.statblock .sb-head{padding:1em 1.3em;border-bottom:1px solid var(--ink);}
+.statblock .sb-head .name{font-family:var(--disp);font-weight:700;font-size:1.4rem;color:var(--ink);}
+.statblock .sb-head .variant{font-family:var(--serif);font-style:italic;color:var(--ink-soft);font-size:.95rem;}
+.statblock .sb-head .flavor{font-family:var(--serif);font-style:italic;color:var(--ink-soft);font-size:.95rem;margin-top:.6em;}
+.statblock .sb-body{padding:1.1em 1.3em;}
+.statblock h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.1em 0 .5em;}
+.statblock h4:first-child{margin-top:0;}
+.statblock .abilities li b{color:var(--blood-ink);}
+.statblock .tagrow{display:flex;flex-wrap:wrap;gap:.4em;margin-top:.4em;}
+
+/* ---------- template box ---------- */
+.tmplbox{border:1px dashed var(--ink-faint);background:var(--paper-dim);padding:1.1em 1.3em;margin:1.3em 0;font-family:var(--mono);font-size:.85rem;color:var(--ink-soft);}
+.tmplbox .tag-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase;display:block;margin-bottom:.6em;}
+.tmplbox em{color:var(--blood-ink);font-style:italic;}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+</style>
+
+<svg width="0" height="0" style="position:absolute">
+<symbol id="drip" viewBox="0 0 40 16">
+  <path d="M7 1 C7 1 3 8 3 11 a4 4 0 0 0 8 0 C11 8 7 1 7 1z" fill="#7E1420"/>
+  <path d="M33 1 C33 1 29 8 29 11 a4 4 0 0 0 8 0 C37 8 33 1 33 1z" fill="none" stroke="#4A5B3B" stroke-width="1.6"/>
+</symbol>
+</svg>
+
+</head>
+<body>
+<div class="book">
+
+<nav class="navbar" id="navbar" aria-label="Chapter navigation">
+  <div class="navbar-bar" id="navbar-bar" role="button" tabindex="0" aria-expanded="false" aria-controls="navmenu">
+    <span class="current" id="navbar-current"><b>†</b>Forsaken Dark</span>
+    <span class="toggle">Contents <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+  </div>
+  <div class="navmenu" id="navmenu">
+    <a href="#cover" data-label="Forsaken Dark"><b>00</b> Front matter</a>
+    <a href="#attributes" data-label="01 · Flesh & Spirit"><b>01</b> Flesh &amp; spirit</a>
+    <a href="#resolution" data-label="02 · Core Resolution"><b>02</b> Core resolution</a>
+    <a href="#disciplines" data-label="03 · Disciplines of Mastery"><b>03</b> Disciplines of mastery</a>
+    <a href="#advancement" data-label="04 · Advancement"><b>04</b> Advancement</a>
+    <a href="#equipment" data-label="05 · Arms & Encumbrance"><b>05</b> Arms &amp; encumbrance</a>
+    <a href="#combat" data-label="06 · When Words Fail"><b>06</b> When words fail</a>
+    <a href="#magic" data-label="07 · To Grasp the Flame"><b>07</b> To grasp the flame</a>
+    <a href="#divinity" data-label="08 · The Price of Faith"><b>08</b> The price of faith</a>
+    <a href="#bestiary" data-label="09 · Bestiary & Reference"><b>09</b> Bestiary &amp; reference</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- COVER -->
+<header class="cover" id="cover">
+  <div class="eyebrow">SPEAK IN DEEDS // A GAME OF CONSEQUENCE AND SHADOW</div>
+  <h1>FORSAKEN<br><em>DARK</em></h1>
+  <p class="tag">"Describe your deed. Then brace for consequence." A tabletop game of cursed steel, hungry gods, and the price paid for power.</p>
+  <div class="meta">
+    <span>SYSTEM<b>1d20 + attribute bonus</b></span>
+    <span>RESOLUTION<b>Five bands, one table</b></span>
+    <span>THEME<b>Flesh, faith, and flame</b></span>
+    <span>EDITION<b>Working draft</b></span>
+  </div>
+</header>
+
+<!-- INTRO -->
+<section class="prose" id="intro">
+  <div class="kicker"><span class="glyph"><svg width="20" height="8"><use href="#drip"/></svg></span>FRONT MATTER</div>
+  <h2 class="chapter">Core Philosophy: Speak in Deeds</h2>
+  <p class="lede">"Describe your deed. Then brace for consequence."</p>
+  <p>This world does not reward the cautious. It rewards the committed, and punishes the foolish. When your character acts, you describe what they do in the fiction, not what dice to roll or skills to use. The GM listens, considers the stakes, and calls for rolls when outcomes hang in the balance.</p>
+  <p>Fiction leads to rolls. Rolls lead to consequences. Consequences lead to more fiction.</p>
+  <p><strong>That is the rhythm of play.</strong></p>
+
+  <h3 class="sub" id="time">Time and Consequence</h3>
+  <p>Time moves differently based on danger and urgency:</p>
+  <div class="statgrid">
+    <div class="cell"><span class="k">Rounds</span><span class="v">~6 seconds — combat, immediate peril</span></div>
+    <div class="cell"><span class="k">Turns</span><span class="v">~10 minutes — dungeons, ruins, cursed places</span></div>
+    <div class="cell"><span class="k">Watches</span><span class="v">~4 hours — wilderness travel, camp</span></div>
+    <div class="cell"><span class="k">Days/Weeks</span><span class="v">Settlement time — healing, research, plotting</span></div>
+  </div>
+  <ul>
+    <li><strong>Rounds</strong> — combat, immediate peril. Move and act once per round.</li>
+    <li><strong>Turns</strong> — exploring dungeons, ruins, cursed places. Every action matters.</li>
+    <li><strong>Watches</strong> — wilderness travel, making camp. Rest and recovery.</li>
+    <li><strong>Days/Weeks</strong> — settlement time. Healing, research, plotting. Downtime actions available.</li>
+  </ul>
+</section>
+
+<!-- PART 01 DIVIDER -->
+<div class="divider" id="attributes">
+  <div class="num">PART 01 // FLESH &amp; SPIRIT</div>
+  <h2>Flesh &amp; Spirit</h2>
+  <p class="dek">Six attributes. Two govern body, two govern mind, two govern spirit. All of them can break.</p>
+</div>
+
+<section class="prose">
+  <h3 class="sub">Attributes: The Measure of Flesh and Spirit</h3>
+  <p>Your character is defined by six attributes, two each governing body, mind, and spirit. Each attribute provides a bonus or penalty calculated as:</p>
+  <div class="callout arcane">
+    <span class="tag-label">Formula</span>
+    <p><strong>Attribute Bonus = Attribute Score − 10</strong></p>
+  </div>
+
+  <div class="cols two">
+    <div>
+      <h4>Body</h4>
+      <ul>
+        <li><strong>Strength</strong> — physical power, carrying capacity, climbing, breaking, wielding heavy weapons</li>
+        <li><strong>Agility</strong> — movement, dodging, stealth, finesse, landing precise blows</li>
+      </ul>
+      <h4>Mind</h4>
+      <ul>
+        <li><strong>Intelligence</strong> — reasoning, research, spellcraft, logic, crafting, ancient lore</li>
+        <li><strong>Perception</strong> — ranged accuracy, tracking, searching, hunting, awareness, reading situations</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Spirit</h4>
+      <ul>
+        <li><strong>Willpower</strong> — casting spells, resisting pain, fear, madness, corruption</li>
+        <li><strong>Charisma</strong> — persuasion, deception, command, preaching, performance, intimidation</li>
+      </ul>
+      <h4>All attributes</h4>
+      <p>All attributes start at 10 before modification.</p>
+    </div>
+  </div>
+
+  <h3 class="sub" id="grit">Grit: The Will to Endure</h3>
+  <p>Grit represents your immediate resilience, the toughness of body and spirit that keeps you standing when steel bites deep.</p>
+  <div class="callout blood">
+    <span class="tag-label">Formula</span>
+    <p><strong>Grit = STR bonus + WIL bonus + Level</strong></p>
+  </div>
+
+  <h3 id="creation">Character Creation</h3>
+  <p>Choose one method:</p>
+
+  <h3 class="sub">Method 1 — Forge by Fire</h3>
+  <ol>
+    <li>Roll 2d6. Each die result (1–6) corresponds to an attribute (STR, AGI, INT, PER, WIL, CHA). Raise those attributes by 1.</li>
+    <li>Choose two attributes to swap 1 point between them.</li>
+  </ol>
+
+  <h3 class="sub">Method 2 — Measured Allocation</h3>
+  <ol>
+    <li>Assign these scores to attributes as desired: 12, 11, 10, 10, 10, 9.</li>
+    <li>Roll 2d6. Lower the first result by 1, raise the second by 1.</li>
+  </ol>
+</section>
+
+<!-- PART 02 DIVIDER -->
+<div class="divider" id="resolution">
+  <div class="num">PART 02 // RESOLUTION</div>
+  <h2>Core Resolution</h2>
+  <p class="dek">One roll. One table. Five ways for the world to answer you.</p>
+</div>
+
+<section class="prose">
+  <p>When the GM calls for a roll, roll <strong>1d20 + relevant attribute bonus</strong>:</p>
+
+  <div class="bandstrip">
+    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">1</span><span class="lbl">Critical Failure</span></div>
+    <div class="b fail"><span class="sym">▼</span><span class="rng">2–9</span><span class="lbl">Failure w/ Consequence</span></div>
+    <div class="b partial"><span class="sym">◇</span><span class="rng">10–15</span><span class="lbl">Success w/ Cost</span></div>
+    <div class="b success"><span class="sym">▲</span><span class="rng">16–19</span><span class="lbl">Success</span></div>
+    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">20+</span><span class="lbl">Critical Success</span></div>
+  </div>
+
+  <ul>
+    <li><strong>20+ — Critical Success:</strong> you succeed and gain an extra benefit.</li>
+    <li><strong>16–19 — Success:</strong> you accomplish your goal.</li>
+    <li><strong>10–15 — Success with Cost:</strong> you succeed, but complications arise.</li>
+    <li><strong>2–9 — Failure with Consequence:</strong> you fail and the situation worsens.</li>
+    <li><strong>1 — Critical Failure:</strong> catastrophic failure with lasting repercussions.</li>
+  </ul>
+
+  <div class="example">
+    <span class="tag-label">Field note</span>
+    <p>Some actions use specialized tables (Fight, Dodge, Shoot, Cast) with the same result bands but specific outcomes. The band symbols (▼▼ ▼ ◇ ▲ ▲▲) are shorthand you'll see throughout this book and on the quick reference in Part 09.</p>
+  </div>
+</section>
+
+<!-- PART 03 DIVIDER -->
+<div class="divider" id="disciplines">
+  <div class="num">PART 03 // MASTERY</div>
+  <h2>Disciplines of Mastery</h2>
+  <p class="dek">Power belongs to the committed. Every advance is a choice: sharpen what you have, or claim something new.</p>
+</div>
+
+<section class="prose">
+  <p>Each time you advance, choose to either gain a new Discipline at rank 1 or increase an existing Discipline.</p>
+
+  <h3 class="sub">Weapon Mastery</h3>
+  <blockquote>"The blade is a language. You learn fluency by bleeding."</blockquote>
+  <p>Choose one weapon type. Each rank grants:</p>
+  <ul>
+    <li>+1 to attack rolls</li>
+    <li>+1 harm dealt</li>
+    <li>+1 protection when using Protect Yourself</li>
+  </ul>
+
+  <h3 class="sub">Tricks of the Trade</h3>
+  <blockquote>"Magic bends the world, but the right tool breaks it clean."</blockquote>
+  <p>Choose one specialty. When performing related actions, add an extra die based on your rank:</p>
+  <ul>
+    <li><strong>Practiced</strong> (+1d4) — reliable under pressure</li>
+    <li><strong>Skilled</strong> (+1d6) — professional confidence and speed</li>
+    <li><strong>Accomplished</strong> (+1d8) — artistic mastery, recognized by peers</li>
+  </ul>
+  <p><strong>Physical tasks:</strong> roll 1d20 + AGI + bonus die.<br><strong>Knowledge tests:</strong> roll 1d20 + INT + bonus die.</p>
+  <p><strong>Specialties available:</strong></p>
+  <ul>
+    <li><strong>Locks &amp; Traps</strong> — disabling, rigging, recognizing mechanical/magical hazards</li>
+    <li><strong>Sneaking &amp; Scaling</strong> — moving unseen, tailing, climbing, breaking and entering</li>
+    <li><strong>Disguise &amp; Poison</strong> — forging documents, impersonation, crafting toxins and antidotes</li>
+  </ul>
+
+  <h3 class="sub">Wizardry</h3>
+  <blockquote>"Ink remembers what the tongue forgets. The skin holds what the mind cannot."</blockquote>
+  <p>Each rank grants:</p>
+  <ul>
+    <li>+1 to casting rolls (WIL + Wizardry)</li>
+    <li>+1 to magical research and item identification (INT + Wizardry)</li>
+  </ul>
+  <p>Spells must be <strong>tattooed</strong>, read from <strong>scrolls/books</strong>, or stored in <strong>wands/staves</strong>. To cast, one hand must be free (unless tattooed), the other holding your magical reference. See <a href="#magic">Part 07</a> for the full casting rules.</p>
+
+  <h3 class="sub">Divinity</h3>
+  <blockquote>"Your god may be silent. That does not mean they are not watching."</blockquote>
+  <p>Each rank grants:</p>
+  <ul>
+    <li>+1 to divine intervention (CHA + Divinity)</li>
+    <li>Increases maximum Favor (CHA + Divinity total)</li>
+  </ul>
+  <p>See <a href="#divinity">Part 08</a> for Domains, Commandments, and the full rules of Providence.</p>
+</section>
+
+<!-- PART 04 DIVIDER -->
+<div class="divider" id="advancement">
+  <div class="num">PART 04 // GROWTH</div>
+  <h2>Advancement</h2>
+  <p class="dek">Every scar teaches something, if you survive long enough to learn it.</p>
+</div>
+
+<section class="prose">
+  <h3 class="sub">Gaining Experience</h3>
+  <p>Earn 1 XP when you:</p>
+  <ul>
+    <li>Roll 9 or less on any attribute check</li>
+    <li>Roleplay your character's traits meaningfully</li>
+    <li>Complete a significant goal</li>
+    <li>Execute a clever plan</li>
+    <li>Recover rare treasure or forbidden knowledge</li>
+  </ul>
+
+  <h3 class="sub">Leveling Up</h3>
+  <p>When XP equals current level × 10:</p>
+  <ol>
+    <li>Choose one attribute to raise by 1</li>
+    <li>Roll 1d6 to randomly raise a second attribute by 1</li>
+    <li>Gain one Discipline advancement</li>
+  </ol>
+
+  <div class="callout blood">
+    <span class="tag-label">Training requirements</span>
+    <p>Advancing Disciplines requires finding masters more skilled than you. Their training won't come cheap. Maximum combined Discipline ranks = current level.</p>
+  </div>
+</section>
+
+<!-- PART 05 DIVIDER -->
+<div class="divider" id="equipment">
+  <div class="num">PART 05 // ARMS</div>
+  <h2>Arms &amp; Encumbrance</h2>
+  <p class="dek">What you carry decides what you can do, and what you can survive.</p>
+</div>
+
+<section class="prose">
+  <h3 class="sub">Carrying Capacity</h3>
+  <p>Your STR score equals your equipment slots. Exceeding this:</p>
+  <ul>
+    <li><strong>Over limit:</strong> −1 AGI</li>
+    <li><strong>Every STR bonus multiple over:</strong> additional −1 AGI</li>
+    <li><strong>STR 11 or lower:</strong> every extra slot = −1 AGI</li>
+  </ul>
+
+  <h3 class="sub">Weight Guidelines</h3>
+  <ul>
+    <li>100 coins = 1 slot</li>
+    <li>10 small vials = 1 slot</li>
+    <li>Light, one-handed item = 1 slot</li>
+    <li>Heavy or two-handed item = 2+ slots</li>
+  </ul>
+
+  <h3 class="sub">Readied vs Packed</h3>
+  <ul>
+    <li><strong>Readied</strong> — in hand or immediately accessible (scabbards, bandoliers)</li>
+    <li><strong>Packed</strong> — stored in bags, requires a vulnerable action to retrieve</li>
+    <li><strong>Dropping</strong> — free action</li>
+    <li><strong>Stowing</strong> — vulnerable action</li>
+  </ul>
+
+  <h3 id="armor">Armor (Stackable)</h3>
+  <p>Wear up to 5 pieces. Armor cannot reduce harm below 1 unless only 1 harm was dealt.</p>
+  <div class="callout blood">
+    <span class="tag-label">Protection</span>
+    <p>Each equipped piece of armor reduces harm by 1, stacking with every other piece worn (to a maximum of 5, since only 5 pieces can be worn at once).</p>
+  </div>
+  <div class="twrap">
+  <table>
+    <tr><th>Armor</th><th>Slots</th><th>Cost</th></tr>
+    <tr><td class="hd">Gambeson</td><td>1</td><td>100 coins</td></tr>
+    <tr><td class="hd">Mail Shirt</td><td>1</td><td>200 coins</td></tr>
+    <tr><td class="hd">Breastplate</td><td>1</td><td>500 coins</td></tr>
+    <tr><td class="hd">Arm Plates</td><td>1</td><td>500 coins</td></tr>
+    <tr><td class="hd">Leg Plates</td><td>1</td><td>500 coins</td></tr>
+  </table>
+  </div>
+  <p class="tnote">Damaged armor offers no protection until repaired (~40% of purchase cost).</p>
+
+  <h3 id="weapons">Weapons</h3>
+  <div class="callout blood">
+    <span class="tag-label">Base harm</span>
+    <p>Harm is <strong>1d6</strong> unless a weapon states otherwise. The Dagger, Rapier, and Crossbow already list their own dice below; every other weapon in the list rolls the base 1d6, modified by its tags (Heavy adds your STR modifier, Versatile adds +1 when wielded two-handed, and so on).</p>
+  </div>
+  <p><strong>Weapon Tags:</strong></p>
+  <ul>
+    <li><strong>2h</strong> — requires both hands</li>
+    <li><strong>Area</strong> — affects multiple targets</li>
+    <li><strong>Bludgeoning</strong> — armor cannot reduce below 2 unless only 2 dealt</li>
+    <li><strong>Forceful</strong> — knockback, trip, stun effects</li>
+    <li><strong>Heavy</strong> — add STR modifier to damage</li>
+    <li><strong>Piercing</strong> — ignores armor on 6s</li>
+    <li><strong>Quick</strong> — faster initiative and resolution</li>
+    <li><strong>Ranged</strong> — distance attacks</li>
+    <li><strong>Reach</strong> — outranges melee weapons</li>
+    <li><strong>Reload</strong> — vulnerable action to reload</li>
+    <li><strong>Rending</strong> — damages equipment, causes bleeding/dismemberment</li>
+    <li><strong>Short</strong> — easier to conceal</li>
+    <li><strong>Versatile</strong> — +1 damage when two-handed</li>
+  </ul>
+  <p class="tnote"><strong>Length Advantage:</strong> longer weapons have advantage until the shorter weapon lands a hit, then disadvantage until distance is restored.</p>
+
+  <div class="twrap">
+  <table>
+    <tr><th>Weapon</th><th>Slots</th><th>Tags</th></tr>
+    <tr><td class="hd">Arming Sword</td><td>1</td><td>Slash/pierce, versatile, +1 protection when focused</td></tr>
+    <tr><td class="hd">Dagger</td><td>1</td><td>Pierce, short, quick, d6+STR or AGI, ignores armor when grappled</td></tr>
+    <tr><td class="hd">Flail</td><td>2</td><td>Bludgeon, forceful, −1 shield protection</td></tr>
+    <tr><td class="hd">Mace/Hammer</td><td>2</td><td>Bludgeon, versatile, forceful</td></tr>
+    <tr><td class="hd">Spear</td><td>2</td><td>Pierce, reach, versatile</td></tr>
+    <tr><td class="hd">Axe</td><td>2</td><td>Slash, short, rending</td></tr>
+    <tr><td class="hd">Pickaxe</td><td>2</td><td>Pierce, versatile</td></tr>
+    <tr><td class="hd">Claymore</td><td>2</td><td>2h, slash, heavy, area</td></tr>
+    <tr><td class="hd">Great Hammer</td><td>3</td><td>2h, bludgeon, heavy, forceful</td></tr>
+    <tr><td class="hd">Great Axe</td><td>2</td><td>2h, slash, heavy, rending</td></tr>
+    <tr><td class="hd">Polearm</td><td>2</td><td>2h, slash/pierce, reach, area</td></tr>
+    <tr><td class="hd">Rapier</td><td>1</td><td>Pierce, quick, ineffective vs plate, d6+AGI</td></tr>
+    <tr><td class="hd">Staff</td><td>2</td><td>Bludgeon, reach</td></tr>
+    <tr><td class="hd">Cudgel</td><td>1</td><td>Bludgeon, short</td></tr>
+    <tr><td class="hd">Short Bow</td><td>2</td><td>Pierce, ranged</td></tr>
+    <tr><td class="hd">Long Bow</td><td>2</td><td>Pierce, ranged, heavy</td></tr>
+    <tr><td class="hd">Crossbow</td><td>3</td><td>Pierce, ranged, reload, d6+3 damage</td></tr>
+    <tr><td class="hd">Shield</td><td>3</td><td>Block d6 damage when protecting</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- PART 06 DIVIDER -->
+<div class="divider" id="combat">
+  <div class="num">PART 06 // COMBAT</div>
+  <h2>When Words Fail, Blood Answers</h2>
+  <p class="dek">Combat is brutal, swift, and mutual. Perfect parries are myths.</p>
+</div>
+
+<section class="prose wide">
+  <p>If you fight, you will bleed, the question is whether you'll make them bleed worse.</p>
+
+  <h3 class="sub" id="fight">Fight (Melee Combat)</h3>
+  <p>Roll 1d20 + AGI:</p>
+  <ul>
+    <li><strong>20+:</strong> suffer harm, choose 3 options</li>
+    <li><strong>16–19:</strong> suffer harm, choose 2 options</li>
+    <li><strong>10–15:</strong> suffer harm, choose 1 option</li>
+    <li><strong>2–9:</strong> suffer harm, gain 1 XP</li>
+    <li><strong>1:</strong> suffer harm + 1d6 extra, gain 1 XP</li>
+  </ul>
+  <p><strong>Combat Options:</strong></p>
+  <ul>
+    <li><strong>Land Your Blow</strong> — deal weapon damage</li>
+    <li><strong>Strike Hard and Fast</strong> — act first, deal +1 harm</li>
+    <li><strong>Protect Yourself</strong> — reduce incoming harm by 1</li>
+    <li><strong>Seize Advantage</strong> — trip, disarm, blind, push, etc. (GM may call for X-in-6 roll)</li>
+  </ul>
+
+  <h3 class="sub" id="shoot">Shoot or Throw (Ranged Attacks)</h3>
+  <p>Roll 1d20 + PER:</p>
+  <ul>
+    <li><strong>20+:</strong> hit, choose 3 options</li>
+    <li><strong>16–19:</strong> hit, choose 2 options</li>
+    <li><strong>10–15:</strong> hit, choose 1 option</li>
+    <li><strong>2–9:</strong> miss, gain 1 XP</li>
+    <li><strong>1:</strong> miss, lose extra ammo, gain 1 XP</li>
+  </ul>
+  <p><strong>Ranged Options:</strong></p>
+  <ul>
+    <li><strong>Called Shot</strong> — target weak points for special effects</li>
+    <li><strong>Remain Hidden</strong> — avoid drawing attention if possible</li>
+    <li><strong>Preserve Ammo</strong> — don't mark ammunition use</li>
+  </ul>
+
+  <h3 class="sub" id="dodge">Dodge (Evading Harm)</h3>
+  <p>Roll 1d20 + AGI:</p>
+  <ul>
+    <li><strong>20+:</strong> avoid harm completely, may counterattack or reposition</li>
+    <li><strong>16–19:</strong> avoid harm entirely</li>
+    <li><strong>10–15:</strong> choose 2 options</li>
+    <li><strong>2–9:</strong> choose 1 option, gain 1 XP</li>
+    <li><strong>1:</strong> choose 0 options, gain 1 XP</li>
+  </ul>
+  <p><strong>Dodge Options:</strong></p>
+  <ul>
+    <li><strong>Evade Harm</strong> — take no damage</li>
+    <li><strong>Stay Upright</strong> — don't fall prone</li>
+    <li><strong>Keep Your Grip</strong> — don't drop readied items</li>
+  </ul>
+
+  <h3 id="harm">Harm and Healing</h3>
+  <blockquote>"Every wound is a debt. Some come due immediately. Others wait to be collected."</blockquote>
+  <h3 class="sub">Taking Damage</h3>
+  <p>Harm flows through these steps:</p>
+  <ol>
+    <li><strong>Protect Yourself</strong> — reduce melee harm if chosen in combat</li>
+    <li><strong>Apply Armor</strong> — subtract 1 harm per equipped piece of armor from remaining harm</li>
+    <li><strong>Grit Absorbs</strong> — subtract from Grit first</li>
+    <li><strong>Body Breaks</strong> — apply overflow to STR or AGI (whichever is higher)</li>
+  </ol>
+
+  <h3 class="sub">Critical Hits and Weapon Effects</h3>
+  <p>Rolling 6 on harm triggers weapon special effects:</p>
+  <ul>
+    <li><strong>Piercing</strong> — ignores armor completely</li>
+    <li><strong>Rending</strong> — damages armor/shields, causes dismemberment</li>
+    <li><strong>Bludgeoning</strong> — knockdown, stunning effects</li>
+  </ul>
+
+  <h3 class="sub" id="injuries">Injuries</h3>
+  <blockquote>"Some wounds close. Others just teach you to live differently."</blockquote>
+  <p>Suffer a serious Injury if:</p>
+  <ul>
+    <li>You take 6+ harm from a single attack (after reductions)</li>
+    <li>STR drops to 0 from damage</li>
+  </ul>
+  <p>When injured:</p>
+  <ul>
+    <li>Roll 1d6 on the table that matches what hurt you, adding <strong>+1 to the roll for every Injury you're already carrying</strong>: <strong>Slash Wounds</strong> for Slash-tagged weapons, <strong>Puncture Wounds</strong> for Pierce-tagged weapons, <strong>Blunt Trauma</strong> for Bludgeon-tagged weapons, <strong>Other Harm</strong> for falls, fire, poison, and anything without a clean weapon tag, or <strong>Horror &amp; Madness</strong> when the wound is to the mind rather than the body (fear, corruption, divine displeasure, magical trauma)</li>
+    <li>Suffer −1 to all d20 rolls until healed</li>
+    <li>May make a WIL check (10+) to ignore the penalty for one turn</li>
+  </ul>
+
+  <div class="example">
+    <span class="tag-label">Reading the tables</span>
+    <p>Each table runs <strong>1 to 7</strong>. A fresh wound is just the raw 1d6 — but every Injury already on your sheet adds +1 to the roll, so the wounded break faster: a character carrying two Injuries rolls the die and adds 2, making the low, survivable rows harder to land on and the top of the table (7) a real possibility. A total above 7 still reads as row 7.</p>
+    <p><strong>Lethal</strong> means the injury kills you if not stabilized within the Time Limit. <strong>"Yes, −1 [Attribute]"</strong> means it's lethal on that same clock <em>and</em>, once healed, leaves a permanent −1 to the named attribute — the wound closes, but it never fully comes back. <strong>Healing Time</strong> is how long the listed penalty lasts once the wound is stabilized and safely resting.</p>
+  </div>
+
+  <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.6em 0 .6em;">Critical Injuries — Slash Wounds</h4>
+  <p class="tnote">A blade doesn't ask permission to open you up.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D6</th><th>Injury</th><th>Lethal</th><th>Time Limit</th><th>Effects During Healing</th><th>Healing</th></tr>
+    <tr><td class="hd">1</td><td>Grazed</td><td>No</td><td>–</td><td>None</td><td>–</td></tr>
+    <tr><td class="hd">2</td><td>Shallow cut</td><td>No</td><td>–</td><td>−1 CHA (visible scar)</td><td>1d6 days</td></tr>
+    <tr><td class="hd">3</td><td>Hamstrung</td><td>No</td><td>–</td><td>You can Move or act each round, but never both</td><td>2d6 days</td></tr>
+    <tr><td class="hd">4</td><td>Severed digit</td><td>No</td><td>–</td><td>Two-handed weapons can't be used, or −1 PER if an eye or ear is taken instead (GM picks the detail)</td><td>Permanent</td></tr>
+    <tr><td class="hd">5</td><td>Deep laceration</td><td>No</td><td>–</td><td>−2 STR while healing</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">6</td><td>Opened artery</td><td class="sig">Yes</td><td>1d6 hours</td><td>−2 STR while healing</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">7</td><td>Cleft through</td><td class="sig">Yes</td><td>–</td><td>You die on the spot</td><td>–</td></tr>
+  </table>
+  </div>
+
+  <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.6em 0 .6em;">Critical Injuries — Blunt Trauma</h4>
+  <p class="tnote">Bone remembers being broken long after the swelling goes down.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D6</th><th>Injury</th><th>Lethal</th><th>Time Limit</th><th>Effects During Healing</th><th>Healing</th></tr>
+    <tr><td class="hd">1</td><td>Winded</td><td>No</td><td>–</td><td>None</td><td>–</td></tr>
+    <tr><td class="hd">2</td><td>Bruised ribs</td><td>No</td><td>–</td><td>−2 to AGI and melee rolls</td><td>1d6 days</td></tr>
+    <tr><td class="hd">3</td><td>Cracked limb</td><td>No</td><td>–</td><td>Two-handed weapons can't be used, or you can Move or act each round, but never both (GM picks the limb)</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">4</td><td>Shattered joint</td><td class="sig">Yes</td><td>1d6 days</td><td>As above, but permanent once healed</td><td>Permanent</td></tr>
+    <tr><td class="hd">5</td><td>Rattled senseless</td><td>No</td><td>–</td><td>Disadvantage on all rolls until treated</td><td>1d6 days</td></tr>
+    <tr><td class="hd sig">6</td><td>Broken neck</td><td class="sig">Yes</td><td>1d6 hours</td><td>Paralyzed from the neck down until treated</td><td>3d6 days</td></tr>
+    <tr><td class="hd sig">7</td><td>Crushed skull</td><td class="sig">Yes</td><td>–</td><td>Your adventure and your life end here</td><td>–</td></tr>
+  </table>
+  </div>
+
+  <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.6em 0 .6em;">Critical Injuries — Puncture Wounds</h4>
+  <p class="tnote">The wound looks small until you see how deep it runs.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D6</th><th>Injury</th><th>Lethal</th><th>Time Limit</th><th>Effects During Healing</th><th>Healing</th></tr>
+    <tr><td class="hd">1</td><td>Pierced flesh</td><td>No</td><td>–</td><td>None</td><td>–</td></tr>
+    <tr><td class="hd">2</td><td>Impaled limb</td><td>No</td><td>–</td><td>You can Move or act each round, but never both, or Two-handed weapons can't be used (GM picks the limb)</td><td>1d6 days</td></tr>
+    <tr><td class="hd sig">3</td><td>Punctured organ</td><td class="sig">Yes</td><td>1d6 days</td><td>−2 STR and AGI</td><td>1d6 days</td></tr>
+    <tr><td class="hd sig">4</td><td>Severed artery</td><td class="sig">Yes, −1 STR or AGI</td><td>1d6 minutes</td><td>Limb permanently weakened once healed</td><td>1d6 days</td></tr>
+    <tr><td class="hd sig">5</td><td>Ruptured gut</td><td class="sig">Yes</td><td>1d6 hours</td><td>1 harm at each STR, AGI, or melee roll</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">6</td><td>Impaled throat</td><td class="sig">Yes, −1 STR</td><td>1d6 rounds</td><td>−2 STR while healing</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">7</td><td>Pierced heart</td><td class="sig">Yes</td><td>–</td><td>Your heart beats its last</td><td>–</td></tr>
+  </table>
+  </div>
+
+  <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.6em 0 .6em;">Critical Injuries — Other Harm</h4>
+  <p class="tnote">Not every scar comes from a blade. Use this table for falls, fire, drowning, poison, exhaustion, and any harm that doesn't come from a tagged weapon.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D6</th><th>Injury</th><th>Lethal</th><th>Time Limit</th><th>Effects During Healing</th><th>Healing</th></tr>
+    <tr><td class="hd">1</td><td>Shaken</td><td>No</td><td>–</td><td>None</td><td>–</td></tr>
+    <tr><td class="hd">2</td><td>Winded</td><td>No</td><td>–</td><td>−1 to your next roll</td><td>–</td></tr>
+    <tr><td class="hd">3</td><td>Singed or bruised</td><td>No</td><td>–</td><td>−2 to AGI-based rolls</td><td>1d6 days</td></tr>
+    <tr><td class="hd sig">4</td><td>Broken by the fall (or burn)</td><td class="sig">Yes</td><td>1d6 days</td><td>−2 to STR and AGI</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">5</td><td>Internal injury</td><td class="sig">Yes</td><td>1d6 hours</td><td>1 harm at each STR or AGI roll</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">6</td><td>Crushed or charred</td><td class="sig">Yes</td><td>1d6 hours</td><td>Unconscious until treated or you die</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">7</td><td>Catastrophic</td><td class="sig">Yes</td><td>–</td><td>You die outright</td><td>–</td></tr>
+  </table>
+  </div>
+
+  <h4 style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--bone);text-transform:uppercase;margin:1.6em 0 .6em;">Critical Injuries — Horror &amp; Madness</h4>
+  <p class="tnote">Not every wound bleeds. Roll here instead of a physical table whenever the wound is to the mind: fear, corruption, divine displeasure, or magical mishap.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D6</th><th>Trauma</th><th>Effect During Healing</th><th>Healing</th></tr>
+    <tr><td class="hd">1</td><td>Shaken</td><td>None lasting</td><td>–</td></tr>
+    <tr><td class="hd">2</td><td>Rattled</td><td>−1 to all WIL rolls</td><td>1d6 days</td></tr>
+    <tr><td class="hd">3</td><td>Haunted</td><td>Nightmares — WIL check (10+) each night's rest or it doesn't count</td><td>1d6 days</td></tr>
+    <tr><td class="hd">4</td><td>Fractured mind</td><td>A lasting phobia, compulsion, or delusion takes hold (pick one with the GM and roleplay it)</td><td>2d6 days</td></tr>
+    <tr><td class="hd">5</td><td>Unraveling</td><td>WIL check (10+) each Watch or lash out at the nearest ally or enemy (GM decides); −2 to all rolls while active</td><td>2d6 days</td></tr>
+    <tr><td class="hd sig">6</td><td>Broken</td><td>Permanently altered personality, or a lost chunk of memory (your choice, decided with the GM)</td><td>Permanent</td></tr>
+    <tr><td class="hd sig">7</td><td>Heart stops</td><td class="sig">You die of pure fright</td><td>–</td></tr>
+  </table>
+  </div>
+
+  <h3 class="sub">Recovery</h3>
+  <p><strong>Grit:</strong> fully restored with 10 minutes rest.</p>
+  <p><strong>Attributes:</strong></p>
+  <ul>
+    <li>1 Watch + ration: heal half of each attribute's damage (round down)</li>
+    <li>2 Watches + ration + fire: above, plus 1d6 more, distributed as desired. Gain 1 reroll.</li>
+    <li>1 Full Day + ration + fire + safety: heal all attribute damage, gain 1 reroll.</li>
+  </ul>
+  <p><strong>Injuries:</strong> require specific treatment to stabilize, then days of safe rest to heal completely.</p>
+</section>
+
+<!-- PART 07 DIVIDER -->
+<div class="divider" id="magic">
+  <div class="num">PART 07 // WIZARDRY</div>
+  <h2>To Grasp the Flame</h2>
+  <p class="dek">Magic is not learned, it is inherited. Every spell was carved long ago by something inhuman.</p>
+</div>
+
+<section class="prose">
+  <p>Magic is not learned, it is inherited. Every spell was carved long ago by something inhuman, passed skin to skin in an unbroken chain of suffering. To wield magic is to negotiate with power that does not wish to be summoned.</p>
+
+  <h3 class="sub">Casting Spells</h3>
+  <p>Roll 1d20 + WIL + Wizardry:</p>
+  <ul>
+    <li><strong>20+:</strong> spell manifests with enhanced effect</li>
+    <li><strong>16–19:</strong> spell succeeds normally</li>
+    <li><strong>10–15:</strong> spell succeeds, but 1 mishap per Potency level</li>
+    <li><strong>2–9:</strong> spell fails, 1 mishap per Potency, gain 1 XP</li>
+    <li><strong>1:</strong> catastrophic failure, 2 mishaps per Potency, gain 1 XP</li>
+  </ul>
+
+  <div class="callout arcane">
+    <span class="tag-label">Potency levels</span>
+    <p>Higher Potency increases effect power but multiplies mishaps. Each Potency above 1 gives intelligent targets −1 to resist.</p>
+  </div>
+  <p><strong>Encumbrance Penalty:</strong> negative AGI from gear applies to casting rolls.<br><strong>Burn Willpower:</strong> spend 1 WIL to reroll a failed casting attempt.</p>
+
+  <h3 class="sub" id="mishaps">Wizardry Mishaps</h3>
+  <blockquote>"Power borrowed from something inhuman rarely comes back exactly as lent."</blockquote>
+  <p>Each mishap owed is a single roll of d66 (2d6, read as tens and ones) on the table below.</p>
+  <div class="twrap">
+  <table>
+    <tr><th>D66</th><th>Effect</th></tr>
+    <tr><td class="hd cir">11</td><td>The caster randomly teleports 10 feet in a random direction, possibly into danger</td></tr>
+    <tr><td class="hd cir">12</td><td>Caster takes PER harm equal to Potency</td></tr>
+    <tr><td class="hd cir">13</td><td>Caster takes AGI harm equal to Potency</td></tr>
+    <tr><td class="hd cir">14</td><td>Caster takes STR harm equal to Potency</td></tr>
+    <tr><td class="hd cir">15</td><td>All nearby non-magical metal melts</td></tr>
+    <tr><td class="hd cir">16</td><td>An orb of darkness surrounds the party</td></tr>
+    <tr><td class="hd cir">21</td><td>All creatures within 15ft appear covered in horrific, charred burns. The burns don't hurt and flake off in 1d3 days; −5 CHA until healed</td></tr>
+    <tr><td class="hd cir">22</td><td>Caster blinks 1d6 rounds into the future</td></tr>
+    <tr><td class="hd cir">23</td><td>The spell affects a random target</td></tr>
+    <tr><td class="hd cir">24</td><td>The spell affects everything within 10ft of the target</td></tr>
+    <tr><td class="hd cir">25</td><td>Cast a random spell instead</td></tr>
+    <tr><td class="hd cir">26</td><td>Cast 3 random spells on 3 random targets within 10ft</td></tr>
+    <tr><td class="hd cir">31</td><td>All mundane fires within 50ft are extinguished (includes torches and lanterns)</td></tr>
+    <tr><td class="hd cir">32</td><td>Caster becomes blind for 1d3 turns</td></tr>
+    <tr><td class="hd cir">33</td><td>A random creature within 10ft is turned into a random monster, forgetting who they are, for 1d6 turns</td></tr>
+    <tr><td class="hd cir">34</td><td>Random limb(s) turn into a lively tentacle for 1d6 turns</td></tr>
+    <tr><td class="hd cir">35</td><td>1d10+1 random fingers/thumbs fall from the caster's hands. They grow back if submerged in water, untouched by light, for an unbroken 8 hours</td></tr>
+    <tr><td class="hd cir">36</td><td>The caster glows with light from beneath their skin, brighter from eyes and mouth — bright enough to serve as a torch (several, if nude). Lasts 1d3 days</td></tr>
+    <tr><td class="hd cir">41</td><td>Caster sees in pitch black as though it's day for 1d6 hours, but becomes light-sensitive: torchlight causes pain, and daylight burns the caster's corneas, causing excruciating pain and immediate blindness for 1d3 days</td></tr>
+    <tr><td class="hd cir">42</td><td>Caster immediately falls ill — sweating, weak, nauseated — for 1d10 turns, disadvantage on all rolls</td></tr>
+    <tr><td class="hd cir">43</td><td>Caster's clothes and equipment burst into flames. The flames do no harm to the caster but burn anything or anyone else they touch. If extinguished, all items are revealed to be exactly as they were before</td></tr>
+    <tr><td class="hd cir">44</td><td>A freezing wind blows, causing liquids to freeze, snow to fall, and characters to potentially become frigid. Lasts 1d6 hours</td></tr>
+    <tr><td class="hd cir">45</td><td>The air becomes hot, causing creatures to sweat, grow lightheaded, and potentially lose consciousness. Metal objects grow hot to the touch and susceptible materials may begin to melt. Lasts 1d6 hours</td></tr>
+    <tr><td class="hd cir">46</td><td>All magical items within 20ft shine bright blue, casting torchlight, and burn anyone who touches them with bare skin. Lasts 1d6 turns</td></tr>
+    <tr><td class="hd sig">51</td><td>Flames explode from the caster, igniting everything flammable within 15ft</td></tr>
+    <tr><td class="hd sig">52</td><td>An invisible explosion knocks everyone within Near back 5 feet; AGI less than 3 are knocked down</td></tr>
+    <tr><td class="hd sig">53</td><td>Caster falls unconscious for 1d3 turns</td></tr>
+    <tr><td class="hd sig">54</td><td>Bizarre gravity takes hold — heavy or light</td></tr>
+    <tr><td class="hd sig">55</td><td>Caster emits a thunderous bang and blinding light</td></tr>
+    <tr><td class="hd sig">56</td><td>Each party member hears a terrifying shriek they recognize from their past and hoped never to hear again (players may explain if they like). Roll to resist fear</td></tr>
+    <tr><td class="hd sig">61</td><td>Thunder cracks as a forceful gale extinguishes all light within 25ft of the caster. A fiery demon is revealed to have been summoned — it returns to its plane in 1d6 turns</td></tr>
+    <tr><td class="hd sig">62</td><td>Caster and target immediately produce thousands of tiny spiders from their pores, incapacitating them for 1d6 rounds. The spiders spread in every direction, then amass into 1d6 dog-sized giant spiders (resistant to piercing, weak to bludgeoning and fire). If they survive 3+ rounds, they combine into one elephant-sized spider that remains until killed</td></tr>
+    <tr><td class="hd sig">63</td><td>Target erupts with blood from every orifice for one round, body held stiff by the pressure. They drop, unresponsive for 1d6 rounds, all stats halved</td></tr>
+    <tr><td class="hd sig">64</td><td>A tiny, pitiful creature (a rat, a worm, a one-eyed crow) appears at the wizard's feet and imprints on them. It follows everywhere, cannot be harmed, and whispers strange words in an unknown language while they sleep</td></tr>
+    <tr><td class="hd sig">65</td><td>The wizard briefly glimpses something behind reality — a massive, coiling entity pressing against the edges of existence. For a split second, it looks at them. WIL check (16+) or suffer nightmares for 1d10 days</td></tr>
+    <tr><td class="hd sig">66</td><td>Caster immediately explodes into fire and gore (dead), igniting and knocking down everything within 10ft</td></tr>
+  </table>
+  </div>
+
+  <h3 class="sub">Ritual Casting</h3>
+  <p>Perform careful, extended casting to reduce risk:</p>
+  <ul>
+    <li>Declare total duration (max 90 minutes)</li>
+    <li>Gain +1 to casting roll per 10 minutes spent</li>
+    <li><strong>Risk:</strong> Potency 2+ causes disadvantage per level above 1</li>
+    <li><strong>Interruption:</strong> any disturbance ruins the ritual completely</li>
+  </ul>
+
+  <h3 class="sub">Learning Spells</h3>
+  <p><strong>From Living Teachers:</strong></p>
+  <ul>
+    <li>Must learn from someone who bears the tattoo</li>
+    <li>INT + Wizardry check to understand</li>
+    <li>Requires ritual inscription with otherworldly ink</li>
+  </ul>
+  <p><strong>From Dead Sources:</strong></p>
+  <ul>
+    <li>Study dead skin, scrolls, or preserved markings</li>
+    <li>Takes at least one week of careful examination</li>
+    <li>INT + Wizardry check to decipher</li>
+    <li>Cannot pass the spell forward to others</li>
+  </ul>
+  <p><strong>Tattooed vs Referenced Casting:</strong></p>
+  <ul>
+    <li><strong>Tattooed</strong> — cast without needing to see runes</li>
+    <li><strong>Referenced</strong> — must have runes visible during casting</li>
+  </ul>
+
+  <h3 id="items">Creating Magical Items</h3>
+  <p><strong>Scrolls</strong> — single-use spell storage:</p>
+  <ul>
+    <li>Know the spell (tattooed or studied)</li>
+    <li>Spend 1 Turn scribing with rare ink</li>
+    <li>INT + Wizardry check to construct</li>
+    <li>WIL + Wizardry check to imbue power</li>
+    <li>Anyone can attempt to cast from a scroll (WIL + Wizardry, disadvantage if no Wizardry ranks)</li>
+  </ul>
+  <p><strong>Wands and Staves</strong> — multi-use spell storage:</p>
+  <ul>
+    <li>Shape appropriate vessel for the spell's nature</li>
+    <li>Spend multiple Watches preparing</li>
+    <li>INT + Wizardry to construct, WIL + Wizardry to bind magic</li>
+    <li>Hold multiple charges (tracked with a Usage Die)</li>
+    <li>Each activation requires a WIL + Wizardry check</li>
+  </ul>
+  <p class="tnote"><strong>Identifying Magic:</strong> an INT + Wizardry check reveals properties, components, curses, and methods of use.</p>
+
+  <h3 id="alchemy">Alchemy: The Rational Art</h3>
+  <p>Where spellcraft screams, alchemy hums. This measured discipline refines magical residue into stable, reliable effects.</p>
+  <p><strong>Gathering Components:</strong></p>
+  <ul>
+    <li>INT check to know where to look</li>
+    <li>PER check to find what you seek</li>
+  </ul>
+  <p><strong>Crafting Process:</strong></p>
+  <ul>
+    <li>Time varies: Turns for simple tonics, Watches for complex items, days for permanent effects</li>
+    <li>Roll INT + Wizardry bonus if applicable</li>
+    <li>Modify for tool quality and component rarity</li>
+  </ul>
+  <p><strong>Results:</strong></p>
+  <ul>
+    <li><strong>16+:</strong> stable, effective item</li>
+    <li><strong>10–15:</strong> weakened or with unexpected side effects</li>
+    <li><strong>Failure:</strong> ingredients wasted, no further consequence</li>
+  </ul>
+  <p class="tnote"><strong>Alchemical Effects:</strong> healing potions, poisons, bombs, stimulants, antidotes. Reliable, but requires proper ingredients and procedures.</p>
+</section>
+
+<!-- PART 08 DIVIDER -->
+<div class="divider" id="divinity">
+  <div class="num">PART 08 // FAITH</div>
+  <h2>The Price of Faith</h2>
+  <p class="dek">Prayer is not a request. It is a negotiation.</p>
+</div>
+
+<section class="prose">
+  <p>While wizards bind power into flesh, the faithful bind themselves to something greater. Divine magic flows not from personal mastery but from relationship, a covenant sealed in devotion, sacrifice, and moral consequence. True faith works through providence and patience, not spectacle and showmanship.</p>
+
+  <h3 class="sub">Divine Domains</h3>
+  <p>Each deity governs specific spheres of influence. When creating your character, choose 2 Domains that define your god's nature and the types of divine intervention available to you:</p>
+  <ul>
+    <li><strong>War Domain</strong> — enemies hesitate at crucial moments, weapons stay sharp, courage holds when others break, righteous cause prevails against odds</li>
+    <li><strong>Death Domain</strong> — peaceful endings come to the suffering, final words are heard and remembered, spirits find proper rest, the dying are granted dignity</li>
+    <li><strong>Nature Domain</strong> — weather cooperates with the faithful, animals provide unexpected aid, plants offer sustenance, natural paths appear when needed</li>
+    <li><strong>Knowledge Domain</strong> — understanding arrives at the right moment, forgotten memories surface, truth reveals itself through circumstances, wisdom guides decisions</li>
+    <li><strong>Protection Domain</strong> — harm turns aside through fortune, safe paths appear in danger, sanctuary holds against threat, the innocent find shelter</li>
+    <li><strong>Healing Domain</strong> — bodies mend as they should, pain eases naturally, strength returns to the weary, recovery comes swifter than expected</li>
+  </ul>
+  <p class="tnote">Your chosen Domains determine what types of providence you may pray for. You cannot seek divine aid outside your god's nature, a god of war cannot grant healing, a nature deity cannot raise the dead.</p>
+
+  <h3 class="sub">Prepared Prayers and Providence</h3>
+  <p>Divine intervention works through preparation, faith, and patience, not magical commands.</p>
+  <p><strong>Daily Preparation:</strong> during your daily prayer (when performing sacred acts to regain Favor), you may prepare specific prayers:</p>
+  <ol>
+    <li><strong>Declare your Intent</strong> — state exactly what you're praying for in concrete terms</li>
+    <li><strong>Commit Favor</strong> — decide how much Favor (1–6) to commit, representing your sincerity and resolve</li>
+    <li><strong>Record the Prayer</strong> — note both intention and committed Favor on your character sheet</li>
+  </ol>
+  <p>You may maintain multiple prepared prayers simultaneously, each with its own committed Favor.</p>
+
+  <h3 class="sub">When Providence Might Answer</h3>
+  <p>When circumstances arise where your prepared prayer might be answered, roll <strong>1d20 + CHA + Divinity + Committed Favor</strong> using the core resolution table:</p>
+  <ul>
+    <li><strong>20+ — Divine Providence:</strong> your prayer is answered completely, possibly with additional blessings</li>
+    <li><strong>16–19 — Answered Prayer:</strong> divine intervention manifests exactly as requested</li>
+    <li><strong>10–15 — Partial Answer:</strong> you receive aid, but with limitations or unexpected complications</li>
+    <li><strong>2–9 — Silence:</strong> no divine response, committed Favor is lost, gain 1 XP</li>
+    <li><strong>1 — Divine Displeasure:</strong> lose additional Favor or face a test of faith, gain 1 XP</li>
+  </ul>
+
+  <h3 class="sub">Immediate Appeals</h3>
+  <p>Calling upon your god without preparation shifts results down the core resolution table:</p>
+  <ul>
+    <li><strong>Spontaneous Appeal</strong> — all results shift down one band (20+ becomes 16–19, 16–19 becomes 10–15, etc.)</li>
+    <li><strong>Desperate Plea</strong> — if you've already made an immediate appeal this day, shift down two bands</li>
+  </ul>
+
+  <h3 class="sub">Subtlety and Manifestation</h3>
+  <p>The obviousness of the requested miracle affects the roll:</p>
+  <ul>
+    <li><strong>Subtle Providence</strong> (could appear as coincidence) — normal roll: wounds heal in hours instead of days, enemies make poor decisions, weather turns favorable</li>
+    <li><strong>Noticeable Miracle</strong> (clearly supernatural) — shift down one band: pain vanishes instantly, weapons break at perfect moments, impossible meetings occur</li>
+    <li><strong>Obvious Divine Intervention</strong> (undeniably miraculous) — shift down two bands: wounds close visibly, enemies experience divine visions, natural disasters halt</li>
+  </ul>
+
+  <h3 class="sub">Commandments and Moral Weight</h3>
+  <p>Divine power demands moral consistency. Your god's commandments aren't mere suggestions, they're the terms of your sacred contract.</p>
+  <p><strong>Commandments:</strong> write 3 Virtues (gain Favor when upheld) and 3 Vices (lose Favor when violated). Make them personal, active, and thematic.</p>
+  <p><strong>Gaining Favor:</strong> uphold your god's virtues through meaningful action, not empty ritual. The GM determines when your actions truly serve your deity's will.</p>
+  <p><strong>Losing Favor:</strong> violate your god's nature and face immediate consequences. Minor transgressions cost 1 Favor; major violations may cost 2–3 Favor and invite divine trials.</p>
+
+  <h3 class="sub">Sacred Acts</h3>
+  <p>Once per day, perform a specific devotional act to regain 1 Favor (cannot repeat the same act consecutively):</p>
+  <ul>
+    <li>Meditative prayer at shrine (1 hour) — also time to prepare prayers</li>
+    <li>Transcribing sacred scripture (1 watch)</li>
+    <li>Fasting or ritual penance (1 day)</li>
+    <li>Tithing gold (significant amount)</li>
+    <li>Converting a non-believer through deed, not word</li>
+    <li>Completing a holy vigil or pilgrimage</li>
+  </ul>
+
+  <div class="example">
+    <span class="tag-label">The Divine Compact</span>
+    <p>Unlike wizardry's selfish accumulation of power, divinity demands ongoing relationship and trust. Your god watches, judges, and responds to your choices through the weaving of providence rather than flashy displays of power.</p>
+    <p>Every answered prayer is both gift and test, proof of faith rewarded, but also expectation of continued devotion. The faithful learn to see their god's hand in small coincidences and favorable turns, understanding that true miracles work through the natural order rather than against it.</p>
+    <p>The faithful are never truly alone, but neither are they truly free. Power comes with strings attached, and those strings reach all the way to heaven.</p>
+  </div>
+</section>
+
+<!-- PART 09 DIVIDER -->
+<div class="divider" id="bestiary">
+  <div class="num">PART 09 // WHAT WAITS IN THE DARK</div>
+  <h2>Bestiary &amp; Quick Reference</h2>
+  <p class="dek">A framework for the things that hunt, worship, and wait beyond the firelight.</p>
+</div>
+
+<section class="prose">
+  <h3 class="sub">NPC and Monster Framework</h3>
+  <p>Use this template to build any creature or NPC the party might face.</p>
+
+  <div class="tmplbox">
+    <span class="tag-label">Stat block template</span>
+    <p><strong>[Name]</strong> — <em>[Species or type variant]</em></p>
+    <p><em>[One-sentence flavor summary — what they are, what drives them, what makes them feel eerie, thematic, or wrong.]</em></p>
+    <p>HP: [#] &nbsp; Armor: [#, if any] &nbsp; Band Shifts: [e.g., AGI−, WIL+, INT+] &nbsp; #: [Number Appearing] &nbsp; Size: [Small/Medium/Large/etc] &nbsp; Tags: [2–4 descriptive]</p>
+    <p><em>[Brief summary of default behavior, not just combat — how they enter scenes, wait, or travel.]</em></p>
+    <p>• [Attack or Ability #1] ([damage: −3 to +8], [keywords]) — [Resolution Band Symbol]: [Effect]<br>
+    • [Attack or Ability #2] ([damage], [keywords]) — [Symbol]: [Effect]<br>
+    • (Optional third action if elite/magical)</p>
+    <p><strong>Motivations:</strong><br>[General Drive: belief, hunger, purpose, curse]<br>[Specific Goal: ritual, object, person, secret]</p>
+    <p><strong>Flaws &amp; Leverage:</strong><br>[General weakness: behavior, taboo, limitation]<br>[Specific vulnerability: detail players might learn or discover]</p>
+    <p><strong>First Encounter Read-Aloud:</strong><br><em>[Sensory-heavy description of how they appear, sound, smell, or behave when first seen. Avoid exposition; lean into mood, mystery, and implication. 40–240 words.]</em></p>
+  </div>
+
+  <div class="example">
+    <span class="tag-label">GM guidance</span>
+    <p>The First Encounter Read-Aloud is the only place in a stat block meant to be spoken, not consulted. Everything above it is for your eyes; everything in it is for theirs.</p>
+  </div>
+
+  <h3 class="sub" id="qrs">Resolution Band Symbols — GM Reference</h3>
+  <div class="bandstrip">
+    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">1 or less</span><span class="lbl">Critical Failure</span></div>
+    <div class="b fail"><span class="sym">▼</span><span class="rng">2–9</span><span class="lbl">Failure</span></div>
+    <div class="b partial"><span class="sym">◇</span><span class="rng">10–15</span><span class="lbl">Partial Success</span></div>
+    <div class="b success"><span class="sym">▲</span><span class="rng">16–19</span><span class="lbl">Full Success</span></div>
+    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">20+</span><span class="lbl">Critical Success</span></div>
+  </div>
+  <ul>
+    <li><strong>▼▼</strong> = Critical Failure (1 or less)</li>
+    <li><strong>▼</strong> = Failure (2–9)</li>
+    <li><strong>◇</strong> = Partial Success (10–15)</li>
+    <li><strong>▲</strong> = Full Success (16–19)</li>
+    <li><strong>▲▲</strong> = Critical Success (20+)</li>
+  </ul>
+</section>
+
+<footer>
+  <div class="ticks"><span></span><span></span><span></span></div>
+  <div>FORSAKEN DARK // A GAME OF CONSEQUENCE AND SHADOW // WORKING DRAFT</div>
+</footer>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var navbar = document.getElementById('navbar');
+  var bar = document.getElementById('navbar-bar');
+  var current = document.getElementById('navbar-current');
+  var links = Array.prototype.slice.call(document.querySelectorAll('#navmenu a'));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+
+  bar.addEventListener('click', function(){
+    navbar.classList.toggle('open');
+    bar.setAttribute('aria-expanded', navbar.classList.contains('open'));
+  });
+  bar.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); bar.click(); }
+  });
+  links.forEach(function(a){
+    a.addEventListener('click', function(){ navbar.classList.remove('open'); });
+  });
+
+  function updateCurrent(){
+    var y = window.scrollY + 80;
+    var active = sections[0];
+    for(var i=0;i<sections.length;i++){
+      if(sections[i].offsetTop <= y) active = sections[i];
+    }
+    var idx = sections.indexOf(active);
+    if(idx >= 0){
+      var label = links[idx].getAttribute('data-label') || links[idx].textContent;
+      current.innerHTML = '<b>' + (idx < 10 ? '0'+idx : idx) + '</b>' + label.replace(/^\d+\s*·\s*/,'');
+    }
+  }
+  window.addEventListener('scroll', updateCurrent, {passive:true});
+  updateCurrent();
+})();
+</script>
+
+</body>
+</html>
