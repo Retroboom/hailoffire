@@ -385,7 +385,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <caption>Posture Table (1d6)</caption>
     <thead><tr><th>Roll</th><th>Posture</th><th>What the whole force does this turn</th></tr></thead>
     <tbody>
-      <tr><td class="r c">1</td><td class="hd">Consolidate</td><td>Caution wins. Units prefer Rally, cover, and short repositioning over offense. Suppressed units try to Fall Back. No unit begins an assault this turn. Fire only from good position.</td></tr>
+      <tr><td class="r c">1</td><td class="hd">Consolidate</td><td>Caution wins. Units prefer cover and short repositioning over offense; Suppressed units Move to recover (out of LoS where possible, Leaders Rallying en route). No unit begins an assault this turn. Fire only from good position.</td></tr>
       <tr><td class="r c">2-3</td><td class="hd">Hold</td><td>The default. Units act on their Behavior Card without bias. Defenders sit in cover and shoot; attackers advance only where the card's priorities call for it.</td></tr>
       <tr><td class="r c">4-5</td><td class="hd">Probe</td><td>Lean forward. Break ties toward the more aggressive option. Advance to gain fire position or contest an objective, but only where the odds are not plainly bad.</td></tr>
       <tr><td class="r c">6</td><td class="hd">Press</td><td>Commit. Any unit that <em>can</em> legally begin an assault this turn and has fire support available should. Suppressing fire is prioritized to set up those assaults. The OpFor spends Hero Points freely (2.5).</td></tr>
@@ -515,7 +515,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
         <ol class="prio">
           <li>In contact with a non-Ready enemy under Probe/Press: <strong>assault</strong> it.</li>
           <li>Enemy in the open within range: <strong>Fire</strong> at the priority target.</li>
-          <li>Suppressed: <strong>Rally</strong> or Fall Back out of LoS.</li>
+          <li>Suppressed: <strong>Move to recover</strong>: out of LoS where possible (Fall Back), the Leader Rallying en route.</li>
           <li>Probe/Press and a covered path exists to a firing position or objective: <strong>Move</strong> there, ideally to a linear obstacle or Area Terrain.</li>
         </ol>
         <div class="foot">Tell: will not leave Hard Cover to chase a target it can already shoot. It shoots first and moves only when the shot is worse than the ground ahead.</div>
@@ -534,7 +534,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
         <ol class="prio">
           <li>Enemy in the open within range: <strong>Fire</strong>, favoring targets massed within 4" of each other (spill hits).</li>
           <li>An assault threat against a nearby unit (unsuppressed enemy within charge reach): <strong>Fire</strong> to suppress the charge.</li>
-          <li>Suppressed: <strong>Rally</strong> in place (does not Fall Back unless overrun is imminent).</li>
+          <li>Suppressed: <strong>recover in place</strong>: a token Move for its Rally Check (no RFPs) or a Leader Rally; it abandons its lane only if overrun is imminent.</li>
           <li>No target and Posture is Press: reposition up to gain a fresh lane of fire.</li>
         </ol>
         <div class="foot">Tell: holds its ground almost to the last. It would rather trade a suppression than give up a good firing lane, and it never advances ahead of the rifle line.</div>
@@ -554,7 +554,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
           <li>Armor in arc where AT beats the armor the shot will strike (Flank Armor from behind the hull-front line): <strong>Fire</strong>, nearest such target first.</li>
           <li>Any armor in arc and range at all: <strong>Fire</strong> (even a bounce inflicts RFPs and uncertainty).</li>
           <li>No armor, and no longer Hidden: <strong>Fire</strong> on the highest-value soft target in arc (a Hidden gun stays silent and waits for the armor).</li>
-          <li>Suppressed: <strong>Rally</strong> via its Leader if one is in contact; it does not Fall Back (it is Immobile or nearly so).</li>
+          <li>Suppressed: recovery comes to it: a <strong>Leader Rally</strong> in base contact, or a token order for its Rally Check (no RFPs); it does not Fall Back (it is Immobile or nearly so).</li>
         </ol>
         <div class="foot">Tell: if deployed Hidden, it holds fire until an enemy vehicle enters a killing shot, even passing up soft targets, then reveals with the best penetration it can get.</div>
       </div>
@@ -820,7 +820,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
       <tr><td class="r">12</td><td class="hd">Crossed Wires</td><td>The OpFor loses 1 Order Point this turn to a garbled order.</td></tr>
       <tr><td class="r">13</td><td class="hd">Lost Runner</td><td>The OpFor's next activation may issue one order only, no split.</td></tr>
       <tr><td class="r">14</td><td class="hd">Cook-Off Scare</td><td>One OpFor vehicle with RFPs (your choice) resolves them now as if in Open Ground.</td></tr>
-      <tr><td class="r">15</td><td class="hd">Head Down</td><td>One Suppressed OpFor Team (your choice) may not attempt to Rally this turn.</td></tr>
+      <tr><td class="r">15</td><td class="hd">Head Down</td><td>One Suppressed OpFor Team (your choice) may not be Rallied this turn: no Rally Check, no Leader Rally.</td></tr>
       <tr><td class="r">16</td><td class="hd">Dud Rounds</td><td>The next OpFor Fire order rolls one fewer die.</td></tr>
 
       <tr><td class="r">21</td><td class="hd">Drifting Smoke</td><td>Place a 4" smoke marker anywhere on the centerline; it blocks LoS until the start of your next turn.</td></tr>
@@ -873,7 +873,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <div class="ocard"><span class="on">12</span><span class="ot">Crossed Wires</span>The OpFor loses 1 Order Point this turn.</div>
     <div class="ocard"><span class="on">13</span><span class="ot">Lost Runner</span>OpFor's next activation: one order only, no split.</div>
     <div class="ocard"><span class="on">14</span><span class="ot">Cook-Off Scare</span>One OpFor vehicle with RFPs resolves them now as Open Ground.</div>
-    <div class="ocard"><span class="on">15</span><span class="ot">Head Down</span>One Suppressed OpFor Team may not Rally this turn.</div>
+    <div class="ocard"><span class="on">15</span><span class="ot">Head Down</span>One Suppressed OpFor Team may not be Rallied this turn.</div>
     <div class="ocard"><span class="on">16</span><span class="ot">Dud Rounds</span>Next OpFor Fire order rolls one fewer die.</div>
 
     <div class="ocard"><span class="on">21</span><span class="ot">Drifting Smoke</span>4" smoke on the centerline; blocks LoS to start of your next turn.</div>
