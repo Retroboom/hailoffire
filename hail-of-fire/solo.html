@@ -462,6 +462,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <thead><tr><th>Trigger</th><th>Spend</th></tr></thead>
     <tbody>
       <tr><td class="hd">You declare an assault into an OpFor Team, and the OpFor has a unit that could fire on the assaulters before they connect</td><td>1 HP to interrupt and fire (suppress the charge before it lands)</td></tr>
+      <tr><td class="hd">A Hidden unit just revealed during your turn with its ambush in front of it (2.6, trigger 1)</td><td>1 HP to activate it on the spot</td></tr>
       <tr><td class="hd">An OpFor gun or tank could get a shot whose AT beats the armor it would strike (often by flanking) but has already activated this turn</td><td>1 HP to re-activate it and take the shot</td></tr>
       <tr><td class="hd">Posture is Press and an assault would land this turn if one more suppressing volley goes in</td><td>1 HP to re-activate a fire unit and set up the assault</td></tr>
       <tr><td class="hd">An OpFor unit is one activation from taking or saving an objective and is out of Order Points</td><td>1 HP to activate it</td></tr>
@@ -473,6 +474,39 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
   <div class="dn rust">
     <span class="tag-label">Designer's Note</span>
     <p>The interrupt trigger is the one that makes the enemy feel alive. The first time a defending gun crew you thought you had pinned suddenly barks back and pulps your assault a half-inch short of the hedgerow, on a Hero Point you did not know it had, the bot will have earned its keep. That uncertainty is not simulated. It is the same hidden Hero Point pool a human would hold, run by a rule instead of a grudge.</p>
+  </div>
+
+  <div class="bar"><span class="barnum">2.6</span> Hidden Teams: the Ambush Doctrine</div>
+
+  <p>The base game lets a defender deploy Hidden Teams that are never pre-plotted: they simply appear, anywhere legal, whenever their owner chooses. Two-player, that is the finest fog rule in the book. Solo, it is the one place the rules hand you a decision that belongs entirely to the enemy. This doctrine takes that decision away from you in three pieces: a <strong>charge</strong> fixes what each Hidden unit is protecting, <strong>triggers</strong> fix when it appears, and a <strong>placement rule</strong> fixes where. All base-game reveal legality applies unchanged: inside its deployment zone, out of your LoS anywhere, or in concealing terrain outside 16" of your Infantry, Gun, and Open-Topped Teams (8" for your other Vehicles), minus any distance your Team just moved; your Recon stretches those distances to 24".</p>
+
+  <h4>Charges, assigned at setup</h4>
+  <p>When the OpFor defends, its on-table units deploy Hidden and Dug-In as normal, but are not placed. Write each unit's name beside a charge:</p>
+  <ul>
+    <li><strong>Each AT Gun unit</strong>: the armor approach: the road, or failing one, the widest open corridor into the defense.</li>
+    <li><strong>Each MG/HMG unit</strong>: the widest open ground in front of an objective.</li>
+    <li><strong>Each Infantry platoon</strong>: an objective, nearest-to-your-edge first, one platoon per objective before any doubles up.</li>
+    <li><strong>Anything left</strong>: doubles up, starting at the objective nearest your edge.</li>
+  </ul>
+
+  <h4>When it reveals</h4>
+  <p>Check after each of your activations resolves, and at the start of each OpFor turn. Take the first trigger that applies.</p>
+  <div class="twrap"><table class="khaki">
+    <caption>Reveal Triggers</caption>
+    <thead><tr><th>#</th><th>Trigger</th><th>Then</th></tr></thead>
+    <tbody>
+      <tr><td class="hd c">1</td><td class="hd">The kill is on: from some legal position the unit would, this instant, qualify for priority steps 1-3 (armor inside an AT gun's range on its approach; a non-Ready Team it could charge; infantry crossing its lane in the open)</td><td>Reveal there. It acts on the OpFor's next Order Point, or immediately by Hero Point during your turn (2.5)</td></tr>
+      <tr><td class="hd c">2</td><td class="hd">The window is closing: your advance would leave no legal reveal position from which the unit could still cover its charge</td><td>Reveal now, in the best position remaining</td></tr>
+      <tr><td class="hd c">3</td><td class="hd">The charge is threatened: an OpFor turn begins with any of your Teams within charge reach of the unit's charge</td><td>Reveal before Order Points are spent</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Where it appears</h4>
+  <p>Among legal positions, the unit appears where it: <strong>(a)</strong> covers its charge, with LoS and range to whatever tripped the trigger; <strong>(b)</strong> keeps concealing terrain and its foxholes (a reveal without a move is still Dug-In: Hard Cover and Concealment both); and <strong>(c)</strong> on any remaining tie, stands where you would least like it. Reveal the whole unit together, in a spread its Leader can command (LoS to his Teams). Revealing costs nothing and is not an activation.</p>
+
+  <div class="dn">
+    <span class="tag-label">When You Defend</span>
+    <p>Your own Hidden units use the base rules exactly as written: reveal them where and when you please. That cunning is yours by right. The doctrine above exists only because the OpFor's cunning has to come from somewhere that is not your thumb on its side of the scale, and this is the page where the arm's-length habit earns its keep: you will always know the ambush is out there, so let the trigger, not your route planning, decide when it springs.</p>
   </div>
 
 </div></div>
@@ -986,7 +1020,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
 <div class="page"><div class="prose wide">
 
-  <p class="lede">Each mission below is a complete solo battle: who the OpFor plays, how to set up, what wins it. Suggested forces are given in HoF's example-platoon language, so scale them to the models you own; the shapes matter more than the exact rosters. Every mission names the arsenal it wants to show off, from bare rifle platoons up to bunkers, flamethrowers, and armor.</p>
+  <p class="lede">Each mission below is a complete solo battle: who the OpFor plays, how to set up, what wins it. Suggested forces are given in HoF's example-platoon language, so scale them to the models you own; the shapes matter more than the exact rosters. Every mission names the arsenal it wants to show off, from bare rifle platoons up to bunkers, flamethrowers, and armor. Wherever a mission gives the OpFor the defense, its on-table units set up Hidden by the Ambush Doctrine (2.6) unless the mission says otherwise.</p>
 
   <div class="bar"><span class="barnum">6.0</span> Build Your Own</div>
   <p>To turn any HoF setup into a solo mission, answer five questions in order, then play:</p>
@@ -1283,6 +1317,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
       <h4>OpFor spends a Hero Point to…</h4>
       <ul>
         <li><strong>Interrupt</strong> and fire on your assault before it lands.</li>
+        <li><strong>Spring an ambush</strong>: activate a just-revealed Hidden unit on your turn.</li>
         <li><strong>Re-activate</strong> a gun/tank for a shot where AT beats the armor struck.</li>
         <li><strong>Re-activate</strong> a fire unit to complete an assault set-up (Press).</li>
         <li><strong>Activate</strong> a unit that can take or save an objective.</li>
@@ -1297,6 +1332,13 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
       </ul>
     </div>
   </div>
+
+  <h4>Hidden units (OpFor defending, 2.6)</h4>
+  <ul>
+    <li><strong>Charges at setup</strong>: AT guns &rarr; the armor approach; MGs &rarr; the widest lane before an objective; infantry &rarr; objectives, nearest-first; leftovers double up.</li>
+    <li><strong>Reveal when</strong> (first that applies): the kill is on (a legal position satisfies steps 1-3 now); the window is closing (your advance would seal off every legal position covering its charge); an OpFor turn starts with your Teams inside charge reach of its charge.</li>
+    <li><strong>Place</strong> at the legal spot that covers the charge; keep terrain and foxholes (no move = still Dug-In); ties &rarr; where you would least like it.</li>
+  </ul>
 
   <div class="dn rust">
     <span class="tag-label">The Golden Rule</span>
@@ -1318,7 +1360,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
   <div class="bar"><span class="barnum">10.1</span> The Situation</div>
   <ul>
-    <li>The OpFor (Defender) holds a walled village. A <strong>Grenadier Platoon</strong> (PL + 4 Rifle/MG Teams, one carrying 1 RFP) is in the buildings. An <strong>HMG Team</strong> covers the open approach. A <strong>PaK40</strong>, still Hidden, watches the road.</li>
+    <li>The OpFor (Defender) holds a walled village. A <strong>Grenadier Platoon</strong> (PL + 4 Rifle/MG Teams, one carrying 1 RFP) is in the buildings. An <strong>HMG Team</strong> covers the open approach. A <strong>PaK40</strong>, still Hidden, is charged with the road: the armor approach (2.6).</li>
     <li>You (Attacker) have two Rifle Platoons at the edge of a wheatfield 7" out, a Sherman platoon on the road, and one objective already yours; two more sit in the village, OpFor-held.</li>
     <li>It is <strong>turn 4 of an 8-turn Clock</strong>. The OpFor is at full strength. Hero Points: yours 3, the OpFor's hidden.</li>
   </ul>
@@ -1339,7 +1381,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
   <h3>Order Point 1 &middot; walk the priority</h3>
   <p>You read the Activation Priority from the top. Step 1 (assault a non-Ready enemy): none of your Teams are in contact, so no. Step 2 (a penetrating shot at armor): the hidden PaK40 has your Sherman platoon on the road, 16" off, squarely in arc. AT 5 versus front Armor 2 is a clean penetrating shot. <strong>Step 2 fires.</strong></p>
-  <p>The OpFor activates the PaK40, which reveals from Hidden as it fires. Its card confirms the choice: priority 1, armor where AT &gt; AR. It targets the nearest Sherman. Declare Fire, resolve its own RFPs (none), execute: RoF 2 at 4+ rolls <span class="roll">5, 6</span>, 2 hits. First hit to the target Sherman, second to another within 4". Penetration on the first: AT 5 vs AR 2, roll the difference (3 dice) hunting 6s: <span class="roll">2, 4, 6</span>. <strong>One Sherman destroyed.</strong> The second Sherman takes its penetration roll: <span class="roll">1, 3, 4</span>, no 6, so RFPs equal to the gun's Firepower instead: 1 RFP, and nobody yet knows if that crew is dead or just rattled. The fog is automatic; you did not have to decide a thing for the enemy.</p>
+  <p>The OpFor activates the PaK40, which reveals from Hidden as it fires: your Shermans on the road tripped Ambush trigger 1 (the kill is on), and the hedged bank beside the road cut is the legal position that covers its charge. Its card confirms the choice: priority 1, armor where AT &gt; AR. It targets the nearest Sherman. Declare Fire, resolve its own RFPs (none), execute: RoF 2 at 4+ rolls <span class="roll">5, 6</span>, 2 hits. First hit to the target Sherman, second to another within 4". Penetration on the first: AT 5 vs AR 2, roll the difference (3 dice) hunting 6s: <span class="roll">2, 4, 6</span>. <strong>One Sherman destroyed.</strong> The second Sherman takes its penetration roll: <span class="roll">1, 3, 4</span>, no 6, so RFPs equal to the gun's Firepower instead: 1 RFP, and nobody yet knows if that crew is dead or just rattled. The fog is automatic; you did not have to decide a thing for the enemy.</p>
 
   <h3>Order Point 2 &middot; recheck from the top</h3>
   <p>The board changed, so you recheck. Step 1: still no non-Ready enemy in contact. Step 2: the PaK40 already fired (it would need a Hero Point to fire again). Step 3 (fire on an assault threat): your leading Rifle Platoon is unsuppressed and sits 7" from the village wall, inside infantry charge reach (8"). That is the whole test; no guessing about your plans required. Had it been sitting at 12", the OpFor would have shrugged: even a Leader-led spearhead lands from there barely one time in four, with the rest of the wave stranded behind it. <strong>Step 3 fires.</strong></p>
