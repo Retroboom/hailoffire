@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forsaken Dark — A Game of Consequence and Shadow</title>
+<title>Forsaken Dark — Blood Dice Edition</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -179,7 +179,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
 <nav class="navbar" id="navbar" aria-label="Chapter navigation">
   <div class="navbar-bar" id="navbar-bar" role="button" tabindex="0" aria-expanded="false" aria-controls="navmenu">
-    <span class="current" id="navbar-current"><b>†</b>Forsaken Dark</span>
+    <span class="current" id="navbar-current"><b>†</b>Forsaken Dark — Blood Dice</span>
     <span class="toggle">Contents <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
   </div>
   <div class="navmenu" id="navmenu">
@@ -204,10 +204,10 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <h1>FORSAKEN<br><em>DARK</em></h1>
   <p class="tag">"Describe your deed. Then brace for consequence." A tabletop game of cursed steel, hungry gods, and the price paid for power.</p>
   <div class="meta">
-    <span>SYSTEM<b>1d20 + attribute bonus</b></span>
-    <span>RESOLUTION<b>Five bands, one table</b></span>
+    <span>SYSTEM<b>D6 dice pool</b></span>
+    <span>RESOLUTION<b>Boost vs. Challenge, five bands</b></span>
     <span>THEME<b>Flesh, faith, and flame</b></span>
-    <span>EDITION<b>Working draft</b></span>
+    <span>EDITION<b>Blood Dice variant</b></span>
   </div>
 </header>
 
@@ -314,31 +314,67 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 <div class="divider" id="resolution">
   <div class="num">PART 02 // RESOLUTION</div>
   <h2>Core Resolution</h2>
-  <p class="dek">One roll. One table. Five ways for the world to answer you.</p>
+  <p class="dek">Two fistfuls of d6. One table. Five ways for the world to answer you.</p>
 </div>
 
 <section class="prose">
-  <p>When the GM calls for a roll, roll <strong>1d20 + relevant attribute bonus</strong>:</p>
+  <p>When the GM calls for a roll, you and the GM each build a pool of d6 and roll them together.</p>
+
+  <div class="cols two">
+    <div>
+      <h3 class="sub" style="color:var(--arcane-ink)">Boost pool — rolled by you</h3>
+      <p>Roll 1d6 for:</p>
+      <ul>
+        <li>A base die, just for attempting the deed</li>
+        <li>Your relevant Attribute bonus, <em>if positive</em> (1 die per point)</li>
+        <li>Each rank in a relevant Discipline</li>
+        <li>Any other bonus this book grants the roll (1 die per point)</li>
+        <li>Any fictional edge the GM agrees is worth a die — good positioning, a clever plan, help from an ally</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sub" style="color:var(--blood-ink)">Challenge pool — rolled by the GM</h3>
+      <p>Roll 1d6 for:</p>
+      <ul>
+        <li>A base die representing the danger of the task (usually 1)</li>
+        <li>Your relevant Attribute bonus, <em>if negative</em> (1 die per point, ignoring the sign)</li>
+        <li>Any penalty this book applies to the roll (1 die per point)</li>
+        <li>Any situational danger — outnumbered, exhausted, poor footing, a hardened target</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout arcane">
+    <span class="tag-label">Converting the rest of this book</span>
+    <p>Everywhere else in this book, a flat bonus or penalty to a roll converts directly into dice: <strong>each positive point adds one Boost die, each negative point adds one Challenge die.</strong> A Discipline rank that "grants +1," an Injury that imposes "−2," committed Favor, Wizardry Potency — all of it. You never need to re-read those rules; just reach for the matching number of dice instead of adding the number to a total. <strong>Advantage</strong> means add 1 Boost die; <strong>Disadvantage</strong> means add 1 Challenge die.</p>
+  </div>
+
+  <p>Each die that shows a <strong>1 or a 6</strong> is a Success. Compare the two pools:</p>
 
   <div class="bandstrip">
-    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">1</span><span class="lbl">Critical Failure</span></div>
-    <div class="b fail"><span class="sym">▼</span><span class="rng">2–9</span><span class="lbl">Failure w/ Consequence</span></div>
-    <div class="b partial"><span class="sym">◇</span><span class="rng">10–15</span><span class="lbl">Success w/ Cost</span></div>
-    <div class="b success"><span class="sym">▲</span><span class="rng">16–19</span><span class="lbl">Success</span></div>
-    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">20+</span><span class="lbl">Critical Success</span></div>
+    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">Miss by 2+</span><span class="lbl">Critical Failure</span></div>
+    <div class="b fail"><span class="sym">▼</span><span class="rng">Miss by 1</span><span class="lbl">Failure w/ Consequence</span></div>
+    <div class="b partial"><span class="sym">◇</span><span class="rng">Push</span><span class="lbl">Success w/ Cost</span></div>
+    <div class="b success"><span class="sym">▲</span><span class="rng">Hit by 1</span><span class="lbl">Success</span></div>
+    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">Hit by 2+</span><span class="lbl">Critical Success</span></div>
   </div>
 
   <ul>
-    <li><strong>20+ — Critical Success:</strong> you succeed and gain an extra benefit.</li>
-    <li><strong>16–19 — Success:</strong> you accomplish your goal.</li>
-    <li><strong>10–15 — Success with Cost:</strong> you succeed, but complications arise.</li>
-    <li><strong>2–9 — Failure with Consequence:</strong> you fail and the situation worsens.</li>
-    <li><strong>1 — Critical Failure:</strong> catastrophic failure with lasting repercussions.</li>
+    <li><strong>Hit by 2 or more — Critical Success:</strong> your Boost Successes beat the Challenge's by 2+. You succeed and gain an extra benefit.</li>
+    <li><strong>Hit by 1 — Success:</strong> your Boost Successes beat the Challenge's by 1. You accomplish your goal.</li>
+    <li><strong>Push — Success with Cost:</strong> equal Successes on both sides (including 0–0). You succeed, but complications arise.</li>
+    <li><strong>Miss by 1 — Failure with Consequence:</strong> the Challenge's Successes beat yours by 1. You fail and the situation worsens.</li>
+    <li><strong>Miss by 2 or more — Critical Failure:</strong> the Challenge's Successes beat yours by 2+. Catastrophic failure with lasting repercussions.</li>
   </ul>
 
   <div class="example">
+    <span class="tag-label">Worked example</span>
+    <p>Corvin (STR +3) tries to force open a rusted portcullis. That's 1 base die + 3 for his Strength = 4 Boost dice. The GM rules it's stiff but not impossible: 1 base Challenge die, +1 for the rust jamming the mechanism = 2 Challenge dice. Corvin rolls 4d6: <span class="roll b">3, 1, 6, 4</span> — two Successes (the 1 and the 6). The GM rolls 2d6: <span class="roll r">5, 1</span> — one Success. Corvin's 2 beats the GM's 1 by exactly 1: a plain Success. The gate grinds open.</p>
+  </div>
+
+  <div class="example">
     <span class="tag-label">Field note</span>
-    <p>Some actions use specialized tables (Fight, Dodge, Shoot, Cast) with the same result bands but specific outcomes. The band symbols (▼▼, ▼, ◇, ▲, ▲▲) are shorthand you'll see throughout this book and on the quick reference in Part 09.</p>
+    <p>Some actions use specialized tables (Fight, Dodge, Shoot, Cast) with the same five bands but specific outcomes. The band symbols (▼▼, ▼, ◇, ▲, ▲▲) are shorthand you'll see throughout this book and on the quick reference in Part 09 — they mean exactly what they meant before, only the dice underneath them changed.</p>
   </div>
 </section>
 
@@ -356,20 +392,20 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <blockquote>"The blade is a language. You learn fluency by bleeding."</blockquote>
   <p>Choose one weapon type. Each rank grants:</p>
   <ul>
-    <li>+1 to attack rolls</li>
+    <li>+1 Boost die to attack rolls</li>
     <li>+1 harm dealt</li>
     <li>+1 protection when using Protect Yourself</li>
   </ul>
 
   <h3 class="sub">Tricks of the Trade</h3>
   <blockquote>"Magic bends the world, but the right tool breaks it clean."</blockquote>
-  <p>Choose one specialty. When performing related actions, add an extra die based on your rank:</p>
+  <p>Choose one specialty. When performing related actions, add Boost dice based on your rank:</p>
   <ul>
-    <li><strong>Practiced</strong> (+1d4) — reliable under pressure</li>
-    <li><strong>Skilled</strong> (+1d6) — professional confidence and speed</li>
-    <li><strong>Accomplished</strong> (+1d8) — artistic mastery, recognized by peers</li>
+    <li><strong>Practiced</strong> (+1 die) — reliable under pressure</li>
+    <li><strong>Skilled</strong> (+2 dice) — professional confidence and speed</li>
+    <li><strong>Accomplished</strong> (+3 dice) — artistic mastery, recognized by peers</li>
   </ul>
-  <p><strong>Physical tasks:</strong> roll 1d20 + AGI + bonus die.<br><strong>Knowledge tests:</strong> roll 1d20 + INT + bonus die.</p>
+  <p><strong>Physical tasks:</strong> build your Boost pool from AGI + your Tricks bonus dice.<br><strong>Knowledge tests:</strong> build your Boost pool from INT + your Tricks bonus dice.</p>
   <p><strong>Specialties available:</strong></p>
   <ul>
     <li><strong>Locks &amp; Traps</strong> — disabling, rigging, recognizing mechanical/magical hazards</li>
@@ -381,8 +417,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <blockquote>"Ink remembers what the tongue forgets. The skin holds what the mind cannot."</blockquote>
   <p>Each rank grants:</p>
   <ul>
-    <li>+1 to casting rolls (WIL + Wizardry)</li>
-    <li>+1 to magical research and item identification (INT + Wizardry)</li>
+    <li>+1 Boost die to casting rolls (WIL + Wizardry)</li>
+    <li>+1 Boost die to magical research and item identification (INT + Wizardry)</li>
   </ul>
   <p>Spells must be <strong>tattooed</strong>, read from <strong>scrolls/books</strong>, or stored in <strong>wands/staves</strong>. To cast, one hand must be free (unless tattooed), the other holding your magical reference. See <a href="#magic">Part 07</a> for the full casting rules.</p>
 
@@ -390,7 +426,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <blockquote>"Your god may be silent. That does not mean they are not watching."</blockquote>
   <p>Each rank grants:</p>
   <ul>
-    <li>+1 to divine intervention (CHA + Divinity)</li>
+    <li>+1 Boost die to Providence rolls (CHA + Divinity)</li>
     <li>Increases maximum Favor (CHA + Divinity total)</li>
   </ul>
   <p>See <a href="#divinity">Part 08</a> for Domains, Commandments, and the full rules of Providence.</p>
@@ -407,7 +443,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <h3 class="sub">Gaining Experience</h3>
   <p>Earn 1 XP when you:</p>
   <ul>
-    <li>Roll 9 or less on any attribute check</li>
+    <li>Miss (either tier) on any attribute check</li>
     <li>Roleplay your character's traits meaningfully</li>
     <li>Complete a significant goal</li>
     <li>Execute a clever plan</li>
@@ -425,7 +461,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <span class="tag-label">Attribute cap</span>
     <p>No attribute may be raised above <strong>18</strong> through leveling. If the random 1d6 in step 2 lands on an attribute already at 18, raise a different attribute of your choice by 1 instead.</p>
   </div>
-  <p class="tnote">This doesn't restore Critical Failure at high scores — that band disappears the moment any attribute bonus goes positive (score 11+), by the math of the core table itself, capped or not. What the cap protects is the other four bands: without it, a high-level character's bonus can grow large enough that Critical Success stops feeling special and Failure all but disappears too, flattening the table into "always succeed." An 18 keeps real texture in every band except the one that was never going to survive a positive bonus regardless.</p>
+  <p class="tnote">The pool version doesn't have the d20 version's problem of Critical Failure becoming mathematically impossible — with two pools of dice instead of one flat total, the GM's Challenge pool can always roll enough Successes to beat you by 2, no matter how large your Boost pool gets. What the cap protects here is the table itself: without it, an attribute bonus can keep growing every level, and a Boost pool of 12, 15, or 20 dice becomes unwieldy to actually roll and count, while making the GM's Challenge pool feel like it can never realistically keep pace unless monsters scale just as aggressively. An 18 keeps Boost pools at a size you can physically handle and keeps threat scaling sane on the GM's side of the table.</p>
 
   <div class="callout blood">
     <span class="tag-label">Training requirements</span>
@@ -547,13 +583,13 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>If you fight, you will bleed, the question is whether you'll make them bleed worse.</p>
 
   <h3 class="sub" id="fight">Fight (Melee Combat)</h3>
-  <p>Roll 1d20 + AGI:</p>
+  <p>Build your Boost pool from AGI (plus Weapon Mastery and any edge); the GM builds Challenge from the foe's danger. Roll and compare:</p>
   <ul>
-    <li><strong>20+:</strong> suffer harm, choose 3 options</li>
-    <li><strong>16–19:</strong> suffer harm, choose 2 options</li>
-    <li><strong>10–15:</strong> suffer harm, choose 1 option</li>
-    <li><strong>2–9:</strong> suffer harm, gain 1 XP</li>
-    <li><strong>1:</strong> suffer harm + 1d6 extra, gain 1 XP</li>
+    <li><strong>Hit by 2+:</strong> suffer harm, choose 3 options</li>
+    <li><strong>Hit by 1:</strong> suffer harm, choose 2 options</li>
+    <li><strong>Push:</strong> suffer harm, choose 1 option</li>
+    <li><strong>Miss by 1:</strong> suffer harm, gain 1 XP</li>
+    <li><strong>Miss by 2+:</strong> suffer harm + 1d6 extra, gain 1 XP</li>
   </ul>
   <p><strong>Combat Options:</strong></p>
   <ul>
@@ -565,22 +601,22 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
 
   <div class="callout blood">
     <span class="tag-label">Why you "suffer harm" on every result</span>
-    <p>Notice every band on the Fight table says <em>suffer harm</em>, even a 20+. That's not a typo — melee is mutual and simultaneous. Your Fight roll never decides whether you get hit; it decides how many Combat Options you get to spend, and <strong>Protect Yourself</strong> is one of those options. Roll badly and you can't reduce what's coming. Roll well and you can choose to blunt it, land your own blow, and seize an advantage, all in the same breath.</p>
+    <p>Notice every band on the Fight table says <em>suffer harm</em>, even Hit by 2+. That's not a typo — melee is mutual and simultaneous. Your Fight roll never decides whether you get hit; it decides how many Combat Options you get to spend, and <strong>Protect Yourself</strong> is one of those options. Roll badly and you can't reduce what's coming. Roll well and you can choose to blunt it, land your own blow, and seize an advantage, all in the same breath.</p>
   </div>
 
   <div class="example">
     <span class="tag-label">Worked example</span>
-    <p>Mireth (AGI +2) swings her Arming Sword at a Tallow Ghoul. She rolls 14 + 2 = 16 — a Success, two Combat Options. She takes the base 1d6 harm from the exchange no matter what she picks. She chooses <strong>Land Your Blow</strong> (her sword deals its 1d6, modified by its Versatile tag) and <strong>Protect Yourself</strong> (−1 to the harm she just took). If she'd rolled a 9 instead — a Failure — she'd still take her harm in full, gain 1 XP, and get no options at all: no blow landed, no reduction, nothing but the wound.</p>
+    <p>Mireth (AGI +2) swings her Arming Sword at a Tallow Ghoul: 1 base die + 2 for her Agility = 3 Boost dice. The GM sets the ghoul's Challenge at 1 base die (it's fast but stupid). Mireth rolls <span class="roll b">2, 6, 4</span> — one Success. The GM rolls <span class="roll r">3</span> — no Success. Mireth's 1 beats the GM's 0: a Success, two Combat Options. She takes the base 1d6 harm from the exchange no matter what she picks. She chooses <strong>Land Your Blow</strong> (her sword deals its 1d6, modified by its Versatile tag) and <strong>Protect Yourself</strong> (−1 to the harm she just took). If she'd rolled zero Successes to the GM's one instead — a Miss by 1 — she'd still take her harm in full, gain 1 XP, and get no options at all: no blow landed, no reduction, nothing but the wound.</p>
   </div>
 
   <h3 class="sub" id="shoot">Shoot or Throw (Ranged Attacks)</h3>
-  <p>Roll 1d20 + PER:</p>
+  <p>Build your Boost pool from PER (plus any edge); the GM builds Challenge from distance, cover, and the target's evasion. Roll and compare:</p>
   <ul>
-    <li><strong>20+:</strong> hit, choose 3 options</li>
-    <li><strong>16–19:</strong> hit, choose 2 options</li>
-    <li><strong>10–15:</strong> hit, choose 1 option</li>
-    <li><strong>2–9:</strong> miss, gain 1 XP</li>
-    <li><strong>1:</strong> miss, lose extra ammo, gain 1 XP</li>
+    <li><strong>Hit by 2+:</strong> hit, choose 3 options</li>
+    <li><strong>Hit by 1:</strong> hit, choose 2 options</li>
+    <li><strong>Push:</strong> hit, choose 1 option</li>
+    <li><strong>Miss by 1:</strong> miss, gain 1 XP</li>
+    <li><strong>Miss by 2+:</strong> miss, lose extra ammo, gain 1 XP</li>
   </ul>
   <p><strong>Ranged Options:</strong></p>
   <ul>
@@ -590,13 +626,13 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   </ul>
 
   <h3 class="sub" id="dodge">Dodge (Evading Harm)</h3>
-  <p>Roll 1d20 + AGI:</p>
+  <p>Build your Boost pool from AGI (plus any edge); the GM builds Challenge from however many foes or attacks you're evading. Roll and compare:</p>
   <ul>
-    <li><strong>20+:</strong> avoid harm completely, may counterattack or reposition</li>
-    <li><strong>16–19:</strong> avoid harm entirely</li>
-    <li><strong>10–15:</strong> choose 2 options</li>
-    <li><strong>2–9:</strong> choose 1 option, gain 1 XP</li>
-    <li><strong>1:</strong> choose 0 options, gain 1 XP</li>
+    <li><strong>Hit by 2+:</strong> avoid harm completely, may counterattack or reposition</li>
+    <li><strong>Hit by 1:</strong> avoid harm entirely</li>
+    <li><strong>Push:</strong> choose 2 options</li>
+    <li><strong>Miss by 1:</strong> choose 1 option, gain 1 XP</li>
+    <li><strong>Miss by 2+:</strong> choose 0 options, gain 1 XP</li>
   </ul>
   <p><strong>Dodge Options:</strong></p>
   <ul>
@@ -634,8 +670,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>When injured:</p>
   <ul>
     <li>Roll 1d6 on the table that matches what hurt you, adding <strong>+1 to the roll for every Injury you're already carrying (to a maximum of +3)</strong>: <strong>Slash Wounds</strong> for Slash-tagged weapons, <strong>Puncture Wounds</strong> for Pierce-tagged weapons, <strong>Blunt Trauma</strong> for Bludgeon-tagged weapons, <strong>Other Harm</strong> for falls, fire, poison, and anything without a clean weapon tag, or <strong>Horror &amp; Madness</strong> when the wound is to the mind rather than the body (fear, corruption, divine displeasure, magical trauma)</li>
-    <li>Suffer −1 to all d20 rolls until healed</li>
-    <li>May make a WIL check (10+) to ignore the penalty for one turn</li>
+    <li>Suffer +1 Challenge die on all rolls until healed</li>
+    <li>May make a WIL check (Push or better) to ignore the penalty for one turn</li>
   </ul>
 
   <div class="example">
@@ -711,9 +747,9 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <tr><th>D6</th><th>Trauma</th><th>Effect During Healing</th><th>Healing</th></tr>
     <tr><td class="hd">1</td><td>Shaken</td><td>None lasting</td><td>–</td></tr>
     <tr><td class="hd">2</td><td>Rattled</td><td>−1 to all WIL rolls</td><td>1d6 days</td></tr>
-    <tr><td class="hd">3</td><td>Haunted</td><td>Nightmares — WIL check (10+) each night's rest or it doesn't count</td><td>1d6 days</td></tr>
+    <tr><td class="hd">3</td><td>Haunted</td><td>Nightmares — WIL check (Push or better) each night's rest or it doesn't count</td><td>1d6 days</td></tr>
     <tr><td class="hd">4</td><td>Fractured mind</td><td>A lasting phobia, compulsion, or delusion takes hold (pick one with the GM and roleplay it)</td><td>2d6 days</td></tr>
-    <tr><td class="hd">5</td><td>Unraveling</td><td>WIL check (10+) each Watch or lash out at the nearest ally or enemy (GM decides); −2 to all rolls while active</td><td>2d6 days</td></tr>
+    <tr><td class="hd">5</td><td>Unraveling</td><td>WIL check (Push or better) each Watch or lash out at the nearest ally or enemy (GM decides); +2 Challenge dice on all rolls while active</td><td>2d6 days</td></tr>
     <tr><td class="hd sig">6</td><td>Broken</td><td>Permanently altered personality, or a lost chunk of memory (your choice, decided with the GM)</td><td>Permanent</td></tr>
     <tr><td class="hd sig">7</td><td>Heart stops</td><td class="sig">You die of pure fright</td><td>–</td></tr>
   </table>
@@ -741,20 +777,20 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>Magic is not learned, it is inherited. Every spell was carved long ago by something inhuman, passed skin to skin in an unbroken chain of suffering. To wield magic is to negotiate with power that does not wish to be summoned.</p>
 
   <h3 class="sub">Casting Spells</h3>
-  <p>Roll 1d20 + WIL + Wizardry:</p>
+  <p>Build your Boost pool from WIL + Wizardry + committed Potency; the GM builds Challenge from the spell's inherent danger and the target's resistance. Roll and compare:</p>
   <ul>
-    <li><strong>20+:</strong> spell manifests with enhanced effect</li>
-    <li><strong>16–19:</strong> spell succeeds normally</li>
-    <li><strong>10–15:</strong> spell succeeds, but 1 mishap per Potency level</li>
-    <li><strong>2–9:</strong> spell fails, 1 mishap per Potency, gain 1 XP</li>
-    <li><strong>1:</strong> catastrophic failure, 2 mishaps per Potency, gain 1 XP</li>
+    <li><strong>Hit by 2+:</strong> spell manifests with enhanced effect</li>
+    <li><strong>Hit by 1:</strong> spell succeeds normally</li>
+    <li><strong>Push:</strong> spell succeeds, but 1 mishap per Potency level</li>
+    <li><strong>Miss by 1:</strong> spell fails, 1 mishap per Potency, gain 1 XP</li>
+    <li><strong>Miss by 2+:</strong> catastrophic failure, 2 mishaps per Potency, gain 1 XP</li>
   </ul>
 
   <div class="callout arcane">
     <span class="tag-label">Potency levels</span>
-    <p>Higher Potency increases effect power but multiplies mishaps. Each Potency above 1 gives intelligent targets −1 to resist.</p>
+    <p>Higher Potency increases effect power but multiplies mishaps. Each Potency above 1 gives intelligent targets +1 Challenge die to resist.</p>
   </div>
-  <p><strong>Encumbrance Penalty:</strong> negative AGI from gear applies to casting rolls.<br><strong>Burn Willpower:</strong> spend 1 WIL to reroll a failed casting attempt.</p>
+  <p><strong>Encumbrance Penalty:</strong> negative AGI from gear adds Challenge dice to casting rolls.<br><strong>Burn Willpower:</strong> spend 1 WIL to reroll every die in your Boost pool that didn't show a Success.</p>
 
   <h3 class="sub" id="mishaps">Wizardry Mishaps</h3>
   <blockquote>"Power borrowed from something inhuman rarely comes back exactly as lent."</blockquote>
@@ -796,7 +832,7 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <tr><td class="hd sig">62</td><td>Caster and target immediately produce thousands of tiny spiders from their pores, incapacitating them for 1d6 rounds. The spiders spread in every direction, then amass into 1d6 dog-sized giant spiders (resistant to piercing, weak to bludgeoning and fire). If they survive 3+ rounds, they combine into one elephant-sized spider that remains until killed</td></tr>
     <tr><td class="hd sig">63</td><td>Target erupts with blood from every orifice for one round, body held stiff by the pressure. They drop, unresponsive for 1d6 rounds, all stats halved</td></tr>
     <tr><td class="hd sig">64</td><td>A tiny, pitiful creature (a rat, a worm, a one-eyed crow) appears at the wizard's feet and imprints on them. It follows everywhere, cannot be harmed, and whispers strange words in an unknown language while they sleep</td></tr>
-    <tr><td class="hd sig">65</td><td>The wizard briefly glimpses something behind reality — a massive, coiling entity pressing against the edges of existence. For a split second, it looks at them. WIL check (16+) or suffer nightmares for 1d10 days</td></tr>
+    <tr><td class="hd sig">65</td><td>The wizard briefly glimpses something behind reality — a massive, coiling entity pressing against the edges of existence. For a split second, it looks at them. WIL check (a Hit, not just a Push) or suffer nightmares for 1d10 days</td></tr>
     <tr><td class="hd sig">66</td><td>Caster immediately explodes into fire and gore (dead), igniting and knocking down everything within 10ft</td></tr>
   </table>
   </div>
@@ -805,8 +841,8 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>Perform careful, extended casting to reduce risk:</p>
   <ul>
     <li>Declare total duration (max 90 minutes)</li>
-    <li>Gain +1 to casting roll per 10 minutes spent</li>
-    <li><strong>Risk:</strong> Potency 2+ causes disadvantage per level above 1</li>
+    <li>Gain +1 Boost die per 20 minutes spent (up to +4 dice at the full 90)</li>
+    <li><strong>Risk:</strong> Potency 2+ adds 1 Challenge die per level above 1</li>
     <li><strong>Interruption:</strong> any disturbance ruins the ritual completely</li>
   </ul>
 
@@ -862,13 +898,13 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
     <li>Roll INT + Wizardry bonus if applicable</li>
     <li>Modify for tool quality and component rarity</li>
   </ul>
-  <p><strong>Results</strong> (the same five bands as every other roll in this book):</p>
+  <p><strong>Results</strong> (the same five bands as every other roll in this book — Boost from INT + Wizardry bonus, Challenge from tool quality and component rarity):</p>
   <ul>
-    <li><strong>20+:</strong> stable, effective item, plus one extra dose or a faster, cheaper batch</li>
-    <li><strong>16–19:</strong> stable, effective item</li>
-    <li><strong>10–15:</strong> weakened or with unexpected side effects</li>
-    <li><strong>2–9:</strong> ingredients wasted, no further consequence</li>
-    <li><strong>1:</strong> ingredients wasted, and the batch turns dangerous — the alchemist suffers 1d6 harm or the GM rolls a Wizardry Mishap instead</li>
+    <li><strong>Hit by 2+:</strong> stable, effective item, plus one extra dose or a faster, cheaper batch</li>
+    <li><strong>Hit by 1:</strong> stable, effective item</li>
+    <li><strong>Push:</strong> weakened or with unexpected side effects</li>
+    <li><strong>Miss by 1:</strong> ingredients wasted, no further consequence</li>
+    <li><strong>Miss by 2+:</strong> ingredients wasted, and the batch turns dangerous — the alchemist suffers 1d6 harm or the GM rolls a Wizardry Mishap instead</li>
   </ul>
   <p class="tnote"><strong>Alchemical Effects:</strong> healing potions, poisons, bombs, stimulants, antidotes. Reliable, but requires proper ingredients and procedures.</p>
 </section>
@@ -906,19 +942,19 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p>You may maintain multiple prepared prayers simultaneously, each with its own committed Favor.</p>
 
   <h3 class="sub">When Providence Might Answer</h3>
-  <p>When circumstances arise where your prepared prayer might be answered, roll <strong>1d20 + CHA + Divinity + Committed Favor</strong> using the core resolution table:</p>
+  <p>When circumstances arise where your prepared prayer might be answered, build your Boost pool from CHA + Divinity + committed Favor (1 die per point committed); the GM builds Challenge from how much your request asks of the natural order. Roll and compare using the core resolution table:</p>
   <ul>
-    <li><strong>20+ — Divine Providence:</strong> your prayer is answered completely, possibly with additional blessings</li>
-    <li><strong>16–19 — Answered Prayer:</strong> divine intervention manifests exactly as requested</li>
-    <li><strong>10–15 — Partial Answer:</strong> you receive aid, but with limitations or unexpected complications</li>
-    <li><strong>2–9 — Silence:</strong> no divine response, committed Favor is lost, gain 1 XP</li>
-    <li><strong>1 — Divine Displeasure:</strong> lose additional Favor or face a test of faith, gain 1 XP</li>
+    <li><strong>Hit by 2+ — Divine Providence:</strong> your prayer is answered completely, possibly with additional blessings</li>
+    <li><strong>Hit by 1 — Answered Prayer:</strong> divine intervention manifests exactly as requested</li>
+    <li><strong>Push — Partial Answer:</strong> you receive aid, but with limitations or unexpected complications</li>
+    <li><strong>Miss by 1 — Silence:</strong> no divine response, committed Favor is lost, gain 1 XP</li>
+    <li><strong>Miss by 2+ — Divine Displeasure:</strong> lose additional Favor or face a test of faith, gain 1 XP</li>
   </ul>
 
   <h3 class="sub">Immediate Appeals</h3>
   <p>Calling upon your god without preparation shifts results down the core resolution table:</p>
   <ul>
-    <li><strong>Spontaneous Appeal</strong> — all results shift down one band (20+ becomes 16–19, 16–19 becomes 10–15, etc.)</li>
+    <li><strong>Spontaneous Appeal</strong> — all results shift down one band (Hit by 2+ becomes Hit by 1, Hit by 1 becomes Push, etc.)</li>
     <li><strong>Desperate Plea</strong> — if you've already made an immediate appeal this day, shift down two bands</li>
   </ul>
 
@@ -999,19 +1035,20 @@ footer .ticks span::after{height:1px;top:50%;transform:translateY(-50%) rotate(4
   <p class="tnote">These ranges aren't hard limits — flex them for a creature's concept — but landing inside the tier keeps encounter difficulty predictable across every monster you build.</p>
 
   <h3 class="sub" id="qrs">Resolution Band Symbols — GM Reference</h3>
+  <p>Count Successes (1s and 6s) in each pool, then compare:</p>
   <div class="bandstrip">
-    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">1 or less</span><span class="lbl">Critical Failure</span></div>
-    <div class="b fail"><span class="sym">▼</span><span class="rng">2–9</span><span class="lbl">Failure</span></div>
-    <div class="b partial"><span class="sym">◇</span><span class="rng">10–15</span><span class="lbl">Partial Success</span></div>
-    <div class="b success"><span class="sym">▲</span><span class="rng">16–19</span><span class="lbl">Full Success</span></div>
-    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">20+</span><span class="lbl">Critical Success</span></div>
+    <div class="b crit-fail"><span class="sym">▼▼</span><span class="rng">Miss by 2+</span><span class="lbl">Critical Failure</span></div>
+    <div class="b fail"><span class="sym">▼</span><span class="rng">Miss by 1</span><span class="lbl">Failure</span></div>
+    <div class="b partial"><span class="sym">◇</span><span class="rng">Push</span><span class="lbl">Partial Success</span></div>
+    <div class="b success"><span class="sym">▲</span><span class="rng">Hit by 1</span><span class="lbl">Full Success</span></div>
+    <div class="b crit-success"><span class="sym">▲▲</span><span class="rng">Hit by 2+</span><span class="lbl">Critical Success</span></div>
   </div>
   <ul>
-    <li><strong>▼▼</strong> = Critical Failure (1 or less)</li>
-    <li><strong>▼</strong> = Failure (2–9)</li>
-    <li><strong>◇</strong> = Partial Success (10–15)</li>
-    <li><strong>▲</strong> = Full Success (16–19)</li>
-    <li><strong>▲▲</strong> = Critical Success (20+)</li>
+    <li><strong>▼▼</strong> = Critical Failure (Challenge beats Boost by 2 or more Successes)</li>
+    <li><strong>▼</strong> = Failure (Challenge beats Boost by 1 Success)</li>
+    <li><strong>◇</strong> = Partial Success (equal Successes, including 0–0)</li>
+    <li><strong>▲</strong> = Full Success (Boost beats Challenge by 1 Success)</li>
+    <li><strong>▲▲</strong> = Critical Success (Boost beats Challenge by 2 or more Successes)</li>
   </ul>
 </section>
 
