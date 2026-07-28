@@ -8,72 +8,54 @@
 <style>
   :root{
     --paper:#ece5d0; --paper-deep:#e0d7bc; --ink:#211d15; --ink-soft:#4a4436;
-    --olive:#4b5134; --sage:#b9bc8f; --sage-soft:#cfd0ab; --khaki:#ddd3b2;
-    --stamp:#9e3123; --bar:#211d15; --bar-text:#ece5d0; --card:#f2ecd9; --rule:rgba(75,81,52,.35);
+    --olive:#4b5134; --sage:#b9bc8f; --khaki:#ddd3b2; --stamp:#9e3123;
+    --bar:#211d15; --bar-text:#ece5d0; --card:#f2ecd9; --rule:rgba(75,81,52,.35);
   }
   @media (prefers-color-scheme:dark){:root{
     --paper:#181a11; --paper-deep:#11130c; --ink:#ddd5ba; --ink-soft:#a89f83;
-    --olive:#99a267; --sage:#2b301d; --sage-soft:#232817; --khaki:#232817;
-    --stamp:#d0654e; --bar:#0b0c07; --bar-text:#d6cead; --card:#1d2013; --rule:rgba(153,162,103,.3);
+    --olive:#99a267; --sage:#2b301d; --khaki:#232817; --stamp:#d0654e;
+    --bar:#0b0c07; --bar-text:#d6cead; --card:#1d2013; --rule:rgba(153,162,103,.3);
   }}
   :root[data-theme="light"]{
     --paper:#ece5d0; --paper-deep:#e0d7bc; --ink:#211d15; --ink-soft:#4a4436;
-    --olive:#4b5134; --sage:#b9bc8f; --sage-soft:#cfd0ab; --khaki:#ddd3b2;
-    --stamp:#9e3123; --bar:#211d15; --bar-text:#ece5d0; --card:#f2ecd9; --rule:rgba(75,81,52,.35);
+    --olive:#4b5134; --sage:#b9bc8f; --khaki:#ddd3b2; --stamp:#9e3123;
+    --bar:#211d15; --bar-text:#ece5d0; --card:#f2ecd9; --rule:rgba(75,81,52,.35);
   }
   :root[data-theme="dark"]{
     --paper:#181a11; --paper-deep:#11130c; --ink:#ddd5ba; --ink-soft:#a89f83;
-    --olive:#99a267; --sage:#2b301d; --sage-soft:#232817; --khaki:#232817;
-    --stamp:#d0654e; --bar:#0b0c07; --bar-text:#d6cead; --card:#1d2013; --rule:rgba(153,162,103,.3);
+    --olive:#99a267; --sage:#2b301d; --khaki:#232817; --stamp:#d0654e;
+    --bar:#0b0c07; --bar-text:#d6cead; --card:#1d2013; --rule:rgba(153,162,103,.3);
   }
   *{box-sizing:border-box}
-  body{
-    background:var(--paper); color:var(--ink); margin:0; padding:18px;
-    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
-    font-size:13.2px; line-height:1.4;
-  }
-  .head{
-    border:2px solid var(--ink); border-bottom-width:5px; padding:14px 18px; margin-bottom:16px;
+  body{background:var(--paper); color:var(--ink); margin:0; padding:18px;
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; font-size:13.2px; line-height:1.4;}
+  .head{border:2px solid var(--ink); border-bottom-width:5px; padding:14px 18px; margin-bottom:16px;
     display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap;
-    background:linear-gradient(180deg,var(--paper) 60%,var(--paper-deep));
-  }
-  .head h1{
-    font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-weight:normal;
-    text-transform:uppercase; letter-spacing:.04em; font-size:1.9rem; margin:0; line-height:1;
-  }
+    background:linear-gradient(180deg,var(--paper) 60%,var(--paper-deep));}
+  .head h1{font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-weight:normal;
+    text-transform:uppercase; letter-spacing:.04em; font-size:1.9rem; margin:0; line-height:1;}
   .head .sub{font-family:"American Typewriter",monospace; font-size:.72rem; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-soft);}
   .grid{columns:3 300px; column-gap:14px;}
   @media print{ body{padding:0;font-size:11.4px} .grid{columns:3 240px} .card{break-inside:avoid} }
-  .card{
-    break-inside:avoid; background:var(--card); border:1.5px solid var(--olive);
-    border-radius:3px; padding:9px 11px 10px; margin:0 0 14px; display:inline-block; width:100%;
-  }
-  .card h2{
-    font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-weight:normal;
+  .card{break-inside:avoid; background:var(--card); border:1.5px solid var(--olive); border-radius:3px;
+    padding:9px 11px 10px; margin:0 0 14px; display:inline-block; width:100%;}
+  .card h2{font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-weight:normal;
     text-transform:uppercase; letter-spacing:.05em; font-size:.98rem; margin:0 0 7px;
-    color:var(--bar-text); background:var(--bar); padding:3px 8px; border-radius:2px;
-  }
-  .card h3{
-    font-family:"American Typewriter",monospace; font-size:.7rem; letter-spacing:.09em;
-    text-transform:uppercase; color:var(--stamp); margin:9px 0 3px;
-  }
+    color:var(--bar-text); background:var(--bar); padding:3px 8px; border-radius:2px;}
+  .card h3{font-family:"American Typewriter",monospace; font-size:.7rem; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--stamp); margin:9px 0 3px;}
   .card h3:first-of-type{margin-top:2px}
-  p{margin:4px 0}
-  ul{margin:4px 0; padding-left:15px}
-  li{margin:2px 0}
-  b,strong{color:var(--ink)}
-  .kw{font-family:"American Typewriter",monospace; font-weight:700; font-size:.82em;
-    letter-spacing:.02em; text-transform:uppercase;}
-  table{width:100%; border-collapse:collapse; margin:4px 0; font-size:.94em}
+  p{margin:4px 0} ul{margin:4px 0; padding-left:15px} li{margin:2px 0} b,strong{color:var(--ink)}
+  .kw{font-family:"American Typewriter",monospace; font-weight:700; font-size:.82em; letter-spacing:.02em; text-transform:uppercase;}
+  table{width:100%; border-collapse:collapse; margin:4px 0; font-size:.92em}
   th{background:var(--olive); color:var(--paper); font-family:"American Typewriter",monospace;
-    font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; text-align:left; padding:2px 5px;}
-  td{padding:2px 5px; border-bottom:1px solid var(--rule); vertical-align:top;
-    font-variant-numeric:tabular-nums;}
+    font-size:.6rem; letter-spacing:.05em; text-transform:uppercase; text-align:left; padding:2px 5px;}
+  td{padding:2px 5px; border-bottom:1px solid var(--rule); vertical-align:top; font-variant-numeric:tabular-nums;}
   tbody tr:last-child td{border-bottom:none}
-  .tag{display:inline-block; font-family:"American Typewriter",monospace; font-size:.62rem;
-    letter-spacing:.06em; text-transform:uppercase; background:var(--sage); color:var(--ink);
-    padding:1px 5px; border-radius:2px; margin-right:3px}
+  td.n{font-family:"American Typewriter",monospace; font-size:.86em; white-space:nowrap}
+  .tag{display:inline-block; font-family:"American Typewriter",monospace; font-size:.58rem; letter-spacing:.05em;
+    text-transform:uppercase; background:var(--sage); color:var(--ink); padding:0 4px; border-radius:2px}
   .foot{font-family:"American Typewriter",monospace; font-size:.66rem; letter-spacing:.1em;
     text-transform:uppercase; color:var(--ink-soft); text-align:center; margin-top:6px}
   .em{color:var(--stamp); font-weight:700}
@@ -83,42 +65,42 @@
 <div class="head">
   <div>
     <h1>Tour of Duty</h1>
-    <div class="sub">Quick Reference &middot; Vietnam rules for Hail of Fire</div>
+    <div class="sub">Quick Reference &middot; simplified for the table</div>
   </div>
-  <div class="sub">Core rules unchanged except as below</div>
+  <div class="sub">Simplified &middot; core rules unchanged except below</div>
 </div>
 
 <div class="grid">
 
 <div class="card">
   <h2>The Turn &amp; The Clock</h2>
-  <p><span class="kw">Air step</span> (Order Dice, before Order Points): resolve aircraft arriving/leaving. Then alternate activations as normal.</p>
-  <p><span class="kw">No turn limit.</span> The game ends when: a Mission Objective is met (that side wins), a force's hidden Break total tops its Break Limit (it loses), or the board empties (draw). Firebase Defense adds first light (end T8).</p>
-  <p><span class="kw">Break Limit</span> = 5 + 2 per Unit, rolled and hidden, as core.</p>
-  <p><b>Enemy objectives all require him to leave.</b> Counts are measured against the force he <b>started</b> with: a Unit that walks is out of your reach.</p>
+  <p><span class="kw">Air step</span> (Order Dice, before Order Points): resolve aircraft arriving/leaving. Then alternate activations.</p>
+  <p><span class="kw">No turn limit.</span> The game ends when a side meets its victory objective, a force's hidden Break total tops its Break Limit (that force loses), or the board empties (draw).</p>
+  <p><span class="kw">Break Limit</span> = 5 + 2 per Unit, rolled and hidden.</p>
+  <p><b>He is leaving.</b> The enemy does not need to win, only to still exist tomorrow. Every man who walks out is one you can no longer reach.</p>
 </div>
 
 <div class="card">
   <h2>Escalation Track</h2>
-  <p>US fire support is not bought; it unlocks as the battle escalates. Clock starts the first turn a Team Fires or is revealed. At the <b>end of each US turn</b>, roll 1d6, add to the Total.</p>
+  <p>US fire support unlocks as the battle escalates. Clock starts the first turn a Team Fires or is revealed. At the <b>end of each US turn</b>, roll 1d6, add to the Total.</p>
   <table><thead><tr><th>Total</th><th>Unlocks (callable next turn)</th></tr></thead><tbody>
-    <tr><td>8+</td><td>Artillery</td></tr>
-    <tr><td>12+</td><td>Gunships</td></tr>
-    <tr><td>16+</td><td>Fast Movers (+ Reaction Platoon by air)</td></tr>
+    <tr><td class="n">8+</td><td>Artillery</td></tr>
+    <tr><td class="n">16+</td><td>Gunships</td></tr>
+    <tr><td class="n">24+</td><td>Fast Movers (+ Reaction Platoon by air)</td></tr>
   </tbody></table>
-  <p><span class="kw">One call per turn</span> (1 Order Point). Mark the point; it lands <b>next turn</b>. Situation shifts thresholds (deep jungle +4, under the firebase -4).</p>
+  <p><span class="kw">One call per turn</span> (1 Order Point). Mark the point; it lands <b>next turn</b>.</p>
   <p><span class="kw">Urgent request</span> - spend 2 Hero Points to roll a 2nd Escalation die. Once/turn.</p>
 </div>
 
 <div class="card">
   <h2>Fire Support &amp; Danger Close</h2>
-  <table><thead><tr><th>Asset</th><th>Deviation</th><th>Danger Close</th></tr></thead><tbody>
-    <tr><td>Artillery</td><td>Full (or none, Pre-Reg)</td><td>20"</td></tr>
-    <tr><td>Gunship</td><td>None</td><td>8"</td></tr>
-    <tr><td>Fast Mover</td><td>Full</td><td>20"</td></tr>
+  <table><thead><tr><th>Asset</th><th>Deviation</th><th>Dngr Close</th></tr></thead><tbody>
+    <tr><td class="n">Artillery</td><td>Full (or none, Pre-Reg)</td><td>20"</td></tr>
+    <tr><td class="n">Gunship</td><td>None</td><td>8"</td></tr>
+    <tr><td class="n">Fast Mover</td><td>Full</td><td>20"</td></tr>
   </tbody></table>
-  <p>A call within an asset's Danger Close of any friendly Team needs a <span class="kw">Training Check</span>; fail refuses the mission (Order Point spent, no Fire Mission used). Barrage hits everyone in radius.</p>
-  <p><b>Fast Movers:</b> never inside 20" of your own, only <b>2 sorties</b> a game.</p>
+  <p>A call within an asset's Danger Close of any friendly Team needs a <span class="kw">Training Check</span>; fail refuses it (OP spent, no Fire Mission used). Barrage hits everyone in radius.</p>
+  <p><b>Fast Movers:</b> never inside 20" of your own; only <b>2 sorties</b> a game.</p>
   <p class="em">The gunship is the close weapon: at 8" it is the only thing callable on an enemy on top of you.</p>
 </div>
 
@@ -127,37 +109,38 @@
   <ul>
     <li><span class="kw">Total Hidden</span> - all Units deploy Hidden, anywhere in zone.</li>
     <li><span class="kw">Spider Holes</span> - Hidden Teams count Dug-In (Hard Cover) until they Move.</li>
-    <li><span class="kw">Fade Away</span> - a Team that starts &amp; ends its activation out of LoS of all enemy (landed birds included) and outside reveal distance re-hides. LoS beats concealment; if seen at the start, no fade.</li>
-    <li><span class="kw">Kill Zone</span> (granted by Missions) - a secret plotted point. Each Team's <b>first</b> shot within 4" fires at +1 RoF and the target loses Concealment. Revealed on use.</li>
+    <li><span class="kw">Fade Away</span> - a Team that starts &amp; ends its activation out of LoS of all enemy (landed birds included) and outside reveal distance re-hides. If seen at the start, no fade.</li>
   </ul>
+  <h3>Kill Zone (simplified)</h3>
+  <p>A Team that <b>reveals within 4" of an enemy and Fires</b> that activation gets <b>+1 RoF</b> and the target <b>may not claim Concealment</b>.</p>
   <h3>Reveal distances</h3>
   <p>16" from Infantry/Gun/Open-Top; 8" other Vehicles; <b>24" Recon</b>.</p>
 </div>
 
 <div class="card">
   <h2>Helicopters &middot; AA Tiers</h2>
-  <p>Choppers cost <b>no Order Point</b> and are not part of a platoon. Engaged from the air only when <b>entering, leaving, or loitering</b>. On the ground: normal fire.</p>
+  <p>Choppers cost <b>no Order Point</b>, not part of a platoon. Engaged from the air only when <b>entering, leaving, or loitering</b>. On the ground: normal fire.</p>
   <table><thead><tr><th>State</th><th>Who fires</th><th>Worst</th></tr></thead><tbody>
-    <tr><td>Slick on ground</td><td>Any weapon (AR 0)</td><td>Destroyed (AT)</td></tr>
-    <tr><td>Slick/gunship airborne</td><td>Anti-Air only</td><td>Driven off</td></tr>
-    <tr><td>Fast movers</td><td>37mm+ only</td><td>Driven off</td></tr>
+    <tr><td class="n">Slick on ground</td><td>Any weapon (AR 0)</td><td>Destroyed (AT)</td></tr>
+    <tr><td class="n">Slick/gunship air</td><td>Anti-Air only</td><td>Driven off</td></tr>
+    <tr><td class="n">Fast movers</td><td>37mm+ only</td><td>Driven off</td></tr>
   </tbody></table>
-  <p><b>Anti-Air weapons</b> = DShK 12.7, ZPU-2. Ordinary MGs are not. <b>Core AA:</b> RoF dice vs 1d6; higher = hit; save vs gun's AT; any fail = driven off.</p>
-  <p class="em">A helicopter is never Killed by RFPs. A Killed result becomes Suppressed. Only an AT penetration removes it.</p>
+  <p><b>Anti-Air</b> = DShK 12.7, ZPU-2. <b>Core AA:</b> RoF dice vs 1d6; higher = hit; save vs gun's AT; any fail = driven off.</p>
+  <p class="em">A helicopter is never Killed by RFPs (a Killed result becomes Suppressed). Only AT penetration removes it.</p>
 </div>
 
 <div class="card">
   <h2>The Slick, Step by Step</h2>
   <ol style="padding-left:16px;margin:4px 0">
     <li><b>Commit</b> (air step): place LZ, open ground, 8" from revealed enemy. No OP.</li>
-    <li><b>Entry AA</b> window: Anti-Air Teams that didn't activate last turn intercept.</li>
+    <li><b>Entry AA</b>: Anti-Air Teams that didn't activate last turn intercept.</li>
     <li><b>Door guns</b> may fire (below).</li>
     <li><b>Unload</b>: troops disembark within 2" but are <b>inert this turn</b> (no Move, no Fire).</li>
-    <li><b>On the ground</b>: AR 0 vehicle. Enemy fires it on their activations or via a Hero Point. Small arms = RFPs (cap Suppressed); AT = penetration = dead with all aboard.</li>
-    <li><b>Depart</b> (next air step): resolve RFPs (Killed &rarr; Suppressed). Then exit AA window; fly off, or loiter Airborne.</li>
+    <li><b>On the ground</b>: AR 0 vehicle. Enemy fires it on their activations or via a Hero Point. Small arms = RFPs (cap Suppressed); AT = dead with all aboard.</li>
+    <li><b>Depart</b> (next air step): resolve RFPs (Killed &rarr; Suppressed), exit AA window; fly off or loiter Airborne.</li>
   </ol>
   <h3>Door guns</h3>
-  <p>Twin M60s as one MG: <b>16", RoF 3, RFPs only</b>. Fire once on arrival, once on departure; never while parked.</p>
+  <p>Twin M60s as one MG: <b>16", RoF 3, RFPs only</b>. Fire once on arrival, once on departure; never parked.</p>
   <h3>Losing birds</h3>
   <p>Any helo destroyed: owner rolls 1 Break Point (2 for a Dust-Off).</p>
 </div>
@@ -165,11 +148,11 @@
 <div class="card">
   <h2>Triage &amp; Dust-Off</h2>
   <ul>
-    <li><span class="kw">Wound Roll</span> - a US non-Vehicle Team taking a Killed from Fire (not assault) rolls 1d6: <b>5+ destroyed</b>, else Wounded (marker). <span class="tag">US: only a 6 kills</span></li>
+    <li><span class="kw">Wound Roll</span> - a US non-Vehicle Team taking a Killed from Fire (not assault) rolls 1d6: <b>5+ destroyed</b>, else Wounded (marker).</li>
     <li><span class="kw">Fighting Wounded</span> - a Team carrying a Wound marker fires at <b>RoF 1</b> and may not assault. 2nd wound or another Killed = destroyed.</li>
     <li><span class="kw">Carry Him</span> - at start of a Move, pass a Wound marker to an unwounded Infantry Team within 2" (or a Transport). The giver is restored.</li>
     <li><span class="kw">Medic</span> (1 Small Team/company) - holds up to 3 wounds, never Fires/assaults, no penalty.</li>
-    <li><span class="kw">Dust-Off</span> - always available, never runs out (a new one next turn if lost). A carrying Team within 4" loads its wounds aboard <b>when that Team activates</b>. Safe exit Evacuates them.</li>
+    <li><span class="kw">Dust-Off</span> - always available, never runs out. A carrying Team within 4" loads its wounds aboard <b>when that Team activates</b>. Safe exit Evacuates them.</li>
     <li><span class="kw">Stakes</span> - a downed Dust-Off = 2 Break rolls, and every wound aboard is lost.</li>
   </ul>
 </div>
@@ -179,95 +162,59 @@
   <p>From the situation's turn (default T4):</p>
   <ul>
     <li><span class="kw">Revealed</span> Teams exit by moving off a PAVN/NLF edge.</li>
-    <li><span class="kw">Hidden</span> Units exfiltrate by declaration: 1 OP at start of turn to remove a Unit that is all-Hidden (via Fade Away the prior turn).</li>
+    <li><span class="kw">Hidden</span> Units exfiltrate by declaration: 1 OP at start of turn to remove a Unit that is all-Hidden (faded the prior turn).</li>
   </ul>
   <p>Exited/exfiltrated Teams are <b>not</b> lost for Morale or Break. A Unit fully off-table generates no more Break Points.</p>
   <p><span class="kw">Political cost</span> (US) - add +1 to every Break Point die you roll against your own force.</p>
 </div>
 
 <div class="card">
-  <h2>National Characteristics</h2>
-  <h3>United States</h3>
-  <p>+1 Fire Mission per battery &middot; Reaction Platoon unlocks at 12+ &middot; Wound Roll fails only on a 6.</p>
-  <h3>ANZAC</h3>
-  <p>Count as Small Teams for reveal (seen at 8") &middot; re-roll failed Training Checks.</p>
-  <h3>ARVN</h3>
-  <p>Roll 1d6/Unit: 1-2 Poor, 3-5 Average, 6 Elite (Rangers/Airborne +2) &middot; one US Advisor may act as CC for Rally.</p>
-  <h3>NVA (PAVN)</h3>
-  <p><b>Break Contact</b> once/game: every Unit full Moves away, no OP &middot; Sappers are Engineers, deploy Hidden anywhere 8"+ from enemy.</p>
-  <h3>NLF</h3>
-  <p>Home Ground: +1 booby-trap set/Unit, +1 tunnel &middot; may Fade while suppressed (not with RFPs) &middot; Local = Poor (Main = Average; one cadre may be Elite).</p>
-</div>
-
-<div class="card">
-  <h2>Terrain of the War</h2>
-  <p>Build dense: pieces 6"-12", clumped, uneven half-inch gaps, <b>50-70%</b> jungle.</p>
-  <ul>
-    <li><b>Elephant grass</b> - Area Terrain; conceals Infantry/Guns, not Vehicles.</li>
-    <li><b>Rice paddies</b> - open for Infantry, Difficult for Vehicles; dikes are Linear Obstacles.</li>
-    <li><b>Trails</b> - roads; vehicles on them ignore surrounding terrain.</li>
-    <li><b>Hamlets</b> - Buildings (Hard Cover); hootches destroyed by any Bunker Buster.</li>
-    <li><b>Booby traps</b> - Minefields; 2"x2", sets of 3 (2 real, 1 dummy), deployed Hidden.</li>
-    <li><b>Tunnels</b> - entrance markers (default 3), Hidden in zone; Hidden Infantry in contact may go under.</li>
-  </ul>
-  <p><span class="kw">Half Scale</span> (2'x3') - halve every distance; a Unit is one squad (4 Teams); 2-3 a side.</p>
-</div>
-
-<div class="card">
-  <h2>Missions &middot; PAVN / NLF</h2>
-  <p>Draw 2, keep 1 secret. Replaces victory conditions. Reveal on trigger or at end.</p>
-  <table><thead><tr><th>Card</th><th>Objective</th></tr></thead><tbody>
-    <tr><td>Annihilation Ambush</td><td>Destroy 1 US Unit + half your Teams leave</td></tr>
-    <tr><td>Bleed &amp; Fade</td><td>Kill 4 Teams + half your Teams leave</td></tr>
-    <tr><td>Sapper Strike</td><td>Destroy the nominated Team in an assault</td></tr>
-    <tr><td>Bait the Reaction</td><td>Down a helo or 3 air-landed Teams</td></tr>
-    <tr><td>Shadow</td><td>3/4 of your Teams exfiltrate (barred if a Unit &lt; half)</td></tr>
-  </tbody></table>
-</div>
-
-<div class="card">
-  <h2>Missions &middot; US-Allied</h2>
-  <table><thead><tr><th>Card</th><th>Objective</th></tr></thead><tbody>
-    <tr><td>Search &amp; Destroy</td><td>Half enemy Units killed/&lt;half (barred if you lose a Unit)</td></tr>
-    <tr><td>Recon in Force</td><td>Reveal 8 Teams/traps/tunnels (barred if you lose a Unit)</td></tr>
-    <tr><td>Open the Road</td><td>Half your Teams exit the far edge</td></tr>
-    <tr><td>Hammer &amp; Anvil</td><td>Kill 4 Teams, half by air/artillery</td></tr>
-    <tr><td>The Snatch</td><td>Carry a Prisoner off your edge</td></tr>
-  </tbody></table>
-  <p>Counts are against the enemy's <b>starting</b> force. "Barred" = the Objective can never be won, only survived.</p>
-</div>
-
-<div class="card">
-  <h2>The Opposition (random enemy)</h2>
-  <p>Build the other side from dice, using only what you own (Available Pool). A result you can't field steps down; you may not add what the roll didn't give.</p>
-  <p><b>1. Strength</b> (per Situation) &middot; <b>2. Character</b> (once, quality + arsenal) &middot; <b>3. Teeth</b> (1d6/Unit):</p>
-  <table><thead><tr><th>d6</th><th>Teeth per Unit</th></tr></thead><tbody>
-    <tr><td>1-2</td><td>Rifles only</td></tr>
-    <tr><td>3</td><td>+1 MG</td></tr>
-    <tr><td>4</td><td>+1 RPG/AT</td></tr>
-    <tr><td>5</td><td>+1 MG and +1 RPG/AT</td></tr>
-    <tr><td>6</td><td>Roll Heavy Support (force); rifles only</td></tr>
-  </tbody></table>
-  <p><b>Heavy Support</b> 1-2 Mortar, 3 AA, 4 Sapper, 5 Recon, 6 any two owned.</p>
-</div>
-
-<div class="card">
-  <h2>Notable Weapons</h2>
+  <h2>US Weapons</h2>
   <table><thead><tr><th>Weapon</th><th>Rng</th><th>RoF</th><th>AT</th></tr></thead><tbody>
-    <tr><td>AK Rifle Team</td><td>8"</td><td>3</td><td>-</td></tr>
-    <tr><td>NLF Local Cell</td><td>16"</td><td>2</td><td>-</td></tr>
-    <tr><td>US Rifle (M16)</td><td>16"</td><td>3</td><td>-</td></tr>
-    <tr><td>RPG-2 / RPG-7</td><td>6"/8"</td><td>1</td><td>4/5</td></tr>
-    <tr><td>M72 LAW (1 use)</td><td>8"</td><td>1</td><td>4</td></tr>
-    <tr><td>M67 90mm RR</td><td>12"</td><td>1</td><td>5</td></tr>
-    <tr><td>DShK 12.7 <span class="tag">AA</span></td><td>16"</td><td>3</td><td>1</td></tr>
-    <tr><td>ZPU-2 14.5 <span class="tag">AA</span></td><td>20"</td><td>4</td><td>2</td></tr>
-    <tr><td>82mm mortar</td><td>24"</td><td>2</td><td>0</td></tr>
+    <tr><td class="n">Rifle Team (M16)</td><td>16"</td><td>3</td><td>-</td></tr>
+    <tr><td class="n">ANZAC/ARVN Rifle</td><td>16"</td><td>2</td><td>-</td></tr>
+    <tr><td class="n">M60 MG</td><td>20"</td><td>3</td><td>-</td></tr>
+    <tr><td class="n">M67 90mm RR <span class="tag">BB</span></td><td>12"</td><td>1</td><td>5</td></tr>
+    <tr><td class="n">M72 LAW <span class="tag">1 use</span></td><td>8"</td><td>1</td><td>4</td></tr>
+    <tr><td class="n">M2 .50cal <span class="tag">AA</span></td><td>20"</td><td>4</td><td>1</td></tr>
+    <tr><td class="n">M29 81mm mtr <span class="tag">Lt Arty</span></td><td>24"</td><td>2</td><td>0</td></tr>
+    <tr><td class="n">M30 4.2" mtr <span class="tag">Med</span></td><td>off</td><td>-</td><td>1</td></tr>
+    <tr><td class="n">M40 106mm RR <span class="tag">BB</span></td><td>20"</td><td>1</td><td>5</td></tr>
+    <tr><td class="n">M102 105mm <span class="tag">Med Arty BB</span></td><td>20"</td><td>1</td><td>4</td></tr>
   </tbody></table>
-  <p>AK &amp; M16 drop 1 RoF at Long Range. RPG/RR cannot fire from buildings.</p>
+  <p>M16 drops to RoF 2 at Long Range. RR/LAW cannot fire from buildings. Mortars &amp; howitzer carry Smoke; 4.2"/105mm are FP 2.</p>
+</div>
+
+<div class="card">
+  <h2>US Vehicles</h2>
+  <table><thead><tr><th>Vehicle</th><th>AR</th><th>Rng</th><th>RoF</th><th>AT</th></tr></thead><tbody>
+    <tr><td class="n">M113 ACAV</td><td>1/0</td><td>16"</td><td>3</td><td>1</td></tr>
+    <tr><td class="n">M48 Patton</td><td>3/2</td><td>24"</td><td>2</td><td>6</td></tr>
+    <tr><td class="n">M551 Sheridan</td><td>1/0</td><td>20"</td><td>1</td><td>6</td></tr>
+    <tr><td class="n">M42 Duster <span class="tag">AA</span></td><td>0/0</td><td>20"</td><td>4</td><td>2</td></tr>
+    <tr><td class="n">M50 Ontos</td><td>0/0</td><td>20"</td><td>2</td><td>5</td></tr>
+  </tbody></table>
+  <p>M113 = .50cal + 2x M60, carries 3. Sheridan FP 2. Ontos <b>Salvo</b>: once/game fire at RoF 6. M35 truck carries 3. UH-1D Slick carries 2.</p>
+</div>
+
+<div class="card">
+  <h2>Enemy Weapons (PAVN / NLF)</h2>
+  <table><thead><tr><th>Weapon</th><th>Rng</th><th>RoF</th><th>AT</th></tr></thead><tbody>
+    <tr><td class="n">AK Rifle Team</td><td>8"</td><td>3</td><td>-</td></tr>
+    <tr><td class="n">NLF Local Cell</td><td>16"</td><td>2</td><td>-</td></tr>
+    <tr><td class="n">RPD LMG</td><td>16"</td><td>3</td><td>-</td></tr>
+    <tr><td class="n">RPG-2 / RPG-7</td><td>6"/8"</td><td>1</td><td>4/5</td></tr>
+    <tr><td class="n">57mm RR</td><td>12"</td><td>1</td><td>4</td></tr>
+    <tr><td class="n">B-10 82mm RR <span class="tag">BB</span></td><td>16"</td><td>1</td><td>5</td></tr>
+    <tr><td class="n">DShK 12.7 <span class="tag">AA</span></td><td>16"</td><td>3</td><td>1</td></tr>
+    <tr><td class="n">ZPU-2 14.5 <span class="tag">AA</span></td><td>20"</td><td>4</td><td>2</td></tr>
+    <tr><td class="n">82mm mortar <span class="tag">Lt Arty</span></td><td>24"</td><td>2</td><td>0</td></tr>
+    <tr><td class="n">120mm mortar <span class="tag">Med</span></td><td>off</td><td>-</td><td>1</td></tr>
+  </tbody></table>
+  <p>AK drops to RoF 2 at Long Range; re-rolls failed Assault Checks. RPG/RR cannot fire from buildings.</p>
 </div>
 
 </div>
-<div class="foot">Tour of Duty &middot; working playtest draft &middot; RetroBoom Games</div>
+<div class="foot">Tour of Duty &middot; simplified quick reference &middot; RetroBoom Games</div>
 </body>
 </html>
