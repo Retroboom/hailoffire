@@ -472,35 +472,39 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
   <div class="bar"><span class="barnum">2.6</span> Hidden Teams: the Ambush Doctrine</div>
 
-  <p>The base game lets a defender deploy Hidden Teams that are never pre-plotted: they simply appear, anywhere legal, whenever their owner chooses. Two-player, that is the finest fog rule in the book. Solo, it is the one place the rules hand you a decision that belongs entirely to the enemy. This doctrine takes that decision away from you in three pieces: a <strong>charge</strong> fixes what each Hidden unit is protecting, <strong>triggers</strong> fix when it appears, and a <strong>placement rule</strong> fixes where. All base-game reveal legality applies unchanged: inside its deployment zone, out of your LoS anywhere, or in concealing terrain outside 16" of your Infantry, Gun, and Open-Topped Teams (8" for your other Vehicles), minus any distance your Team just moved; your Recon stretches those distances to 24".</p>
+  <p>The base game lets a defender deploy Hidden Teams that are never pre-plotted: they simply appear, anywhere legal, whenever their owner chooses. Two-player, that is the finest fog rule in the book. Solo, it is the one place the rules hand you a decision that belongs entirely to the enemy. This doctrine takes that decision away from you in four pieces: a <strong>charge</strong> fixes what each Hidden unit is protecting, <strong>triggers</strong> fix when it appears, a <strong>placement rule</strong> fixes where, and <strong>Contacts</strong> take away the one thing you would still know: whether anything is actually there. All base-game reveal legality applies unchanged: inside its deployment zone, out of your LoS anywhere, or in concealing terrain outside 16" of your Infantry, Gun, and Open-Topped Teams (8" for your other Vehicles), minus any distance your Team just moved; your Recon stretches those distances to 24".</p>
 
-  <h4>Charges, assigned at setup</h4>
-  <p>When the OpFor defends, its on-table units deploy Hidden and Dug-In as normal, but are not placed. Write each unit's name beside a charge:</p>
+  <h4>Contacts and charges, assigned at setup</h4>
+  <p>When the OpFor defends, its on-table units deploy Hidden and Dug-In as normal, but are not placed, and they are not written down as units. Instead, list <strong>Contacts</strong>: one for every Hidden unit, <strong>plus two dummies, the Nerves</strong>. Assign each Contact a charge, shaped by what the force actually contains:</p>
   <ul>
-    <li><strong>Each AT Gun unit</strong>: the armor approach: the road, or failing one, the widest open corridor into the defense.</li>
-    <li><strong>Each MG/HMG unit</strong>: the widest open ground in front of an objective.</li>
-    <li><strong>Each Infantry platoon</strong>: an objective, nearest-to-your-edge first, one platoon per objective before any doubles up.</li>
-    <li><strong>Anything left</strong>: doubles up, starting at the objective nearest your edge.</li>
+    <li><strong>One Contact on the armor approach</strong> (the road, or failing one, the widest open corridor into the defense) for each hidden AT Gun or TD unit.</li>
+    <li><strong>One Contact on the widest open ground</strong> in front of an objective for each hidden MG/HMG unit.</li>
+    <li><strong>One Contact on an objective</strong>, nearest-to-your-edge first, for each hidden Infantry platoon, one per objective before any doubles up.</li>
+    <li><strong>The two Nerves, and anything left</strong>: double up on objectives, starting nearest your edge.</li>
   </ul>
+  <p>Do not record which Contact is which. A Contact is not a unit; it is a place the OpFor might be, and two of them are nothing at all.</p>
 
-  <h4>When it reveals</h4>
+  <h4>When a Contact trips</h4>
   <p>Check after each of your activations resolves, and at the start of each OpFor turn. Take the first trigger that applies.</p>
   <div class="twrap"><table class="khaki">
     <caption>Reveal Triggers</caption>
     <thead><tr><th>#</th><th>Trigger</th><th>Then</th></tr></thead>
     <tbody>
-      <tr><td class="hd c">1</td><td class="hd">The kill is on: from some legal position the unit would, this instant, qualify for priority steps 1-3 (armor inside an AT gun's range on its approach; a non-Ready Team it could charge; infantry crossing its lane in the open)</td><td>Reveal there. It acts on the OpFor's next Order Point, or immediately by Hero Point during your turn (2.5)</td></tr>
-      <tr><td class="hd c">2</td><td class="hd">The window is closing: your advance would leave no legal reveal position from which the unit could still cover its charge</td><td>Reveal now, in the best position remaining</td></tr>
-      <tr><td class="hd c">3</td><td class="hd">The charge is threatened: an OpFor turn begins with any of your Teams within charge reach of the unit's charge</td><td>Reveal before Order Points are spent</td></tr>
+      <tr><td class="hd c">1</td><td class="hd">The kill is on: from some legal position, a fitting unit would this instant qualify for priority steps 1-3 (armor inside an AT gun's range on its approach; a non-Ready Team it could charge; infantry crossing its lane in the open)</td><td>Resolve the Contact there (below). If a unit springs, it acts on the OpFor's next Order Point, or immediately by Hero Point during your turn (2.5)</td></tr>
+      <tr><td class="hd c">2</td><td class="hd">The window is closing: your advance would leave no legal reveal position from which a unit could still cover the Contact's charge</td><td>Resolve now, in the best position remaining</td></tr>
+      <tr><td class="hd c">3</td><td class="hd">The charge is threatened: an OpFor turn begins with any of your Teams within charge reach of the Contact's charge</td><td>Resolve before Order Points are spent</td></tr>
     </tbody>
   </table></div>
+
+  <h4>Resolving a Contact</h4>
+  <p>When a trigger trips a Contact, roll <strong>1d6</strong>. On a <strong>5+</strong>, while any Nerves remain uncrossed, the Contact was nothing: wind in the wheat, a shape in a doorway, a helmet that turned out to be a fence post. Cross off one Nerves entry and remove the Contact from the list. On any other result, a real unit springs: the <strong>best fit for the trigger</strong> among the units still hidden. A kill-shot trip takes an AT Gun or TD first, then an MG, then infantry; an objective or assault-threat trip takes infantry first, then an MG, then an AT Gun. Two bookends keep the arithmetic honest: once every real unit has sprung, all remaining trips are automatically Nerves, and once both Nerves are crossed off, every trip is automatically real. The <em>number</em> of Contacts is open information; which of them are Nerves is what the dice keep from you.</p>
 
   <h4>Where it appears</h4>
   <p>Among legal positions, the unit appears where it: <strong>(a)</strong> covers its charge, with LoS and range to whatever tripped the trigger; <strong>(b)</strong> keeps concealing terrain and its foxholes (a reveal without a move is still Dug-In: Hard Cover and Concealment both); and <strong>(c)</strong> on any remaining tie, stands where you would least like it. Reveal the whole unit together, in a spread its Leader can command (LoS to his Teams). Revealing costs nothing and is not an activation.</p>
 
   <div class="dn">
     <span class="tag-label">When You Defend</span>
-    <p>Your own Hidden units use the base rules exactly as written: reveal them where and when you please. That cunning is yours by right. The doctrine above exists only because the OpFor's cunning has to come from somewhere that is not your thumb on its side of the scale, and this is the page where the arm's-length habit earns its keep: you will always know the ambush is out there, so let the trigger, not your route planning, decide when it springs.</p>
+    <p>Your own Hidden units use the base rules exactly as written: reveal them where and when you please. That cunning is yours by right. The doctrine above exists only because the OpFor's cunning has to come from somewhere that is not your thumb on its side of the scale, and this is the page where the arm's-length habit earns its keep. And with Nerves in the pocket, you no longer even know whether the ambush is real, which is roughly how the men walking point felt about every treeline in Normandy.</p>
   </div>
 
 </div></div>
@@ -836,7 +840,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <li>On the <strong>OpFor's turn</strong>, when its Hero Die shows a <span class="roll">6</span> (it also refreshes Hero Points as normal) or a <span class="roll">1</span> (resolve an air attack first if Air Support is in play, then still roll the Oracle).</li>
     <li>Optionally, on <strong>your</strong> turn, when <em>your</em> Hero Die shows a <span class="roll">1</span>: the fog of war cuts both ways. If you would rather keep your own turns clean, ignore this and let the Oracle be the OpFor's alone.</li>
   </ul>
-  <p>To consult it, either roll <strong>2d6 of different colors as a d66</strong> (first die tens, second die units: results 11 to 66), or <strong>draw one card</strong> from the deck in 4.3 and set it aside until the deck is reshuffled. Pick one method and stick with it for the game. Where an event says "your choice," you the human choose, even when that favors you: the Oracle is chaos, not malice.</p>
+  <p>To consult it, either roll <strong>2d6 of different colors as a d66</strong> (first die tens, second die units: results 11 to 66), or <strong>draw one card</strong> from the deck in 4.3 and set it aside until the deck is reshuffled. Pick one method and stick with it for the game. No event asks you to choose on the enemy's behalf: where an event says <strong>roll off</strong>, roll a d6 for each qualifying unit or Team and the highest is taken (reroll ties). The Oracle is chaos, not malice, and it picks its own victims.</p>
 
   <div class="bar"><span class="barnum">4.2</span> The d66 Table</div>
 
@@ -844,11 +848,11 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <caption>Tactical Events (d66)</caption>
     <thead><tr><th>Roll</th><th>Event</th><th>Effect</th></tr></thead>
     <tbody>
-      <tr><td class="r">11</td><td class="hd">Jammed Weapon</td><td>One OpFor Team of your choice may not Fire until its next activation.</td></tr>
+      <tr><td class="r">11</td><td class="hd">Jammed Weapon</td><td>One OpFor Team (roll off among those that Fired this turn; all Teams if none did) may not Fire until its next activation.</td></tr>
       <tr><td class="r">12</td><td class="hd">Crossed Wires</td><td>The OpFor loses 1 Order Point this turn to a garbled order.</td></tr>
       <tr><td class="r">13</td><td class="hd">Lost Runner</td><td>The OpFor's next activation may issue one order only, no split.</td></tr>
-      <tr><td class="r">14</td><td class="hd">Cook-Off Scare</td><td>One OpFor vehicle with RFPs (your choice) resolves them now as if in Open Ground.</td></tr>
-      <tr><td class="r">15</td><td class="hd">Head Down</td><td>One Suppressed OpFor Team (your choice) may not be Rallied this turn: no Rally Check, no Leader Rally.</td></tr>
+      <tr><td class="r">14</td><td class="hd">Cook-Off Scare</td><td>One OpFor vehicle with RFPs (roll off) resolves them now as if in Open Ground.</td></tr>
+      <tr><td class="r">15</td><td class="hd">Head Down</td><td>One Suppressed OpFor Team (roll off) may not be Rallied this turn: no Rally Check, no Leader Rally.</td></tr>
       <tr><td class="r">16</td><td class="hd">Dud Rounds</td><td>The next OpFor Fire order rolls one fewer die.</td></tr>
 
       <tr><td class="r">21</td><td class="hd">Drifting Smoke</td><td>Place a 4" smoke marker anywhere on the centerline; it blocks LoS until the start of your next turn.</td></tr>
@@ -884,7 +888,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
       <tr><td class="r">63</td><td class="hd">Command Paralysis</td><td>The OpFor's Posture becomes Consolidate for this turn, overriding the earlier roll.</td></tr>
       <tr><td class="r">64</td><td class="hd">Lucky Shot</td><td>The OpFor's next Penetration Roll this game may re-roll one missed die.</td></tr>
       <tr><td class="r">65</td><td class="hd">Chaos in the Rear</td><td>Randomly pick one OpFor unit; it may not be activated this turn.</td></tr>
-      <tr><td class="r">66</td><td class="hd">The Fog Lifts</td><td>Resolve the RFPs on one OpFor vehicle of your choice now: a rare moment of clarity for you.</td></tr>
+      <tr><td class="r">66</td><td class="hd">The Fog Lifts</td><td>Resolve the RFPs on one OpFor vehicle (roll off) now: a rare moment of clarity for you.</td></tr>
     </tbody>
   </table></div>
 
@@ -897,7 +901,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
   <p>Prefer drawing to rolling? Print this page, cut along the grid, and shuffle the 36 cards into a face-down deck. Draw one whenever the Oracle speaks, resolve it, and set it aside; reshuffle the discard when the deck runs out. The cards carry the same events as the d66 table, so you never need both open at once.</p>
 
   <div class="osheet">
-    <div class="ocard"><span class="on">11</span><span class="ot">Jammed Weapon</span>One OpFor Team (your choice) may not Fire until its next activation.</div>
+    <div class="ocard"><span class="on">11</span><span class="ot">Jammed Weapon</span>One OpFor Team (roll off; those that Fired this turn first) may not Fire until its next activation.</div>
     <div class="ocard"><span class="on">12</span><span class="ot">Crossed Wires</span>The OpFor loses 1 Order Point this turn.</div>
     <div class="ocard"><span class="on">13</span><span class="ot">Lost Runner</span>OpFor's next activation: one order only, no split.</div>
     <div class="ocard"><span class="on">14</span><span class="ot">Cook-Off Scare</span>One OpFor vehicle with RFPs resolves them now as Open Ground.</div>
@@ -937,7 +941,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
     <div class="ocard"><span class="on">63</span><span class="ot">Command Paralysis</span>OpFor Posture becomes Consolidate this turn.</div>
     <div class="ocard"><span class="on">64</span><span class="ot">Lucky Shot</span>OpFor's next Penetration Roll re-rolls one missed die.</div>
     <div class="ocard"><span class="on">65</span><span class="ot">Chaos in the Rear</span>One random OpFor unit may not activate this turn.</div>
-    <div class="ocard"><span class="on">66</span><span class="ot">The Fog Lifts</span>Resolve the RFPs on one OpFor vehicle of your choice now.</div>
+    <div class="ocard"><span class="on">66</span><span class="ot">The Fog Lifts</span>Resolve the RFPs on one OpFor vehicle (roll off) now.</div>
   </div>
 
 </div></div>
@@ -951,7 +955,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
 <div class="page"><div class="prose">
 
-  <p class="lede">Solo HoF does not need a new victory engine. Break Points, Break Limits, and objectives already end games decisively, and they run the same whether the loser is a person or the OpFor. This chapter borrows the balancing spine from the <em>Conquest</em> pick-up scenario, adds a Clock so the attacker cannot dither forever, and defines a margin of victory so campaign play has something to remember.</p>
+  <p class="lede">Solo HoF does not need a new victory engine. Break Points, Break Limits, and objectives already end games decisively, and they run the same whether the loser is a person or the OpFor. This chapter builds a pick-up-game balancing spine around that engine, adds a Clock so the attacker cannot dither forever, and defines a margin of victory so campaign play has something to remember.</p>
 
   <div class="bar"><span class="barnum">5.1</span> Roles &amp; The Handicap</div>
   <p>Every solo game has an <strong>Attacker</strong> and a <strong>Defender</strong>. Role is the strongest balancing lever there is, because it self-corrects: give the harder job to the stronger force. Set roles one of two ways:</p>
@@ -1176,7 +1180,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
   </table></div>
 
   <div class="bar"><span class="barnum">7.3</span> The Enemy Escalates</div>
-  <p>The OpFor does not stand still while you grow. After <strong>each mission you win</strong>, apply one Escalation to the enemy for the next battle (your choice, or roll a d6):</p>
+  <p>The OpFor does not stand still while you grow. After <strong>each mission you win</strong>, apply one Escalation to the enemy for the next battle (roll a d6; picking instead is allowed only as a theme set before the campaign begins):</p>
   <div class="twrap"><table>
     <caption>Escalation (d6, or choose)</caption>
     <thead><tr><th>d6</th><th>The OpFor gains…</th></tr></thead>
@@ -1322,7 +1326,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
       <ul>
         <li>OpFor Hero Die shows <strong>6</strong> or <strong>1</strong>.</li>
         <li>(Optional) your Hero Die shows <strong>1</strong>.</li>
-        <li>Roll <strong>d66</strong> or draw a card; resolve; "your choice" means you pick.</li>
+        <li>Roll <strong>d66</strong> or draw a card; resolve; "roll off" = d6 per candidate, highest is taken, reroll ties.</li>
       </ul>
     </div>
   </div>
@@ -1330,6 +1334,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
   <h4>Hidden units (OpFor defending, 2.6)</h4>
   <ul>
     <li><strong>Charges at setup</strong>: AT guns &rarr; the armor approach; MGs &rarr; the widest lane before an objective; infantry &rarr; objectives, nearest-first; leftovers double up.</li>
+    <li><strong>Contacts</strong>: one per hidden unit + 2 Nerves; on a trip roll 1d6: 5+ (Nerves left) = nothing there; else the best-fitting unit springs. All real sprung &rarr; rest are Nerves; Nerves gone &rarr; all real.</li>
     <li><strong>Reveal when</strong> (first that applies): the kill is on (a legal position satisfies steps 1-3 now); the window is closing (your advance would seal off every legal position covering its charge); an OpFor turn starts with your Teams inside charge reach of its charge.</li>
     <li><strong>Place</strong> at the legal spot that covers the charge; keep terrain and foxholes (no move = still Dug-In); ties &rarr; where you would least like it.</li>
   </ul>
@@ -1354,7 +1359,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
   <div class="bar"><span class="barnum">10.1</span> The Situation</div>
   <ul>
-    <li>The OpFor (Defender) holds a walled village. A <strong>Grenadier Platoon</strong> (PL + 4 Rifle/MG Teams, one carrying 1 RFP) is in the buildings. An <strong>HMG Team</strong> covers the open approach. A <strong>PaK40</strong>, still Hidden, is charged with the road: the armor approach (2.6).</li>
+    <li>The OpFor (Defender) holds a walled village. A <strong>Grenadier Platoon</strong> (PL + 4 Rifle/MG Teams, one carrying 1 RFP) is in the buildings. An <strong>HMG Team</strong> covers the open approach. A <strong>PaK40</strong>, still Hidden, generates a Contact charged with the road: the armor approach. With its two Nerves, three Contacts watch the village (2.6).</li>
     <li>You (Attacker) have two Rifle Platoons at the edge of a wheatfield 7" out, a Sherman platoon on the road, and one objective already yours; two more sit in the village, OpFor-held.</li>
     <li>It is <strong>turn 4 of an 8-turn Clock</strong>. The OpFor is at full strength. Hero Points: yours 3, the OpFor's hidden.</li>
   </ul>
@@ -1375,7 +1380,7 @@ footer .fbig{font-family:var(--disp);font-size:2rem;color:var(--paper);letter-sp
 
   <h3>Order Point 1 &middot; walk the priority</h3>
   <p>You read the Activation Priority from the top. Step 1 (assault a non-Ready enemy): none of your Teams are in contact, so no. Step 2 (a penetrating shot at armor): the hidden PaK40 has your Sherman platoon on the road, 16" off, squarely in arc. AT 5 versus front Armor 2 is a clean penetrating shot. <strong>Step 2 fires.</strong></p>
-  <p>The OpFor activates the PaK40, which reveals from Hidden as it fires: your Shermans on the road tripped Ambush trigger 1 (the kill is on), and the hedged bank beside the road cut is the legal position that covers its charge. Its card confirms the choice: priority 1, armor where AT &gt; AR. It targets the nearest Sherman. Declare Fire, resolve its own RFPs (none), execute: RoF 2 at 4+ rolls <span class="roll">5, 6</span>, 2 hits. First hit to the target Sherman, second to another within 4". Penetration on the first: AT 5 vs AR 2, roll the difference (3 dice) hunting 6s: <span class="roll">2, 4, 6</span>. <strong>One Sherman destroyed.</strong> The second Sherman takes its penetration roll: <span class="roll">1, 3, 4</span>, no 6, so RFPs equal to the gun's Firepower instead: 1 RFP, and nobody yet knows if that crew is dead or just rattled. The fog is automatic; you did not have to decide a thing for the enemy.</p>
+  <p>The OpFor activates the PaK40, which reveals from Hidden as it fires: your Shermans on the road tripped Ambush trigger 1 (the kill is on). The Contact resolves on a <span class="roll">3</span>: real, and a kill-shot trip takes the AT gun first. Had the die come up 5+, this treeline would have been Nerves, and your tanks would have rolled on none the wiser. The hedged bank beside the road cut is the legal position that covers its charge. Its card confirms the choice: priority 1, armor where AT &gt; AR. It targets the nearest Sherman. Declare Fire, resolve its own RFPs (none), execute: RoF 2 at 4+ rolls <span class="roll">5, 6</span>, 2 hits. First hit to the target Sherman, second to another within 4". Penetration on the first: AT 5 vs AR 2, roll the difference (3 dice) hunting 6s: <span class="roll">2, 4, 6</span>. <strong>One Sherman destroyed.</strong> The second Sherman takes its penetration roll: <span class="roll">1, 3, 4</span>, no 6, so RFPs equal to the gun's Firepower instead: 1 RFP, and nobody yet knows if that crew is dead or just rattled. The fog is automatic; you did not have to decide a thing for the enemy.</p>
 
   <h3>Order Point 2 &middot; recheck from the top</h3>
   <p>The board changed, so you recheck. Step 1: still no non-Ready enemy in contact. Step 2: the PaK40 already fired (it would need a Hero Point to fire again). Step 3 (fire on an assault threat): your leading Rifle Platoon is unsuppressed and sits 7" from the village wall, inside infantry charge reach (8"). That is the whole test; no guessing about your plans required. Had it been sitting at 12", the OpFor would have shrugged: even a Leader-led spearhead lands from there barely one time in four, with the rest of the wave stranded behind it. <strong>Step 3 fires.</strong></p>
