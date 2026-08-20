@@ -362,21 +362,33 @@
   }
   .cart-empty { color: var(--ink-soft); font-size: 0.9rem; padding: 20px 0; text-align: center; }
 
-  .cart-group h5 {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: var(--olive-dark);
-    margin: 14px 0 6px;
-  }
-  .cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.88rem;
-    padding: 5px 0;
+  .cart-combined-item {
+    position: relative;
+    padding: 8px 26px 8px 0;
     border-bottom: 1px dashed var(--line);
   }
-  .cart-item button {
+  .cart-combined-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.88rem;
+  }
+  .cart-combined-name { font-weight: 600; }
+  .cart-combined-amount {
+    color: var(--ink-soft);
+    white-space: nowrap;
+    flex: none;
+  }
+  .cart-combined-meals {
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .cart-combined-remove {
+    position: absolute;
+    top: 6px;
+    right: 0;
     border: none;
     background: none;
     color: var(--terracotta);
@@ -1392,6 +1404,138 @@ let openCardId = null;
 // shoppingItems: key -> { text, recipeTitle }
 const shoppingItems = new Map();
 
+// --- Ingredient parsing: combines duplicate ingredients across meals into one
+// shopping-list line with a summed amount and a note on which meals need it.
+const UNIT_DEFS = [
+  { re: /^cups?\b\.?/i, singular: "cup", plural: "cups" },
+  { re: /^tbsp\.?\b/i, singular: "tbsp", plural: "tbsp" },
+  { re: /^tablespoons?\b/i, singular: "tbsp", plural: "tbsp" },
+  { re: /^tsp\.?\b/i, singular: "tsp", plural: "tsp" },
+  { re: /^teaspoons?\b/i, singular: "tsp", plural: "tsp" },
+  { re: /^ounces?\b/i, singular: "oz", plural: "oz" },
+  { re: /^oz\.?\b/i, singular: "oz", plural: "oz" },
+  { re: /^pounds?\b/i, singular: "lb", plural: "lbs" },
+  { re: /^lbs?\.?\b/i, singular: "lb", plural: "lbs" },
+  { re: /^cans?\b/i, singular: "can", plural: "cans" },
+  { re: /^jars?\b/i, singular: "jar", plural: "jars" },
+  { re: /^cloves?\b/i, singular: "clove", plural: "cloves" },
+  { re: /^slices?\b/i, singular: "slice", plural: "slices" },
+  { re: /^stalks?\b/i, singular: "stalk", plural: "stalks" },
+  { re: /^fillets?\b/i, singular: "fillet", plural: "fillets" },
+  { re: /^pieces?\b/i, singular: "piece", plural: "pieces" },
+  { re: /^handfuls?\b/i, singular: "handful", plural: "handfuls" }
+];
+
+const KNOWN_PREP_PHRASES = new Set([
+  "drained", "rinsed", "minced", "diced", "chopped", "sliced", "thinly sliced",
+  "sliced thin", "halved", "quartered", "cubed", "pitted", "grated", "shredded",
+  "peeled", "deveined", "seeded", "cooked", "cooled", "juiced", "zested",
+  "patted dry", "squeezed dry", "lightly mashed", "mashed", "fried", "poached",
+  "tops cut off", "cut into chunks", "cut into strips", "cut into wedges",
+  "to serve", "to taste", "optional", "divided", "plus more for serving",
+  "for topping", "room temperature", "toasted"
+]);
+
+function isPoppableSegment(segment) {
+  const s = segment.trim().replace(/^(and|or)\s+/i, "").trim();
+  if (!s) return false;
+  const parts = s.split(/\s+(?:and|or)\s+/i).map(p => p.trim()).filter(Boolean);
+  if (!parts.length) return false;
+  return parts.every(p => KNOWN_PREP_PHRASES.has(p.toLowerCase()));
+}
+
+function stripPrepNotes(text) {
+  const segments = text.split(",").map(s => s.trim()).filter(Boolean);
+  while (segments.length > 1 && isPoppableSegment(segments[segments.length - 1])) {
+    segments.pop();
+  }
+  return segments.join(", ");
+}
+
+function parseQtyToken(token) {
+  const mixed = token.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if (mixed) return parseInt(mixed[1], 10) + parseInt(mixed[2], 10) / parseInt(mixed[3], 10);
+  const frac = token.match(/^(\d+)\/(\d+)$/);
+  if (frac) return parseInt(frac[1], 10) / parseInt(frac[2], 10);
+  const num = parseFloat(token);
+  return isNaN(num) ? null : num;
+}
+
+function formatQty(num) {
+  const fractionLabels = [
+    [1 / 8, "1/8"], [1 / 4, "1/4"], [1 / 3, "1/3"], [3 / 8, "3/8"],
+    [1 / 2, "1/2"], [5 / 8, "5/8"], [2 / 3, "2/3"], [3 / 4, "3/4"], [7 / 8, "7/8"]
+  ];
+  let whole = Math.floor(num + 1e-9);
+  let frac = num - whole;
+  if (frac < 1 / 16) frac = 0;
+  else if (frac > 15 / 16) { whole += 1; frac = 0; }
+  if (frac === 0) return String(whole);
+  let best = fractionLabels[0], bestDiff = Infinity;
+  fractionLabels.forEach(([val, label]) => {
+    const diff = Math.abs(frac - val);
+    if (diff < bestDiff) { bestDiff = diff; best = [val, label]; }
+  });
+  return whole > 0 ? whole + " " + best[1] : best[1];
+}
+
+function singularizeWord(word) {
+  if (/[a-z]oes$/i.test(word)) return word.slice(0, -2);
+  if (/ies$/i.test(word)) return word.slice(0, -3) + "y";
+  if (/ss$/i.test(word) || word.length <= 3) return word;
+  if (/s$/i.test(word)) return word.slice(0, -1);
+  return word;
+}
+
+function parseIngredientLine(text) {
+  const trimmed = text.trim();
+  const qtyMatch = trimmed.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)(\s*-\s*(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?))?/);
+  let qty = null;
+  let rest = trimmed;
+  if (qtyMatch) {
+    const upperToken = qtyMatch[3] || qtyMatch[1];
+    qty = parseQtyToken(upperToken);
+    rest = trimmed.slice(qtyMatch[0].length).trim();
+  }
+
+  let unitDef = null;
+  let sizeNote = "";
+  let rest2 = rest;
+  if (qty !== null) {
+    for (const def of UNIT_DEFS) {
+      const m = rest.match(def.re);
+      if (!m) continue;
+      const afterUnit = rest.slice(m[0].length).trim();
+      if (/^of\b/i.test(afterUnit)) {
+        // "piece of fruit" idiom - not a countable unit, leave the whole phrase intact
+        break;
+      }
+      unitDef = def;
+      rest2 = afterUnit;
+      const sizeMatch = rest2.match(/^\([^)]*\)/);
+      if (sizeMatch) {
+        sizeNote = sizeMatch[0];
+        rest2 = rest2.slice(sizeMatch[0].length).trim();
+      }
+      break;
+    }
+  }
+
+  const cleaned = rest2.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+  let core = stripPrepNotes(cleaned);
+  if (!core) core = cleaned || trimmed;
+
+  const groupWords = core.toLowerCase().split(" ");
+  if (groupWords.length) {
+    groupWords[groupWords.length - 1] = singularizeWord(groupWords[groupWords.length - 1]);
+  }
+  const groupKey = groupWords.join(" ") || core.toLowerCase();
+
+  const displayName = core.charAt(0).toUpperCase() + core.slice(1);
+
+  return { qty, unitDef, sizeNote, groupKey, displayName };
+}
+
 const grid = document.getElementById("grid");
 const noResults = document.getElementById("no-results");
 const searchInput = document.getElementById("search");
@@ -1612,37 +1756,87 @@ function renderCart() {
     return;
   }
 
-  const byRecipe = new Map();
+  // Group checked ingredients by normalized item name, summing amounts that
+  // share a unit and tracking which meals each item is needed for.
+  const groups = new Map();
   shoppingItems.forEach((val, key) => {
-    if (!byRecipe.has(val.recipeTitle)) byRecipe.set(val.recipeTitle, []);
-    byRecipe.get(val.recipeTitle).push({ key, text: val.text });
+    const parsed = parseIngredientLine(val.text);
+    let group = groups.get(parsed.groupKey);
+    if (!group) {
+      group = {
+        displayName: parsed.displayName,
+        amounts: new Map(),
+        freeform: false,
+        recipeTitles: new Set(),
+        keys: []
+      };
+      groups.set(parsed.groupKey, group);
+    }
+    group.keys.push(key);
+    group.recipeTitles.add(val.recipeTitle);
+
+    if (parsed.qty === null) {
+      group.freeform = true;
+    } else {
+      const unitKey = parsed.unitDef ? parsed.unitDef.singular + "|" + parsed.sizeNote : "__count__";
+      const existing = group.amounts.get(unitKey);
+      if (existing) {
+        existing.qty += parsed.qty;
+      } else {
+        group.amounts.set(unitKey, { qty: parsed.qty, unitDef: parsed.unitDef, sizeNote: parsed.sizeNote });
+      }
+    }
   });
 
-  byRecipe.forEach((items, recipeTitle) => {
-    const group = document.createElement("div");
-    group.className = "cart-group";
-    const h5 = document.createElement("h5");
-    h5.textContent = recipeTitle;
-    group.appendChild(h5);
-    items.forEach(item => {
-      const row = document.createElement("div");
-      row.className = "cart-item";
-      const span = document.createElement("span");
-      span.textContent = item.text;
-      row.appendChild(span);
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "×";
-      removeBtn.setAttribute("aria-label", "Remove " + item.text);
-      removeBtn.addEventListener("click", () => {
-        shoppingItems.delete(item.key);
-        const checkbox = document.getElementById(item.key);
-        if (checkbox) checkbox.checked = false;
-        renderCart();
-      });
-      row.appendChild(removeBtn);
-      group.appendChild(row);
+  const sortedGroups = Array.from(groups.values()).sort((a, b) =>
+    a.displayName.localeCompare(b.displayName)
+  );
+
+  sortedGroups.forEach(group => {
+    const row = document.createElement("div");
+    row.className = "cart-combined-item";
+
+    const main = document.createElement("div");
+    main.className = "cart-combined-main";
+
+    const name = document.createElement("span");
+    name.className = "cart-combined-name";
+    name.textContent = group.displayName;
+    main.appendChild(name);
+
+    const amountParts = Array.from(group.amounts.values()).map(a => {
+      const label = a.unitDef ? (a.qty > 1 ? a.unitDef.plural : a.unitDef.singular) : "";
+      return [formatQty(a.qty), label, a.sizeNote].filter(Boolean).join(" ");
     });
-    cartList.appendChild(group);
+    if (amountParts.length) {
+      const amount = document.createElement("span");
+      amount.className = "cart-combined-amount";
+      amount.textContent = amountParts.join(" + ") + (group.freeform ? " + more" : "");
+      main.appendChild(amount);
+    }
+
+    row.appendChild(main);
+
+    const meals = document.createElement("div");
+    meals.className = "cart-combined-meals";
+    meals.textContent = "For: " + Array.from(group.recipeTitles).join(", ");
+    row.appendChild(meals);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "cart-combined-remove";
+    removeBtn.textContent = "×";
+    removeBtn.setAttribute("aria-label", "Remove " + group.displayName);
+    removeBtn.addEventListener("click", () => {
+      group.keys.forEach(k => {
+        shoppingItems.delete(k);
+        const checkbox = document.getElementById(k);
+        if (checkbox) checkbox.checked = false;
+      });
+      renderCart();
+    });
+    row.appendChild(removeBtn);
+
+    cartList.appendChild(row);
   });
 }
 
