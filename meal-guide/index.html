@@ -441,9 +441,26 @@
   }
 
   @media print {
-    header, .controls, #cart-btn, #cart-panel, #overlay, .chevron, .add-all-btn { display: none !important; }
+    header, .controls, #cart-btn, #overlay, .chevron, .add-all-btn,
+    main, footer, #cart-close, .cart-footer, .cart-combined-remove {
+      display: none !important;
+    }
     .details { max-height: none !important; }
     .card { break-inside: avoid; }
+
+    #cart-panel {
+      position: static !important;
+      right: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      box-shadow: none !important;
+    }
+    #cart-list {
+      overflow: visible !important;
+      padding: 0 !important;
+    }
+    .cart-combined-item { padding-right: 0; }
   }
 </style>
 </head>
